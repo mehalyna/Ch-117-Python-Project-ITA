@@ -1,3 +1,11 @@
+---
+name: User Story
+about: Create a story to help us improve
+summary: ''
+labels: story
+assignees: ''
+
+---
 
 **As a** role **I want to** ability **so that** receive benefit
 
