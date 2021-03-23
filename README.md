@@ -1,6 +1,24 @@
 # Ch-117-Python-Project-ITA
 Python Project of Ch-117 mixed group ITA
 
+### Installation for Windows
+
+1. Install python 3.8 at the [link](https://www.python.org/downloads/windows/)
+2. Install MongoDB at the [link](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/)
+3. Clone the repository
+   ```sh
+   git clone https://github.com/mehalyna/Ch-117-Python-Project-ITA.git
+   ```
+4. Install python packages from requirements.txt
+   ```sh
+   pip install -r requirements.txt
+   ```
+5. Initialize database (details will be added in the future)
+6. Run the server
+   ```sh
+   app.py
+   ```
+
 
 ## For contributors
 ### Project setup
