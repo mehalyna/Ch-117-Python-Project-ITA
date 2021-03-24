@@ -44,7 +44,7 @@ result = some_function_that_takes_arguments(
 
 ### 1.2 Maximum Line Length
 
-Limit all lines to a **maximum of 79 characters**.
+Limit all lines to a **maximum of 120 characters**.
 
 The preferred way of wrapping long lines is by using Python's implied line continuation inside parentheses, brackets, and braces. Long lines can be broken over multiple lines by wrapping expressions in parentheses. These should be used in preference to using a backslash for line continuation.
 
@@ -328,12 +328,6 @@ Don't use inline comments at all.
 
 ### 4.3 Documentation Strings
 
-Write docstrings for all public: 
-- modules, 
-- functions, 
-- classes, 
-- methods. 
-
 Use triple double-quotes for all docstrings. The ends a multiline docstring should be on a line by itself:
 ```
 """Return a foobang
@@ -346,6 +340,37 @@ For one liner docstrings, please keep the closing """ on the same line:
 ```
 """Return an ex-parrot."""
 ```
+
+Write docstrings for all public: 
+- modules, 
+- functions, 
+- classes, 
+- methods. 
+
+```
+"""Module docstring"""
+...
+```
+```
+def func(a, b):
+    """func docstring"""
+    pass
+```
+```
+class MyClass:
+    """MyClass docstring"""
+
+    def __init__(self):
+        """MyClass.__init__ docstring"""
+        pass
+
+    def __str__(self):
+        """MyClass.__str__ docstring"""
+        pass
+
+    ...
+```
+
 
 
 ## 5. Naming Conventions
@@ -415,6 +440,18 @@ Use suffix "Error" for your custom exceptions (if the exception actually is an e
 
 Function names should be lowercase, with words separated by underscores (SnakeCase) as necessary to improve readability.
 
+All function names should be written in the form _[doing]\_[what]_, where _[doing]_ is a verb, which specifies the action which the function performs, while _[what]_ is a noun, which defines the action object.
+```
+def compute_sum(*args):
+    n_sum = 0
+    
+    for a in args:
+        n_sum += a
+
+    return n_sum
+```
+
+
 Variable names follow the same convention as function names.
 
 
@@ -465,4 +502,3 @@ Use the following guidelines:
 4. [PyCharm 2020.3 External tools. Pylint](https://www.jetbrains.com/help/pycharm/configuring-third-party-tools.html)
 5. [Editing Python in Visual Studio Code](https://code.visualstudio.com/docs/python/editing)
 6. [Linting Python in Visual Studio Code](https://code.visualstudio.com/docs/python/linting)
- 
