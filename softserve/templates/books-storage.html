@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %} Book Storage {% endblock %}
+{% block body %}
+<div class="container">
+    <h1>Book storage</h1>
+
+    {% for item in books %}
+        <div class="alert alert-info">
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.author }}</p>
+            <p><b>{{ item.year }}</b></p>
+            <a href="/books-storage/{{ item._id }}" class="btn btn-warning">Details</a>
+            <a href="/books-storage/{{ item._id }}/update" class="btn btn-success">Update</a>
+            <a href="/books-storage/{{ item._id }}/del" class="btn btn-danger">Delete</a>
+
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
