@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}
+Create User
+{% endblock %}
+
+{% block body %}
+    <div class=".create_user_form">
+        <form action="" method="post">
+            <p>
+                {{ form.firstname.label }}<br>
+                {{ form.firstname(size=32) }}
+            </p>
+            <p>
+                {{ form.lastname.label }}<br>
+                {{ form.lastname(size=32) }}
+            </p>
+            <p>
+                {{ form.email.label }}<br>
+                {{ form.email(size=32) }}
+            </p>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password(size=32) }}
+            </p>
+            <p>
+                {{ form.role.label }}<br>
+                {{ form.role }}
+            </p>
+            <p><button type="submit" class="btn-default"
+                        data-toggle="tooltip"
+                        data-placement="bottom"
+                        title="click for creating user"
+                        onclick="createUser()"> Submit </button></p>
+        </form>
+    </div>
+
+
+{% endblock %}

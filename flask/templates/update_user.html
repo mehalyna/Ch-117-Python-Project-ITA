@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}
+Update User
+{% endblock %}
+
+{% block body %}
+    <div class="update_user_form">
+        <form action="" method="post">
+             <p>
+                {{ form.firstname.label }}<br>
+                {{ form.firstname(size=32, value=user.firstname) }}
+            </p>
+            <p>
+                {{ form.lastname.label }}<br>
+                {{ form.lastname(size=32, value=user.lastname) }}
+            </p>
+            <p>
+                {{ form.email.label }}<br>
+                {{ form.email(size=32, value=user.email) }}
+            </p>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password(size=32) }}
+            </p>
+            <p>
+                {{ form.role.label }}<br>
+                {{ form.role }}
+            </p>
+            <p>
+                {{ form.status.label }}<br>
+                {{ form.status }}
+            </p>
+            <p><button type="submit">Submit</button></p>
+        </form>
+    </div>
+
+{% endblock %}
