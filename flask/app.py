@@ -1,15 +1,29 @@
+import os
+
+from dotenv import load_dotenv
 from bson import ObjectId
 from flask import Flask, render_template, flash, redirect, request
+from forms import AddUserForm, UpdateUserForm
+from mongoengine import connect
+from mongoengine.errors import NotUniqueError
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash
-from forms import AddUserForm, UpdateUserForm
 
-client = MongoClient('localhost', 27017)
-db = client['projectITA']
-users_col = db['users']
+from models import Users
+
+load_dotenv()
+
+connect(
+    db=os.getenv('DB_NAME'),
+    host=os.getenv('MONGO_URL'),
+    port=int(os.getenv('PORT'))
+    )
+
+client = MongoClient(os.getenv('MONGO_URL'), 27017)
 app = Flask(__name__)
-SECRET_KEY = "TEST"
-app.config["SECRET_KEY"] = SECRET_KEY
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+db = client[os.getenv('DB_NAME')]
+users_col = db[os.getenv('USERS_COL')]
 
 
 @app.route('/')
@@ -33,14 +47,16 @@ def get_inactive_users_list():
 def create_user():
     form = AddUserForm(request.form)
     if request.method == 'POST':
-        firstname = form.firstname.data
-        lastname = form.lastname.data
-        email = form.email.data
-        password = generate_password_hash(form.password.data, method='sha256')
-        role = form.role.data
-        users_col.insert_one({'firstname': firstname, 'lastname': lastname,
-                              'email': email, 'password': password,
-                              'role': role, 'status': 'active'})
+        try:
+            user = Users(email=form.email.data)
+            user.firstname = form.firstname.data
+            user.lastname = form.lastname.data
+            user.password = generate_password_hash(form.password.data, method='sha256')
+            user.role = form.role.data
+            user.status = 'active'
+            user.save()
+        except NotUniqueError as e:
+            print("E-mail already found")
         flash('User successfully created', 'success')
         return redirect('/active_users_list')
     return render_template('create_user.html', form=form)
@@ -48,8 +64,8 @@ def create_user():
 
 @app.route('/update_user/<string:_id>', methods=['POST', 'GET'])
 def update_user(_id):
-    user = users_col.find_one({'_id': ObjectId(_id)})
-    form = UpdateUserForm(request.form, role=user['role'], status=user['status'])
+    user = Users.objects.get(id=ObjectId(_id))
+    form = UpdateUserForm(request.form)
     if request.method == 'POST':
         firstname = form.firstname.data
         lastname = form.lastname.data
@@ -57,12 +73,10 @@ def update_user(_id):
         password = generate_password_hash(form.password.data, method='sha256')
         role = form.role.data
         status = form.status.data
-        users_col.update_one(
-            {'_id': ObjectId(_id)}, {'$set': {
-                'firstname': firstname, 'lastname': lastname,
-                'email': email, 'password': password,
-                'role': role, 'status': status
-            }})
+        user.update(firstname=firstname, lastname=lastname,
+                    email=email, password=password,
+                    role=role, status=status)
+
         flash('User successfully updated', 'success')
         return redirect('/active_users_list')
     return render_template('update_user.html', user=user, form=form)
