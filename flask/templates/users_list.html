@@ -16,7 +16,7 @@ User List
                     Status: {{ user.status }}
                     <br>
                 </p>
-                <a href="/update_user/{{ user.id }}"
+                <a href="{{ url_for('update_user', _id=user.id) }}"
                    class="btn btn-warning btn-secondary"
                    data-toggle="tooltip"
                    data-placement="bottom"
@@ -28,7 +28,7 @@ User List
                         data-toggle="tooltip"
                         data-placement="bottom"
                         title="click for deleting user"
-                        onclick="deleteUser('{{ user.id }}')">
+                        onclick="deleteUser('{{ url_for('delete_user', _id=user.id) }}')">
                     Delete user
                 </button>
                 {% endif %}

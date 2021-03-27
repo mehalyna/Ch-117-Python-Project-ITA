@@ -4,7 +4,7 @@ Create User
 {% endblock %}
 
 {% block body %}
-    <div class=".create_user_form">
+    <div class="create_user_form">
         <form action="" method="post">
             {{ form.csrf_token }}
             <p>
@@ -17,6 +17,16 @@ Create User
             </p>
             <p>
                 {{ form.email.label }}<br>
+{#                {% if form.email.errors %}#}
+{#                    {{ form.email(class="form-control form-control-lg is-invalid") }}#}
+{#                    <div class="invalid-feedback">#}
+{#                    {% for error in form.email.errors %}#}
+{#                        <span>{{ error }}</span>#}
+{#                    {% endfor %}#}
+{#                    </div>#}
+{#                {% else %}#}
+{#                    {{ form.email(size=32) }}#}
+{#                {% endif %}#}
                 {{ form.email(size=32) }}
             </p>
             <p>
@@ -27,13 +37,7 @@ Create User
                 {{ form.role.label }}<br>
                 {{ form.role }}
             </p>
-            <p><button type="submit" class="btn-default"
-                        data-toggle="tooltip"
-                        data-placement="bottom"
-                        title="click for creating user"
-                        onclick="createUser()"> Submit </button></p>
+            <p>{{ form.submit(class="btn btn-success") }}
         </form>
     </div>
-
-
 {% endblock %}

@@ -3,11 +3,10 @@ import os
 from bson import ObjectId
 from bson.errors import InvalidId
 from dotenv import load_dotenv
-from flask import Flask, render_template, flash, redirect, request
+from flask import Flask, render_template, flash, redirect, request, url_for
 from forms import AddUserForm, UpdateUserForm
 from mongoengine import connect
-from mongoengine.errors import NotUniqueError, DoesNotExist
-from pymongo import MongoClient
+from mongoengine.errors import NotUniqueError, DoesNotExist, ValidationError
 from werkzeug.security import generate_password_hash
 
 from models import Users
@@ -26,7 +25,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 @app.route('/')
 def start_page():
-    return render_template('base.html')
+    return render_template('index.html')
 
 
 @app.route('/active_users_list')
@@ -44,7 +43,7 @@ def get_inactive_users_list():
 @app.route('/create_user', methods=['GET', 'POST'])
 def create_user():
     form = AddUserForm(request.form)
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate_on_submit():
         try:
             user = Users(email=form.email.data)
             user.firstname = form.firstname.data
@@ -53,10 +52,12 @@ def create_user():
             user.role = form.role.data
             user.status = 'active'
             user.save()
-        except NotUniqueError as e:
-            print("E-mail already found")
-        flash('User successfully created', 'success')
-        return redirect('/active_users_list')
+            flash('User successfully created', 'success')
+            return redirect(url_for('get_active_users_list'))
+        except (NotUniqueError, ValidationError) as e:
+            print("E-mail already found or user entered invalid e-mail")
+            print(e)
+            return redirect(url_for('create_user'))
     return render_template('create_user.html', form=form)
 
 
@@ -65,7 +66,7 @@ def update_user(_id):
     try:
         user = Users.objects.get(id=ObjectId(_id))
         form = UpdateUserForm(request.form, role=user.role, status=user.status)
-        if request.method == 'POST':
+        if request.method == 'POST' and form.validate_on_submit():
             firstname = form.firstname.data
             lastname = form.lastname.data
             email = form.email.data
@@ -77,11 +78,11 @@ def update_user(_id):
                         role=role, status=status)
 
             flash('User successfully updated', 'success')
-            return redirect('/active_users_list')
+            return redirect(url_for('get_active_users_list'))
     except (DoesNotExist, InvalidId) as e:
         print('Such user doesn\'t exist')
         print(e)
-        return redirect('/active_users_list')
+        return redirect(url_for('get_active_users_list'))
     return render_template('update_user.html', user=user, form=form)
 
 
@@ -91,11 +92,12 @@ def delete_user(_id):
         user = Users.objects.get(id=ObjectId(_id), status='active')
         user.update(status='inactive')
         flash('User successfully deleted', 'danger')
-        return redirect('/active_users_list')
+        return redirect(url_for('get_active_users_list'))
     except (DoesNotExist, InvalidId) as e:
         print('User is already inactive or such user doesn\'t exist')
-        return redirect('/active_users_list')
+        print(e)
+        return redirect(url_for('get_active_users_list'))
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
