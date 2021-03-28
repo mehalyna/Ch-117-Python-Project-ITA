@@ -1,12 +1,11 @@
 import os
+import traceback
 
 from bson import ObjectId
-from bson.errors import InvalidId
 from dotenv import load_dotenv
 from flask import Flask, render_template, flash, redirect, request, url_for
 from forms import AddUserForm, UpdateUserForm
 from mongoengine import connect
-from mongoengine.errors import NotUniqueError, DoesNotExist, ValidationError
 from werkzeug.security import generate_password_hash
 
 from models import Users
@@ -17,7 +16,7 @@ connect(
     db=os.getenv('DB_NAME'),
     host=os.getenv('MONGO_URL'),
     port=int(os.getenv('PORT'))
-    )
+)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -54,15 +53,15 @@ def create_user():
             user.save()
             flash('User successfully created', 'success')
             return redirect(url_for('get_active_users_list'))
-        except (NotUniqueError, ValidationError) as e:
-            print("E-mail already found or user entered invalid e-mail")
-            print(e)
+        except Exception as e:
+            print("Something went wrong!")
+            traceback.print_exc()
             return redirect(url_for('create_user'))
     return render_template('create_user.html', form=form)
 
 
 @app.route('/update_user/<string:_id>', methods=['POST', 'GET'])
-def update_user(_id):
+def update_user(_id: str):
     try:
         user = Users.objects.get(id=ObjectId(_id))
         form = UpdateUserForm(request.form, role=user.role, status=user.status)
@@ -79,23 +78,23 @@ def update_user(_id):
 
             flash('User successfully updated', 'success')
             return redirect(url_for('get_active_users_list'))
-    except (DoesNotExist, InvalidId) as e:
-        print('Such user doesn\'t exist')
-        print(e)
+    except Exception as e:
+        print('Something went wrong!')
+        traceback.print_exc()
         return redirect(url_for('get_active_users_list'))
     return render_template('update_user.html', user=user, form=form)
 
 
 @app.route('/delete_user/<string:_id>')
-def delete_user(_id):
+def delete_user(_id: str):
     try:
         user = Users.objects.get(id=ObjectId(_id), status='active')
         user.update(status='inactive')
         flash('User successfully deleted', 'danger')
         return redirect(url_for('get_active_users_list'))
-    except (DoesNotExist, InvalidId) as e:
-        print('User is already inactive or such user doesn\'t exist')
-        print(e)
+    except Exception as e:
+        print('Something went wrong!')
+        traceback.print_exc()
         return redirect(url_for('get_active_users_list'))
 
 
