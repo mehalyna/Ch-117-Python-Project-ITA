@@ -457,6 +457,8 @@ Variable names follow the same convention as function names.
 
 #### 5.2.7 Function and Method Arguments
 
+Use type hinting for function arguments.
+
 Always use **self** for the first argument to instance methods.
 
 Always use **cls** for the first argument to class methods.

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}
+User List
+{% endblock %}
+
+{% block body %}
+    {% for user in users %}
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">Email: {{ user.email }}</h5>
+                <p class="card-text">
+                    First name: {{ user.firstname }}
+                    <br>
+                    Role: {{ user.role }}
+                    <br>
+                    Status: {{ user.status }}
+                    <br>
+                </p>
+                <a href="{{ url_for('update_user', _id=user.id) }}"
+                   class="btn btn-warning btn-secondary"
+                   data-toggle="tooltip"
+                   data-placement="bottom"
+                   title="click for editing user">
+                    Edit user
+                </a>
+                {% if user.status != 'inactive' %}
+                <button class="btn btn-danger btn-secondary"
+                        data-toggle="tooltip"
+                        data-placement="bottom"
+                        title="click for deleting user"
+                        onclick="deleteUser('{{ url_for('delete_user', _id=user.id) }}')">
+                    Delete user
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

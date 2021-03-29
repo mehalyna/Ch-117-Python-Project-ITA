@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}
+Create User
+{% endblock %}
+
+{% block body %}
+    <div class="create_user_form">
+        <form action="" method="post">
+            {{ form.csrf_token }}
+            <p>
+                {{ form.firstname.label }}<br>
+                {{ form.firstname(size=32) }}
+            </p>
+            <p>
+                {{ form.lastname.label }}<br>
+                {{ form.lastname(size=32) }}
+            </p>
+            <p>
+                {{ form.email.label }}<br>
+                {{ form.email(size=32) }}
+            </p>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password(size=32) }}
+            </p>
+            <p>
+                {{ form.role.label }}<br>
+                {{ form.role }}
+            </p>
+            <p>{{ form.submit(class="btn btn-success") }}
+        </form>
+    </div>
+{% endblock %}
