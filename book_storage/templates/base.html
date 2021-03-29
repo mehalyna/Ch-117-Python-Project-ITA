@@ -8,10 +8,10 @@
     </head>
     <body>
         <div class="jumbotron">
-            <a href="/">HOME</a><br>
-            <a href="/create_user">Create User</a><br>
-            <a href="/active_users_list">Active Users List</a><br>
-            <a href="/inactive_users_list">Inactive Users List</a>
+            <a href="{{ url_for('start_page') }}">HOME</a><br>
+            <a href="{{ url_for('create_user') }}">Create User</a><br>
+            <a href="{{ url_for('get_active_users_list') }}">Active Users List</a><br>
+            <a href="{{ url_for('get_inactive_users_list') }}">Inactive Users List</a>
         </div>
         <hr>
         {% with messages = get_flashed_messages(with_categories=true) %}

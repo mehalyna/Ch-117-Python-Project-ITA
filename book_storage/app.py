@@ -3,7 +3,7 @@ import traceback
 
 from bson import ObjectId
 from dotenv import load_dotenv
-from flask import Flask, render_template, flash, redirect, request, url_for
+from flask import flash, Flask, redirect, render_template, request, url_for
 from forms import AddUserForm, UpdateUserForm
 from mongoengine import connect
 from werkzeug.security import generate_password_hash
