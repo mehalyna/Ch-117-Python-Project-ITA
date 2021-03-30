@@ -3,7 +3,7 @@ from wtforms import StringField, SelectField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email
 from wtforms.fields.html5 import EmailField
 
-from admin.models import Status, Role
+from admin.models import Role, Status
 
 
 class AddUserForm(FlaskForm):
@@ -14,8 +14,8 @@ class AddUserForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     role = SelectField('Role', choices=[
         (Role.ADMIN, Role.ADMIN),
-        (Role.USER, Role.USER),
-        (Role.USER, Role.USER),
+        (Role.MODERATOR, Role.MODERATOR),
+        (Role.USER, Role.USER)
     ], validators=[DataRequired()])
     submit = SubmitField('Submit')
 
@@ -23,5 +23,5 @@ class AddUserForm(FlaskForm):
 class UpdateUserForm(AddUserForm):
     status = SelectField('Status', choices=[
             (Status.ACTIVE, Status.ACTIVE),
-            (Status.INACTIVE, Status.INACTIVE),
+            (Status.INACTIVE, Status.INACTIVE)
         ], validators=[DataRequired()])
