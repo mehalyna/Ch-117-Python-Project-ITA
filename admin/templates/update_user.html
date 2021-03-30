@@ -20,6 +20,10 @@ Update User
                 {{ form.email(size=32, value=user.email) }}
             </p>
             <p>
+                {{ form.login.label }}<br>
+                {{ form.login(size=32, value=user.login) }}
+            </p>
+            <p>
                 {{ form.password.label }}<br>
                 {{ form.password(size=32) }}
             </p>

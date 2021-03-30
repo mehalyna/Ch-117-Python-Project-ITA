@@ -47,6 +47,7 @@ def create_user():
             user = User(email=form.email.data)
             user.firstname = form.firstname.data
             user.lastname = form.lastname.data
+            user.login = form.login.data
             user.password = generate_password_hash(form.password.data, method='sha256')
             user.role = form.role.data
             user.status = 'active'
@@ -69,11 +70,12 @@ def update_user(_id: str):
             firstname = form.firstname.data
             lastname = form.lastname.data
             email = form.email.data
+            login = form.login.data
             password = generate_password_hash(form.password.data, method='sha256')
             role = form.role.data
             status = form.status.data
             user.update(firstname=firstname, lastname=lastname,
-                        email=email, password=password,
+                        email=email, login=login, password=password,
                         role=role, status=status)
 
             flash('User successfully updated', 'success')
@@ -91,6 +93,18 @@ def delete_user(_id: str):
         user = User.objects.get(id=ObjectId(_id), status='active')
         user.update(status='inactive')
         flash('User successfully deleted', 'danger')
+        return redirect(url_for('get_active_users_list'))
+    except Exception as e:
+        print('Something went wrong!')
+        traceback.print_exc()
+        return redirect(url_for('get_active_users_list'))
+
+@app.route('/restore_user/<string:_id>')
+def restore_user(_id: str):
+    try:
+        user = User.objects.get(id=ObjectId(_id), status='inactive')
+        user.update(status='active')
+        flash('User successfully restored', 'success')
         return redirect(url_for('get_active_users_list'))
     except Exception as e:
         print('Something went wrong!')
