@@ -5,7 +5,8 @@ from mongoengine import DateTimeField, Document, EmailField, EmbeddedDocument, E
 
 class Status:
     ACTIVE = 'active'
-    DELETED = 'deleted'
+    INACTIVE = 'inactive'
+    MUTED = 'muted'
 
 
 class Role:
@@ -25,7 +26,7 @@ class User(Document):
     firstname = StringField(max_length=100, min_length=1, required=True)
     lastname = StringField(max_length=100, min_length=1, required=True)
     email = EmailField(required=True, unique=True)
-    login = StringField(required=True)
+    login = StringField(required=True, unique=True)
     password = StringField(required=True, min_length=8)
     role = StringField(default=Role.USER)
     status = StringField(default=Status.ACTIVE)
