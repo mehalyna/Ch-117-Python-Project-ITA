@@ -8,7 +8,7 @@ from forms import AddUserForm, UpdateUserForm
 from mongoengine import connect
 from werkzeug.security import generate_password_hash
 
-from models import Users
+from models import User
 
 load_dotenv()
 
@@ -29,13 +29,13 @@ def start_page():
 
 @app.route('/active_users_list')
 def get_active_users_list():
-    users = Users.objects(status='active')
+    users = User.objects(status='active')
     return render_template('users_list.html', users=users)
 
 
 @app.route('/inactive_users_list')
 def get_inactive_users_list():
-    users = Users.objects(status='inactive')
+    users = User.objects(status='inactive')
     return render_template('users_list.html', users=users)
 
 
@@ -44,7 +44,7 @@ def create_user():
     form = AddUserForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
         try:
-            user = Users(email=form.email.data)
+            user = User(email=form.email.data)
             user.firstname = form.firstname.data
             user.lastname = form.lastname.data
             user.password = generate_password_hash(form.password.data, method='sha256')
@@ -63,7 +63,7 @@ def create_user():
 @app.route('/update_user/<string:_id>', methods=['POST', 'GET'])
 def update_user(_id: str):
     try:
-        user = Users.objects.get(id=ObjectId(_id))
+        user = User.objects.get(id=ObjectId(_id))
         form = UpdateUserForm(request.form, role=user.role, status=user.status)
         if request.method == 'POST' and form.validate_on_submit():
             firstname = form.firstname.data
@@ -88,7 +88,7 @@ def update_user(_id: str):
 @app.route('/delete_user/<string:_id>')
 def delete_user(_id: str):
     try:
-        user = Users.objects.get(id=ObjectId(_id), status='active')
+        user = User.objects.get(id=ObjectId(_id), status='active')
         user.update(status='inactive')
         flash('User successfully deleted', 'danger')
         return redirect(url_for('get_active_users_list'))
