@@ -6,6 +6,7 @@ from mongoengine import DateTimeField, Document, EmailField, EmbeddedDocument, E
 class Status:
     ACTIVE = 'active'
     INACTIVE = 'inactive'
+    MUTED = 'muted'
 
 
 class Role:
