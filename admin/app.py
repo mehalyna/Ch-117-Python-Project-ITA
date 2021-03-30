@@ -89,11 +89,20 @@ def update_user(_id: str):
 def delete_user(_id: str):
     try:
         user = Users.objects.get(id=ObjectId(_id), status='active')
-        if user.status == 'active':
-            user.update(status='inactive')
-        else:
-            user.update(status='active')
+        user.update(status='inactive')
         flash('User successfully deleted', 'danger')
+        return redirect(url_for('get_active_users_list'))
+    except Exception as e:
+        print('Something went wrong!')
+        traceback.print_exc()
+        return redirect(url_for('get_active_users_list'))
+
+@app.route('/restore_user/<string:_id>')
+def restore_user(_id: str):
+    try:
+        user = Users.objects.get(id=ObjectId(_id), status='inactive')
+        user.update(status='active')
+        flash('User successfully restored', 'success')
         return redirect(url_for('get_active_users_list'))
     except Exception as e:
         print('Something went wrong!')

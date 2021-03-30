@@ -28,7 +28,7 @@ User List
                         data-toggle="tooltip"
                         data-placement="bottom"
                         title="click for deleting user"
-                        onclick="deleteUser('{{ url_for('delete_user', _id=user.id) }}')">
+                        onclick="change_status('{{ url_for('delete_user', _id=user.id) }}', status='delete' )">
                     Delete user
                 </button>
                 {% endif %}
@@ -37,7 +37,7 @@ User List
                     data-toggle="tooltip"
                     data-placement="bottom"
                     title="click for deleting user"
-                    onclick="deleteUser('{{ url_for('delete_user', _id=user.id) }}')">
+                    onclick="change_status('{{ url_for('restore_user', _id=user.id) }}', status='restore')">
                     Restore user
                 </button>
                 {% endif %}
