@@ -8,6 +8,7 @@ class AddUserForm(FlaskForm):
     firstname = StringField('Firstname', validators=[DataRequired()])
     lastname = StringField('Lastname', validators=[DataRequired()])
     email = EmailField('Email', validators=[DataRequired(), Email()])
+    login = StringField('Login', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     role = SelectField('Role', choices=[
         ('admin', 'admin'),
