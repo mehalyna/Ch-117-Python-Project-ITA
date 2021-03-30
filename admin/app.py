@@ -89,7 +89,10 @@ def update_user(_id: str):
 def delete_user(_id: str):
     try:
         user = Users.objects.get(id=ObjectId(_id), status='active')
-        user.update(status='inactive')
+        if user.status == 'active':
+            user.update(status='inactive')
+        else:
+            user.update(status='active')
         flash('User successfully deleted', 'danger')
         return redirect(url_for('get_active_users_list'))
     except Exception as e:

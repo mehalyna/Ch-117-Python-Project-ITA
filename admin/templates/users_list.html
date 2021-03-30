@@ -32,6 +32,15 @@ User List
                     Delete user
                 </button>
                 {% endif %}
+                {% if user.status != 'active' %}
+                <button class="btn btn-danger btn-secondary"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="click for deleting user"
+                    onclick="deleteUser('{{ url_for('delete_user', _id=user.id) }}')">
+                    Restore user
+                </button>
+                {% endif %}
             </div>
         </div>
     {% endfor %}
