@@ -4,42 +4,51 @@ import traceback
 from bson import ObjectId
 from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, url_for
-from forms import AddUserForm, UpdateUserForm
+from flask_login import LoginManager, logout_user, login_user, login_required
 from mongoengine import connect
+from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
-
-from models import User
 
 load_dotenv()
 
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 connect(
     db=os.getenv('DB_NAME'),
     host=os.getenv('MONGO_URL'),
     port=int(os.getenv('PORT'))
 )
+login = LoginManager(app)
+login.login_view = 'admin_login'
+login.init_app(app)
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+from forms import LoginForm, AddUserForm, UpdateUserForm
+from models import User
 
 
 @app.route('/')
+@login_required
 def start_page():
     return render_template('index.html')
 
 
 @app.route('/active_users_list')
+@login_required
 def get_active_users_list():
     users = User.objects(status='active')
     return render_template('users_list.html', users=users)
 
 
 @app.route('/inactive_users_list')
+@login_required
 def get_inactive_users_list():
     users = User.objects(status='inactive')
     return render_template('users_list.html', users=users)
 
 
 @app.route('/create_user', methods=['GET', 'POST'])
+@login_required
 def create_user():
     form = AddUserForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
@@ -48,7 +57,7 @@ def create_user():
             user.firstname = form.firstname.data
             user.lastname = form.lastname.data
             user.login = form.login.data
-            user.password = generate_password_hash(form.password.data, method='sha256')
+            user.set_password(form.password.data)
             user.role = form.role.data
             user.status = 'active'
             user.save()
@@ -62,6 +71,7 @@ def create_user():
 
 
 @app.route('/update_user/<string:_id>', methods=['POST', 'GET'])
+@login_required
 def update_user(_id: str):
     try:
         user = User.objects.get(id=ObjectId(_id))
@@ -71,11 +81,11 @@ def update_user(_id: str):
             lastname = form.lastname.data
             email = form.email.data
             login = form.login.data
-            password = generate_password_hash(form.password.data, method='sha256')
+            password_hash = generate_password_hash(form.password.data)
             role = form.role.data
             status = form.status.data
             user.update(firstname=firstname, lastname=lastname,
-                        email=email, login=login, password=password,
+                        email=email, login=login, password_hash=password_hash,
                         role=role, status=status)
 
             flash('User successfully updated', 'success')
@@ -88,6 +98,7 @@ def update_user(_id: str):
 
 
 @app.route('/delete_user/<string:_id>')
+@login_required
 def delete_user(_id: str):
     try:
         user = User.objects.get(id=ObjectId(_id), status='active')
@@ -99,7 +110,9 @@ def delete_user(_id: str):
         traceback.print_exc()
         return redirect(url_for('get_active_users_list'))
 
+
 @app.route('/restore_user/<string:_id>')
+@login_required
 def restore_user(_id: str):
     try:
         user = User.objects.get(id=ObjectId(_id), status='inactive')
@@ -110,6 +123,29 @@ def restore_user(_id: str):
         print('Something went wrong!')
         traceback.print_exc()
         return redirect(url_for('get_active_users_list'))
+
+
+@app.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        admin = User.objects.get(login=form.admin.data)
+        if admin is None or not admin.check_password(form.password.data):
+            flash('Invalid username or password')
+            return redirect('/admin_login')
+        if admin.role == 'admin':
+            login_user(admin)
+            next_page = request.args.get('next')
+            if not next_page or url_parse(next_page).netloc != '':
+                next_page = url_for('start_page')
+            return redirect(next_page)
+    return render_template('admin_login.html', title='Sign In', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('start_page'))
 
 
 if __name__ == '__main__':

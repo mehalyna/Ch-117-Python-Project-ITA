@@ -1,6 +1,9 @@
+from app import login
 from datetime import datetime
+from flask_login import UserMixin
 from mongoengine import DateTimeField, Document, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 class Status:
@@ -22,12 +25,12 @@ class Preference(EmbeddedDocument):
     years = ListField(default=(), max_length=2)
 
 
-class User(Document):
+class User(UserMixin, Document):
     firstname = StringField(max_length=100, min_length=1, required=True)
     lastname = StringField(max_length=100, min_length=1, required=True)
     email = EmailField(required=True, unique=True)
     login = StringField(required=True, unique=True)
-    password = StringField(required=True, min_length=8)
+    password_hash = StringField(required=True, min_length=8)
     role = StringField(default=Role.USER)
     status = StringField(default=Status.ACTIVE)
     last_login = DateTimeField(default=datetime.now)
@@ -35,6 +38,30 @@ class User(Document):
     recommended_books = ListField(default=[])
     wishlist = ListField(default=[])
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
+
+    def __repr__(self):
+        return '<Admin {}>'.format(self.login)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+
+    def __unicode__(self):
+        return self.login
 
 
 class BookStatistic(EmbeddedDocument):
@@ -74,3 +101,8 @@ class Review(Document):
     status = StringField(default=Status.ACTIVE, max_length=100)
     comment = StringField(default='', max_length=5000)
     date = DateTimeField(default=datetime.now)
+
+
+@login.user_loader
+def load_user(user_id):
+    return User.objects.get(id=user_id)
