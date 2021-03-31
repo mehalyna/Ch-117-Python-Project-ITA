@@ -4,32 +4,32 @@ Create User
 {% endblock %}
 
 {% block body %}
-    <div class="create_user_form">
+    <div class="create_user_form container d-flex justify-content-center">
         <form action="" method="post">
             {{ form.csrf_token }}
             <p>
-                {{ form.firstname.label }}<br>
-                {{ form.firstname(size=32) }}
+                {{ form.firstname.label }}
+                {{ form.firstname(size=32, class_="form-control", placeholder="firstname") }}
             </p>
             <p>
-                {{ form.lastname.label }}<br>
-                {{ form.lastname(size=32) }}
+                {{ form.lastname.label }}
+                {{ form.lastname(size=32, class_="form-control", placeholder="lastname") }}
             </p>
             <p>
-                {{ form.email.label }}<br>
-                {{ form.email(size=32) }}
+                {{ form.email.label }}
+                {{ form.email(size=32, class_="form-control", placeholder="email") }}
             </p>
             <p>
-                {{ form.login.label }}<br>
-                {{ form.login(size=32) }}
+                {{ form.login.label }}
+                {{ form.login(size=32, class_="form-control", placeholder="login") }}
             </p>
             <p>
-                {{ form.password.label }}<br>
-                {{ form.password(size=32) }}
+                {{ form.password.label }}
+                {{ form.password(size=32, class_="form-control", placeholder="password") }}
             </p>
             <p>
-                {{ form.role.label }}<br>
-                {{ form.role }}
+                {{ form.role.label }}
+                {{ form.role(class_="form-control") }}
             </p>
             <p>{{ form.submit(class="btn btn-success") }}
         </form>
