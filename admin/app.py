@@ -33,6 +33,18 @@ def get_users_list():
     return render_template('users_list.html', users=users)
 
 
+@app.route('/active_users_list')
+def get_active_users_list():
+    users = User.objects(status='active').order_by('email', 'status')
+    return render_template('users_list.html', users=users)
+
+
+@app.route('/inactive_users_list')
+def get_inactive_users_list():
+    users = User.objects(status='inactive').order_by('email', 'status')
+    return render_template('users_list.html', users=users)
+
+
 @app.route('/create_user', methods=['GET', 'POST'])
 def create_user():
     form = AddUserForm(request.form)
