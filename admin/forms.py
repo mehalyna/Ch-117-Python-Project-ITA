@@ -3,7 +3,7 @@ from wtforms import StringField, SelectField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email
 from wtforms.fields.html5 import EmailField
 
-from admin.models import Role, Status
+from models import Role, Status
 
 
 class AddUserForm(FlaskForm):
