@@ -3,7 +3,7 @@ function change_status(url, status) {
     if (ask) {
         window.location.href = url;
         setTimeout(() => {
-            $('div.alert-success').addClass('d-none');
+            location.reload();
         }, 3000);
     }
 }

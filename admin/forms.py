@@ -22,6 +22,6 @@ class AddUserForm(FlaskForm):
 
 class UpdateUserForm(AddUserForm):
     status = SelectField('Status', choices=[
-            (Status.ACTIVE, Status.ACTIVE),
-            (Status.INACTIVE, Status.INACTIVE)
-        ], validators=[DataRequired()])
+        (Status.ACTIVE, Status.ACTIVE),
+        (Status.INACTIVE, Status.INACTIVE)
+    ], validators=[DataRequired()])
