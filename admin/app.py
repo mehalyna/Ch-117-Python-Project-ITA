@@ -82,7 +82,6 @@ def update_user(_id: str):
             email = form.email.data
             login = form.login.data
             password_hash = generate_password_hash(form.password.data)
-            user.set_password(form.password.data)
             role = form.role.data
             status = form.status.data
             user.update(firstname=firstname, lastname=lastname,
