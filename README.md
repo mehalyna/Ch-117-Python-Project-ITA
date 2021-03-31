@@ -18,13 +18,11 @@ Python Project of Ch-117 mixed group ITA
    - Connect to local db
    ```python
    from mongoengine import connect
-
    connect(
        db=DB_NAME,
        host=MONGO_URL,
        port=PORT
     )
-   ```
 6. Run the server
    ```sh
    app.py

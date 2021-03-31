@@ -13,7 +13,6 @@ build/
 develop-eggs/
 dist/
 downloads/
-local/
 eggs/
 .eggs/
 lib/
@@ -105,12 +104,15 @@ celerybeat.pid
 
 # Environments
 admin/.env
+.env
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+.venv_flask
+.flask_venv
 
 # Spyder project settings
 .spyderproject
