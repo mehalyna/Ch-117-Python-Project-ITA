@@ -7,6 +7,7 @@ from flask import flash, Flask, redirect, render_template, request, url_for
 from flask_login import LoginManager, logout_user, login_user, login_required
 from mongoengine import connect
 from werkzeug.urls import url_parse
+from werkzeug.security import generate_password_hash
 
 load_dotenv()
 
@@ -80,11 +81,12 @@ def update_user(_id: str):
             lastname = form.lastname.data
             email = form.email.data
             login = form.login.data
-            password = user.set_password(form.password.data)
+            password_hash = generate_password_hash(form.password.data)
+            user.set_password(form.password.data)
             role = form.role.data
             status = form.status.data
             user.update(firstname=firstname, lastname=lastname,
-                        email=email, login=login, password=password,
+                        email=email, login=login, password_hash=password_hash,
                         role=role, status=status)
 
             flash('User successfully updated', 'success')

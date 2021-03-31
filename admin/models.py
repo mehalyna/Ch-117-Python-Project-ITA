@@ -102,7 +102,7 @@ class Review(Document):
     comment = StringField(default='', max_length=5000)
     date = DateTimeField(default=datetime.now)
 
-# Create user loader function
+
 @login.user_loader
 def load_user(user_id):
     return User.objects(id=user_id).first()
