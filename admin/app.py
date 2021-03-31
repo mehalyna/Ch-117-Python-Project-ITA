@@ -27,15 +27,9 @@ def start_page():
     return render_template('index.html')
 
 
-@app.route('/active_users_list')
-def get_active_users_list():
-    users = User.objects(status='active')
-    return render_template('users_list.html', users=users)
-
-
-@app.route('/inactive_users_list')
-def get_inactive_users_list():
-    users = User.objects(status='inactive')
+@app.route('/users_list')
+def get_users_list():
+    users = User.objects.order_by('email', 'status')
     return render_template('users_list.html', users=users)
 
 
@@ -53,7 +47,7 @@ def create_user():
             user.status = 'active'
             user.save()
             flash('User successfully created', 'success')
-            return redirect(url_for('get_active_users_list'))
+            return redirect(url_for('get_users_list'))
         except Exception as e:
             print("Something went wrong!")
             traceback.print_exc()
@@ -79,11 +73,11 @@ def update_user(_id: str):
                         role=role, status=status)
 
             flash('User successfully updated', 'success')
-            return redirect(url_for('get_active_users_list'))
+            return redirect(url_for('get_users_list'))
     except Exception as e:
         print('Something went wrong!')
         traceback.print_exc()
-        return redirect(url_for('get_active_users_list'))
+        return redirect(url_for('get_users_list'))
     return render_template('update_user.html', user=user, form=form)
 
 
@@ -93,11 +87,11 @@ def delete_user(_id: str):
         user = User.objects.get(id=ObjectId(_id), status='active')
         user.update(status='inactive')
         flash('User successfully deleted', 'danger')
-        return redirect(url_for('get_active_users_list'))
+        return redirect(url_for('get_users_list'))
     except Exception as e:
         print('Something went wrong!')
         traceback.print_exc()
-        return redirect(url_for('get_active_users_list'))
+        return redirect(url_for('get_users_list'))
 
 
 @app.route('/restore_user/<string:_id>')
@@ -106,11 +100,11 @@ def restore_user(_id: str):
         user = User.objects.get(id=ObjectId(_id), status='inactive')
         user.update(status='active')
         flash('User successfully restored', 'success')
-        return redirect(url_for('get_active_users_list'))
+        return redirect(url_for('get_users_list'))
     except Exception as e:
         print('Something went wrong!')
         traceback.print_exc()
-        return redirect(url_for('get_active_users_list'))
+        return redirect(url_for('get_users_list'))
 
 
 if __name__ == '__main__':
