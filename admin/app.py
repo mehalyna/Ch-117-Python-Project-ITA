@@ -99,6 +99,7 @@ def delete_user(_id: str):
         traceback.print_exc()
         return redirect(url_for('get_active_users_list'))
 
+
 @app.route('/restore_user/<string:_id>')
 def restore_user(_id: str):
     try:
