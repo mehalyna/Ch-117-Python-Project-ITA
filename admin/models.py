@@ -1,6 +1,6 @@
 from app import login
-from flask_login import UserMixin
 from datetime import datetime
+from flask_login import UserMixin
 from mongoengine import DateTimeField, Document, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -105,4 +105,4 @@ class Review(Document):
 
 @login.user_loader
 def load_user(user_id):
-    return User.objects(id=user_id).first()
+    return User.objects.get(id=user_id)
