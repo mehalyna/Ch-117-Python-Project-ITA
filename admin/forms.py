@@ -25,7 +25,7 @@ class UpdateUserForm(AddUserForm):
         (Status.ACTIVE, Status.ACTIVE),
         (Status.INACTIVE, Status.INACTIVE)
     ], validators=[DataRequired()])
-
+    
 
 class LoginForm(FlaskForm):
     admin = StringField('Admin', validators=[DataRequired()])
