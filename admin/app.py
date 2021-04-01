@@ -116,6 +116,7 @@ def delete_user(_id: str):
         return redirect(url_for('get_users_list'))
 
 
+
 @app.route('/restore_user/<string:_id>')
 @login_required
 def restore_user(_id: str):
