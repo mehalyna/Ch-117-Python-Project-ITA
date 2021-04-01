@@ -22,23 +22,29 @@
                 <p>
                     {{ form.admin(size=32, class='form-control', placeholder='Admin') }}
                     {% for error in form.admin.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
+                <div class="alert alert-warning" role="alert">
+                    <span>{{ error }}</span>
+                </div>
+                {% endfor %}
+
                 </p>
                 <p>
                     {{ form.password(size=32, class='form-control', placeholder='Password') }}
                     {% for error in form.password.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
+                <div class="alert alert-warning" role="alert">
+                    <span>{{ error }}</span>
+                </div>
+                {% endfor %}
+
                 </p>
                 <p>{{ form.submit(class="btn btn-primary btn-lg btn-block", type="submit", placeholder="Sing In") }}</p>
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
+                {% for message in messages %}
+                <div class="alert alert-danger" role="alert">
+                    <a>{{ message }}</a>
+                </div>
+                {% endfor %}
                 {% endif %}
                 {% endwith %}
             </form>

@@ -129,7 +129,7 @@ def restore_user(_id: str):
 def admin_login():
     form = LoginForm()
     if form.validate_on_submit():
-        admin = User.objects.get(login=form.admin.data)
+        admin = User.objects(login=form.admin.data).first()
         if admin is None or not admin.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect('/admin_login')
