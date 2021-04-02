@@ -59,8 +59,8 @@ class UpdateUserForm(AddUserForm):
 
 
 class LoginForm(FlaskForm):
-    login = StringField('Login', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    admin = StringField('Admin', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=35)])
     submit = SubmitField('Sign In')
 
     def get_user(self):

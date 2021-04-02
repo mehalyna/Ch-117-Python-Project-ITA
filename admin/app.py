@@ -81,7 +81,10 @@ def create_user():
 def update_user(_id: str):
     try:
         user = User.objects.get(id=ObjectId(_id))
-        form = UpdateUserForm(request.form, role=user.role, status=user.status)
+        form = UpdateUserForm(
+            request.form, firstname=user.firstname, lastname=user.lastname,
+            email=user.email, login=user.login, role=user.role, status=user.status)
+        form.user_id.data = user.id
         if request.method == 'POST' and form.validate_on_submit():
             firstname = form.firstname.data
             lastname = form.lastname.data
