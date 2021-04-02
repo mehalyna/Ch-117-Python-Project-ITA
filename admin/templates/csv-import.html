@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %} Book adding {% endblock %}
+{% block body %}
+<div class="container"><br>
+    <h1>Upload JSON file</h1>
+    <form method="POST" action="" enctype="multipart/form-data"><br>
+        <p><input type="file" name="file"></p><br>
+        <p><input type="submit" value="Submit"></p>
+    </form>
+</div>
+{% endblock %}

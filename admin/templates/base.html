@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %} {% endblock %} </title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
@@ -16,39 +19,53 @@
                         class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                <a class="nav-link dropdown-toggle" href="#" id="user" role="button" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
                     User management
                 </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <div class="dropdown-menu" aria-labelledby="user">
                     <a class="dropdown-item" href="{{ url_for('create_user') }}">Create User</a>
                     <a class="dropdown-item" href="{{ url_for('get_users_list') }}">Users List</a>
                 </div>
             </li>
-
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="add" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    Add Book
+                </a>
+                <div class="dropdown-menu" aria-labelledby="add">
+                    <a class="dropdown-item" href="{{ url_for('add_book') }}">Add Book</a>
+                    <a class="dropdown-item" href="{{ url_for('uploadFiles') }}">Import File</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="book" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    Book Management
+                </a>
+                <div class="dropdown-menu" aria-labelledby="book">
+                    <a class="dropdown-item" href="{{ url_for('book_storage') }}">Book Storage</a>
+                    <a class="dropdown-item" href="{{ url_for('book_active') }}">Active Books</a>
+                    <a class="dropdown-item" href="{{ url_for('book_inactive') }}">Inactive Books</a>
+                </div>
+            </li>
+          </header>
+        </li>
         </ul>
         <a class="nav-link btn btn-sm btn-outline-secondary" href="{{ url_for('logout') }}">Logout</a>
     </div>
 </nav>
-{% block body %}
-{% endblock %}
-{% with messages = get_flashed_messages(with_categories=true) %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
             <div class="alert alert-{{ category }}"> {{ message }} </div>
         {% endfor %}
     {% endif %}
 {% endwith %}
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="/static/js/main.js"></script>
+    {% block body %}{% endblock %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
