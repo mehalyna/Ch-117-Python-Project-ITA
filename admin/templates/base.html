@@ -12,7 +12,8 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('start_page') }}">HOME <span class="sr-only">(current)</span></a>
+                <a id="HOME" class="nav-link" href="{{ url_for('start_page') }}">HOME <span
+                        class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -21,13 +22,15 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{{ url_for('create_user') }}">Create User</a>
-
                     <a class="dropdown-item" href="{{ url_for('get_users_list') }}">Users List</a>
                 </div>
+            </li>
             <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
         </ul>
     </div>
 </nav>
+{% block body %}
+{% endblock %}
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
@@ -35,8 +38,6 @@
         {% endfor %}
     {% endif %}
 {% endwith %}
-{% block body %}
-{% endblock %}
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
