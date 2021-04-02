@@ -1,49 +1,70 @@
 {% extends 'base.html' %}
 {% block title %}
-User List
+    User List
 {% endblock %}
 
 {% block body %}
-    <div class="row">
-        {% for user in users %}
-            <div class="card col-12 col-md-6 col-lg-3 col-xl-4 mt-3 mr-3" style="width: 18rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Email: {{ user.email }}</h5>
-                    <p class="card-text">
-                        First name: {{ user.firstname }}
-                        <br>
-                        Role: {{ user.role }}
-                        <br>
-                        Status: {{ user.status }}
-                        <br>
-                    </p>
-                    <a href="{{ url_for('update_user', _id=user.id) }}"
-                       class="btn btn-warning btn-secondary"
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       title="click for editing user">
-                        Edit user
-                    </a>
-                    {% if user.status != 'inactive' %}
-                    <button class="btn btn-danger btn-secondary"
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            title="click for deleting user"
-                            onclick="change_status('{{ url_for('delete_user', _id=user.id) }}', status='delete' )">
-                        Delete user
+    <input class="form-control" id="myInput" type="text" placeholder="Search..">
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Email</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Role</th>
+            <th scope="col">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Status
                     </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="{{ url_for('get_users_list') }}">All users</a>
+                        <a class="dropdown-item" href="{{ url_for('get_active_users_list') }}">Active</a>
+                        <a class="dropdown-item" href="{{ url_for('get_inactive_users_list') }}">Inactive</a>
+                    </div>
+                </div>
+            </th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        {% for user in users %}
+            <tbody id="myTable">
+            <tr {% if user.status == 'inactive' %} style="opacity: 50%" {% endif %}>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ user.email }}</td>
+                <td>{{ user.firstname }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.status }}</td>
+                <td>
+                    {% if user.status != 'inactive' %}
+                        <a href="{{ url_for('update_user', _id=user.id) }}"
+                           class="btn btn-warning btn-secondary"
+                           data-toggle="tooltip"
+                           data-placement="bottom"
+                           title="click for editing user">
+                            Edit user
+                        </a>
+                        <button class="btn btn-danger btn-secondary"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="click for deleting user"
+                                onclick="change_status('{{ url_for('delete_user', _id=user.id) }}', status='delete' )">
+                            Delete user
+                        </button>
                     {% endif %}
                     {% if user.status != 'active' %}
-                    <button class="btn btn-danger btn-secondary"
-                        data-toggle="tooltip"
-                        data-placement="bottom"
-                        title="click for deleting user"
-                        onclick="change_status('{{ url_for('restore_user', _id=user.id) }}', status='restore')">
-                        Restore user
-                    </button>
+                        <button class="btn btn-danger btn-secondary"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="click for deleting user"
+                                onclick="change_status('{{ url_for('restore_user', _id=user.id) }}', status='restore')">
+                            Restore user
+                        </button>
                     {% endif %}
-                </div>
-            </div>
+                </td>
+            </tr>
+            </tbody>
         {% endfor %}
-    </div>
+    </table>
 {% endblock %}
