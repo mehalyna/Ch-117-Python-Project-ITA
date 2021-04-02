@@ -30,12 +30,12 @@
         </thead>
         {% for user in users %}
             <tbody id="myTable">
-            <tr {% if user.status == 'inactive' %} style="opacity: 50%" {% endif %}>
+            <tr>
                 <th scope="row">{{ loop.index }}</th>
-                <td>{{ user.email }}</td>
-                <td>{{ user.firstname }}</td>
-                <td>{{ user.role }}</td>
-                <td>{{ user.status }}</td>
+                <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.email }}</td>
+                <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.firstname }}</td>
+                <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.role }}</td>
+                <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.status }}</td>
                 <td>
                     {% if user.status != 'inactive' %}
                         <a href="{{ url_for('update_user', _id=user.id) }}"
@@ -54,7 +54,8 @@
                         </button>
                     {% endif %}
                     {% if user.status != 'active' %}
-                        <button class="btn btn-danger btn-secondary"
+                        <button id="restore_user"
+                                class="btn btn-danger btn-secondary"
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="click for deleting user"
