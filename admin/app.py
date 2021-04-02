@@ -5,11 +5,12 @@ from bson import ObjectId
 from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, url_for
 from flask_login import LoginManager, logout_user, login_user, login_required
-from forms import LoginForm, AddUserForm, UpdateUserForm
-from models import User
 from mongoengine import connect
 from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
+
+from forms import LoginForm, AddUserForm, UpdateUserForm
+from models import User
 
 load_dotenv()
 
@@ -70,6 +71,7 @@ def create_user():
         except Exception as e:
             print("Something went wrong!")
             traceback.print_exc()
+            flash(e)
             return redirect(url_for('create_user'))
     return render_template('create_user.html', form=form)
 
@@ -97,6 +99,7 @@ def update_user(_id: str):
     except Exception as e:
         print('Something went wrong!')
         traceback.print_exc()
+        flash(e)
         return redirect(url_for('get_users_list'))
     return render_template('update_user.html', user=user, form=form)
 
@@ -112,8 +115,8 @@ def delete_user(_id: str):
     except Exception as e:
         print('Something went wrong!')
         traceback.print_exc()
+        flash(e)
         return redirect(url_for('get_users_list'))
-
 
 
 @app.route('/restore_user/<string:_id>')
@@ -127,6 +130,7 @@ def restore_user(_id: str):
     except Exception as e:
         print('Something went wrong!')
         traceback.print_exc()
+        flash(e)
         return redirect(url_for('get_users_list'))
 
 
