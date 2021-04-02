@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email
+from wtforms.validators import DataRequired, Email, Length
 from wtforms.fields.html5 import EmailField
 
 from models import Role, Status, User
@@ -29,7 +29,7 @@ class UpdateUserForm(AddUserForm):
 
 class LoginForm(FlaskForm):
     admin = StringField('Admin', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=35)])
     submit = SubmitField('Sign In')
 
     def get_user(self):

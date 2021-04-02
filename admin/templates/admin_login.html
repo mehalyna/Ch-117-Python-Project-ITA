@@ -19,28 +19,48 @@
              style="top: 30%; margin-right: auto;margin-left: auto;">
             <form action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
-                <p>
+                <div>
+                    {% if not form.admin.errors %}
                     {{ form.admin(size=32, class='form-control', placeholder='Admin') }}
+                    {% else %}
+                    {{ form.admin(size=32, class='form-control is-invalid', placeholder='Admin') }}
                     {% for error in form.admin.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
+                        <span class="to_red">{{ error }}</span>
                     {% endfor %}
-                </p>
-                <p>
+                    {% endif %}
+                </div>
+
+                <br>
+
+                <div>
+                    {% if not form.password.errors %}
                     {{ form.password(size=32, class='form-control', placeholder='Password') }}
+                    {% else %}
+                    {{ form.password(size=32, class='form-control is-invalid', placeholder='Password') }}
                     {% for error in form.password.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
+                        <span class="to_red">{{ error }}</span>
                     {% endfor %}
-                </p>
-                <p>{{ form.submit(class="btn btn-primary btn-lg btn-block", type="submit", placeholder="Sing In") }}</p>
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <ul>
+                    {% endif %}
+                </div>
+
+                <br>
+
+                <div>
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
                     {% for message in messages %}
-                    <li>{{ message }}</li>
+                    <div class="alert alert-danger" role="alert">
+                        <a>{{ message }}</a>
+                    </div>
                     {% endfor %}
-                </ul>
-                {% endif %}
-                {% endwith %}
+                    {% endif %}
+                    {% endwith %}
+                </div>
+
+                <div>
+                    {{ form.submit(class="btn btn-primary btn-lg btn-block", type="submit", placeholder="Sing In") }}
+                </div>
+
             </form>
             {% endblock %}
         </div>

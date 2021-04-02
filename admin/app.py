@@ -5,6 +5,8 @@ from bson import ObjectId
 from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, url_for
 from flask_login import LoginManager, logout_user, login_user, login_required
+from forms import LoginForm, AddUserForm, UpdateUserForm
+from models import User
 from mongoengine import connect
 from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
@@ -21,9 +23,6 @@ connect(
 login = LoginManager(app)
 login.login_view = 'admin_login'
 login.init_app(app)
-
-from forms import LoginForm, AddUserForm, UpdateUserForm
-from models import User
 
 
 @app.route('/')
@@ -152,6 +151,11 @@ def admin_login():
 def logout():
     logout_user()
     return redirect(url_for('start_page'))
+
+
+@login.user_loader
+def load_user(user_id):
+    return User.objects.get(id=user_id)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-from app import login
 from datetime import datetime
 from flask_login import UserMixin
 from mongoengine import DateTimeField, Document, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
@@ -101,8 +100,3 @@ class Review(Document):
     status = StringField(default=Status.ACTIVE, max_length=100)
     comment = StringField(default='', max_length=5000)
     date = DateTimeField(default=datetime.now)
-
-
-@login.user_loader
-def load_user(user_id):
-    return User.objects.get(id=user_id)
