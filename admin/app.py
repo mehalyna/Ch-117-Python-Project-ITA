@@ -20,9 +20,9 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-UPLOAD_FOLDER = 'static/files'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
+UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER')
 
 connect(
     db=os.getenv('DB_NAME'),
@@ -183,7 +183,8 @@ def add_book():
             book.save()
             return redirect('/book-storage')
         except Exception as e:
-            traceback.print_exc(e)
+            print('Something went wrong while book adding')
+            traceback.print_exc()
             return redirect('/add-book')
     return render_template('add-book.html', form=form)
 
@@ -253,7 +254,8 @@ def book_update(_id):
                         description=description, pages=pages, genres=genres, status=status)
             return redirect('/book-storage')
     except Exception as e:
-        traceback.print_exc(e)
+        print('Something went wrong while book updating')
+        traceback.print_exc()
         return redirect('/home')
     return render_template('update-book.html', book=book, form=form)
 
@@ -265,7 +267,8 @@ def book_delete(_id):
         book.update(status='inactive')
         return redirect('/book-active')
     except Exception as e:
-        traceback.print_exc(e)
+        print('Something went wrong while book deletion')
+        traceback.print_exc()
         return redirect('/home')
 
 
@@ -276,13 +279,9 @@ def book_restore(_id):
         book.update(status='active')
         return redirect('/book-inactive')
     except Exception as e:
-        traceback.print_exc(e)
+        print('Something went wrong while book restoring')
+        traceback.print_exc()
         return redirect('/home')
-
-
-@login.user_loader
-def load_user(user_id):
-    return User.objects.get(id=user_id)
 
 
 if __name__ == '__main__':
