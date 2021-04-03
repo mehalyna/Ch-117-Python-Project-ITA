@@ -279,11 +279,6 @@ def book_restore(_id):
         traceback.print_exc(e)
         return redirect('/home')
 
-
-@login.user_loader
-def load_user(user_id):
-    return User.objects.get(id=user_id)
-
-
+ 
 if __name__ == '__main__':
     app.run()
