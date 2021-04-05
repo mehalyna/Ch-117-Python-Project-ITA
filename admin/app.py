@@ -4,12 +4,12 @@ import traceback
 from bson import ObjectId
 from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, url_for
-from flask_login import LoginManager, logout_user, login_user, login_required
+from flask_login import LoginManager, login_required,  login_user, logout_user
 from mongoengine import connect
 from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
 
-from forms import LoginForm, AddUserForm, UpdateUserForm
+from forms import AddUserForm, LoginForm, UpdateUserForm
 from models import User
 
 load_dotenv()
