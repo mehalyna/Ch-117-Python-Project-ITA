@@ -2,9 +2,6 @@ function change_status(url, status) {
     const ask = window.confirm(`Are you sure you want to ${status} this user?`);
     if (ask) {
         window.location.href = url;
-        setTimeout(() => {
-            location.reload();
-        }, 3000);
     }
 }
 
@@ -18,5 +15,7 @@ $(document).ready(function () {
 });
 
 window.setTimeout(function() {
-    $(".alert").fadeTo(500, 0)
+    $(".alert").fadeTo(500, 0, function (){
+      $(this)[0].style.display = 'none'
+    })
 }, 2000);

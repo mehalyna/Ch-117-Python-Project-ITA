@@ -3,7 +3,7 @@ Flask==1.1.2
 Flask-Login==0.5.0
 flask_wtf==0.14.3
 mongoengine==0.23.0
-pylint==2.7.2
-python-dotenv==0.15.0
+pylint==2.7.4
+python-dotenv==0.16.0
 Werkzeug==1.0.1
 WTForms==2.3.3

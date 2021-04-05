@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, SelectField, StringField, SubmitField
+from wtforms import IntegerField, PasswordField, SelectField, StringField, SubmitField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Regexp, ValidationError
 
@@ -62,3 +62,20 @@ class LoginForm(FlaskForm):
 
     def get_user(self):
         return User.objects(admin=self.admin.data).first()
+
+class AddBookForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    author = StringField('Author', validators=[DataRequired()])
+    genre = StringField('Genre', validators=[DataRequired()])
+    year = StringField('Year', validators=[DataRequired()])
+    publisher = StringField('Publisher', validators=[DataRequired()])
+    pages = IntegerField('Pages', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
+    language = StringField('Language', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+class UpdateBookForm(AddBookForm):
+    status = SelectField('Status', choices=[
+        (Status.ACTIVE, Status.ACTIVE),
+        (Status.INACTIVE, Status.INACTIVE)
+    ], validators=[DataRequired()])

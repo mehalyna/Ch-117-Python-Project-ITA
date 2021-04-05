@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Main Page
+    Home
+{% endblock %}
+
+{% block welcome %}
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>Administrator Panel</h1>
+            <a href="{{ url_for('logout') }}" class="link-dark">Logout</a>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block body %}
