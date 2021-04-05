@@ -1,12 +1,38 @@
 {% extends 'base.html' %}
-
-{% block title %} Book adding {% endblock %}
-{% block body %}
-<div class="container"><br>
-    <h1>Upload JSON file</h1>
-    <form method="POST" action="" enctype="multipart/form-data"><br>
-        <p><input type="file" name="file"></p><br>
-        <p><input type="submit" value="Submit"></p>
-    </form>
-</div>
+{% block title %}
+Import JSON file
 {% endblock %}
+
+{% block body %}
+<section id="cover" class="min-vh-100">
+    <div id="cover-caption">
+        <div class="container">
+            <div class="row text-black">
+                <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10 mx-auto text-center form p-4">
+                    <h6 class="py-2 text-truncate">Upload file with book examples in JSON format</h6>
+                    <div class="px-2">
+                        <form method="POST" action="" enctype="multipart/form-data" class="justify-content-center">
+                            <div class="form-group custom-file">
+                                <input class="custom-file-input btn btn-outline-success" type="file" name="file"
+                                       id="myInput" aria-describedby="myInput">
+                                <label class="custom-file-label" for="myInput">Choose file</label>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-success btn-lg form-control">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+        <script type="text/javascript">
+        document.querySelector('.custom-file-input').addEventListener('change',function(e){
+            let fileName = document.getElementById("myInput").files[0].name;
+            let nextSibling = e.target.nextElementSibling;
+            nextSibling.innerText = fileName
+})
+        </script>
+{% endblock %}
+

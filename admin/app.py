@@ -1,28 +1,22 @@
-import os
-import traceback
 import json
+import os
 
 from bson import ObjectId
 from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, url_for
-from flask_login import LoginManager, logout_user, login_user, login_required
-from forms import LoginForm, AddUserForm, UpdateUserForm
-from models import User
+from flask_login import LoginManager, login_required,  login_user, logout_user
 from mongoengine import connect
 from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
 
-from forms import LoginForm, AddUserForm, UpdateUserForm, AddBookForm, UpdateBookForm
-from models import User, Book
-
+from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
+from models import Book, Status, User
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-
 app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
-UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER')
 
 connect(
     db=os.getenv('DB_NAME'),
@@ -49,14 +43,14 @@ def get_users_list():
 @app.route('/active_users_list')
 @login_required
 def get_active_users_list():
-    users = User.objects(status='active').order_by('email', 'status')
+    users = User.objects(status=Status.ACTIVE).order_by('email', 'status')
     return render_template('users_list.html', users=users)
 
 
 @app.route('/inactive_users_list')
 @login_required
 def get_inactive_users_list():
-    users = User.objects(status='inactive').order_by('email', 'status')
+    users = User.objects(status=Status.INACTIVE).order_by('email', 'status')
     return render_template('users_list.html', users=users)
 
 
@@ -72,13 +66,13 @@ def create_user():
             user.login = form.login.data
             user.set_password(form.password.data)
             user.role = form.role.data
-            user.status = 'active'
+            user.status = Status.ACTIVE
             user.save()
             flash('User successfully created', 'success')
             return redirect(url_for('get_users_list'))
         except Exception as e:
-            print("Something went wrong!")
-            traceback.print_exc()
+            print(e)
+            flash(str(e), 'danger')
             return redirect(url_for('create_user'))
     return render_template('create_user.html', form=form)
 
@@ -88,7 +82,10 @@ def create_user():
 def update_user(_id: str):
     try:
         user = User.objects.get(id=ObjectId(_id))
-        form = UpdateUserForm(request.form, role=user.role, status=user.status)
+        form = UpdateUserForm(
+            request.form, firstname=user.firstname, lastname=user.lastname,
+            email=user.email, login=user.login, role=user.role, status=user.status)
+        form.user_id.data = user.id
         if request.method == 'POST' and form.validate_on_submit():
             firstname = form.firstname.data
             lastname = form.lastname.data
@@ -104,8 +101,8 @@ def update_user(_id: str):
             flash('User successfully updated', 'success')
             return redirect(url_for('get_users_list'))
     except Exception as e:
-        print('Something went wrong!')
-        traceback.print_exc()
+        print(e)
+        flash(str(e), 'danger')
         return redirect(url_for('get_users_list'))
     return render_template('update_user.html', user=user, form=form)
 
@@ -119,8 +116,8 @@ def delete_user(_id: str):
         flash('User successfully deleted', 'danger')
         return redirect(url_for('get_users_list'))
     except Exception as e:
-        print('Something went wrong!')
-        traceback.print_exc()
+        print(e)
+        flash(str(e), 'danger')
         return redirect(url_for('get_users_list'))
 
 
@@ -133,8 +130,8 @@ def restore_user(_id: str):
         flash('User successfully restored', 'success')
         return redirect(url_for('get_users_list'))
     except Exception as e:
-        print('Something went wrong!')
-        traceback.print_exc()
+        print(e)
+        flash(str(e), 'danger')
         return redirect(url_for('get_users_list'))
 
 
@@ -166,6 +163,7 @@ def load_user(user_id):
 
 
 @app.route('/add-book', methods=['POST', 'GET'])
+@login_required
 def add_book():
     form = AddBookForm(request.form)
     if request.method == 'POST':
@@ -178,64 +176,71 @@ def add_book():
         book.description = form.description.data
         book.pages = form.pages.data
         book.genres = form.genre.data
-        book.status = 'active'
+        book.status = Status.ACTIVE
         try:
             book.save()
             return redirect('/book-storage')
         except Exception as e:
-            print('Something went wrong while book adding')
-            traceback.print_exc()
+            print(e)
+            flash(str(e), 'danger')
             return redirect('/add-book')
     return render_template('add-book.html', form=form)
 
 @app.route('/import-file')
+@login_required
 def import_file():
     return render_template('csv-import.html')
 
 
 @app.route('/import-file', methods=['POST', 'GET'])
+@login_required
 def uploadFiles():
     try:
         uploaded_file = request.files['file']
         if uploaded_file.filename:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
             uploaded_file.save(file_path)
-            with open(UPLOAD_FOLDER + '/' + uploaded_file.filename) as f:
+            with open(os.getenv('UPLOAD_FOLDER') + '/' + uploaded_file.filename) as f:
                 file_data = json.load(f)
             for example in file_data:
                 book = Book.from_json(json.dumps(example))
                 book.save(force_insert=True)
         return redirect(url_for('import_file'))
     except Exception as e:
-        print("Something went wrong!")
-        traceback.print_exc()
+        print(e)
+        flash(str(e), 'danger')
         return redirect(url_for('import_file'))
 
 
 @app.route('/book-storage')
+@login_required
 def book_storage():
     books = Book.objects()
     return render_template('book-storage.html', books=books)
 
 @app.route('/book-active')
+@login_required
 def book_active():
-    books = Book.objects(status='active')
+    books = Book.objects(status=Status.ACTIVE)
     return render_template('book-active.html', books=books)
 
 
 @app.route('/book-inactive')
+@login_required
 def book_inactive():
-    books = Book.objects(status='inactive')
+    books = Book.objects(status=Status.INACTIVE)
     return render_template('book-inactive.html', books=books)
 
 
 @app.route('/book-storage/<string:_id>')
+@login_required
 def book_details(_id):
     book = Book.objects.get(id=ObjectId(_id))
     return render_template('book-details.html', book=book)
 
 
 @app.route('/book-update/<string:_id>', methods=['POST', 'GET'])
+@login_required
 def book_update(_id):
     try:
         book = Book.objects.get(id=ObjectId(_id))
@@ -254,33 +259,35 @@ def book_update(_id):
                         description=description, pages=pages, genres=genres, status=status)
             return redirect('/book-storage')
     except Exception as e:
-        print('Something went wrong while book updating')
-        traceback.print_exc()
+        print(e)
+        flash(str(e), 'danger')
         return redirect('/home')
     return render_template('update-book.html', book=book, form=form)
 
 
 @app.route('/book-delete/<string:_id>')
+@login_required
 def book_delete(_id):
     try:
-        book = Book.objects.get(id=ObjectId(_id), status='active')
-        book.update(status='inactive')
+        book = Book.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
+        book.update(status=Status.INACTIVE)
         return redirect('/book-active')
     except Exception as e:
-        print('Something went wrong while book deletion')
-        traceback.print_exc()
+        print(e)
+        flash(str(e), 'danger')
         return redirect('/home')
 
 
 @app.route('/book-restore/<string:_id>')
+@login_required
 def book_restore(_id):
     try:
-        book = Book.objects.get(id=ObjectId(_id), status='inactive')
-        book.update(status='active')
+        book = Book.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
+        book.update(status=Status.ACTIVE)
         return redirect('/book-inactive')
     except Exception as e:
-        print('Something went wrong while book restoring')
-        traceback.print_exc()
+        print(e)
+        flash(str(e), 'danger')
         return redirect('/home')
 
 
