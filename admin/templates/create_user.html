@@ -6,7 +6,7 @@ Create User
 {% block body %}
 <div class="d-flex align-items-center flex-column">
     <h1>User adding form</h1>
-    <form class="border custom_border rounded m-3" action="" method="post" novalidate>
+    <form class="custom_border rounded m-3" action="" method="post" novalidate>
         {{ form.csrf_token }}
         <div class="col-md-12 mb-3 pt-3">
                 {{ form.firstname.label }}
