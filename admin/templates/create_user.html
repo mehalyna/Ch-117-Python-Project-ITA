@@ -4,83 +4,85 @@ Create User
 {% endblock %}
 
 {% block body %}
-<div class="create_user_form container d-flex justify-content-center">
-    <form action="" method="post">
+<div class="d-flex align-items-center flex-column">
+    <h1>User adding form</h1>
+    <form class="border custom_border rounded m-3" action="" method="post" novalidate>
         {{ form.csrf_token }}
         <div class="col-md-12 mb-3 pt-3">
-            {% if not form.firstname.errors %}
                 {{ form.firstname.label }}
-                {{ form.firstname(size=32, class="form-control", placeholder="firstname") }}
-            {% elif form.firstname.errors %}
-                {{ form.firstname.label }}
-                {{ form.firstname(size=32, class="form-control is-invalid", placeholder="firstname") }}
+                {{ form.firstname(class="form-control", size=32, placeholder="firstname") }}
+            {% if form.firstname.errors %}
+                <script>
+                document.getElementById("firstname").classList.add("is-invalid");
+                </script>
                 {% for error in form.firstname.errors %}
                    <span class="to_red">{{ error }}</span>
                 {% endfor %}
             {% endif %}
         </div>
         <div class="col-md-12 mb-3">
-            {% if not form.lastname.errors %}
             {{ form.lastname.label }}
             {{ form.lastname(size=32, class="form-control", placeholder="lastname") }}
-            {% elif form.lastname.errors %}
-                {{ form.lastname.label }}
-                {{ form.lastname(size=32, class="form-control is-invalid", placeholder="lastname") }}
+            {% if form.lastname.errors %}
+                <script>
+                    document.getElementById("lastname").classList.add("is-invalid");
+                </script>
                 {% for error in form.lastname.errors %}
                     <span class="to_red">{{ error }}</span>
                 {% endfor %}
             {% endif %}
         </div>
         <div class="col-md-12 mb-3">
-            {% if not form.email.errors %}
-                {{ form.email.label }}
-                {{ form.email(size=32, class="form-control", placeholder="email") }}
-            {% elif form.email.errors %}
-                {{ form.email.label }}
-                {{ form.email(size=32, class="form-control is-invalid", placeholder="email") }}
+            {{ form.email.label }}
+            {{ form.email(size=32, class="form-control", placeholder="email") }}
+            {% if form.email.errors %}
+                <script>
+                    document.getElementById("email").classList.add("is-invalid");
+                </script>
                 {% for error in form.email.errors %}
                     <span class="to_red">{{ error }}</span>
                 {% endfor %}
             {% endif %}
         </div>
         <div class="col-md-12 mb-3">
-            {% if not form.login.errors %}
             {{ form.login.label }}
-            {{ form.login(size=32, class_="form-control", placeholder="login", id="login_input") }}
-            {% elif form.login.errors %}
-                {{ form.login.label }}
-                {{ form.login(size=32, class_="form-control is-invalid", placeholder="login") }}
+            {{ form.login(size=32, class="form-control", placeholder="login") }}
+            {% if form.login.errors %}
+                <script>
+                    document.getElementById("login").classList.add("is-invalid");
+                </script>
                 {% for error in form.login.errors %}
                    <span class="to_red">{{ error }}</span>
                 {% endfor %}
             {% endif %}
         </div>
         <div class="col-md-12 mb-3">
-            {% if not form.password.errors %}
-                {{ form.password.label }}
-                {{ form.password(size=32, class_="form-control", placeholder="password") }}
-            {% elif form.password.errors %}
-                {{ form.password.label }}
-                {{ form.password(size=32, class_="form-control is-invalid", placeholder="password") }}
+            {{ form.password.label }}
+            {{ form.password(size=32, class="form-control", placeholder="password") }}
+            {% if form.password.errors %}
+                <script>
+                    document.getElementById("password").classList.add("is-invalid");
+                </script>
                 {% for error in form.password.errors %}
                    <span class="to_red">{{ error }}</span>
                 {% endfor %}
             {% endif %}
         </div>
         <div class="col-md-12 mb-3">
-            {% if not form.role.errors %}
-                {{ form.role.label }}
-                {{ form.role(class_="form-control") }}
-            {% elif form.role.errors %}
-                {{ form.role.label }}
-                {{ form.role(class_="form-control is-invalid") }}
+            {{ form.role.label }}
+            {{ form.role(class="form-control") }}
+            {% if form.role.errors %}
+                <script>
+                    document.getElementById("role").classList.add("is-invalid");
+                </script>
                 {% for error in form.role.errors %}
                     <span class="to_red">{{ error }}</span>
                 {% endfor %}
             {% endif %}
         </div>
-        <div class="col-md-12 mb-3">
+        <div class="col-md-12 mb-3 custom">
             {{ form.submit(class="btn btn-success") }}
+            <a class="btn btn-secondary" href="{{ url_for('start_page') }}">Cancel</a>
         </div>
     </form>
 </div>
