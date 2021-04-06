@@ -14,8 +14,8 @@ $(document).ready(function () {
     });
 });
 
-//window.setTimeout(function() {
-//    $(".alert").fadeTo(500, 0, function (){
-//      $(this)[0].style.display = 'none'
-//    })
-//}, 2000);
+window.setTimeout(function() {
+    $(".alert").fadeTo(500, 0, function (){
+      $(this)[0].style.display = 'none'
+    })
+}, 2000);
