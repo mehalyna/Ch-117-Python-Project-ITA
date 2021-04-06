@@ -6,8 +6,10 @@ from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, url_for
 from flask_login import LoginManager, login_required,  login_user, logout_user
 from mongoengine import connect
-from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
+from werkzeug.urls import url_parse
+from werkzeug.utils import secure_filename
+
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Book, Status, User
@@ -195,21 +197,35 @@ def import_file():
 @app.route('/import-file', methods=['POST', 'GET'])
 @login_required
 def uploadFiles():
-    try:
+    if request.method == 'POST' and request.files:
         uploaded_file = request.files['file']
-        if uploaded_file.filename:
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
+        if uploaded_file.filename == '':
+            flash('File has not been selected, please choose one.', 'warning')
+            return redirect(request.url)
+        if not (uploaded_file.filename.endswith('.json')):
+            flash('Incorrect type of file (.JSON is needed)', 'danger')
+            return redirect(request.url)
+        else:
+            filename = secure_filename(uploaded_file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             uploaded_file.save(file_path)
-            with open(os.getenv('UPLOAD_FOLDER') + '/' + uploaded_file.filename) as f:
+        try:
+            with open(os.getenv('UPLOAD_FOLDER') + filename) as f:
                 file_data = json.load(f)
+        except Exception as e:
+            flash(str(e), 'danger')
+            return redirect(request.url)
+        finally:
+            os.remove(file_path)
+        try:
             for example in file_data:
                 book = Book.from_json(json.dumps(example))
                 book.save(force_insert=True)
-        return redirect(url_for('import_file'))
-    except Exception as e:
-        print(e)
-        flash(str(e), 'danger')
-        return redirect(url_for('import_file'))
+            flash('Books added successfully', 'success')
+            return redirect(url_for('import_file'))
+        except Exception as e:
+            flash(str(e), 'danger')
+            return redirect(url_for('import_file'))
 
 
 @app.route('/book-storage')
