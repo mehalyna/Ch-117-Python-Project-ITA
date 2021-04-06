@@ -79,14 +79,14 @@ class Author(Document):
 
 class Book(Document):
     title = StringField(default='', max_length=200)
-    author = StringField(default='Author', max_length=200)
+    author_id = ReferenceField(Author.__name__)
     year = StringField(default='', max_length=20)
     publisher = StringField(default='', max_length=200)
     language = StringField(default='', max_length=20)
     description = StringField(default='', max_length=10000)
     link_img = StringField(default='', max_length=1000)
     pages = IntField(default=1, min_value=1)
-    genres = StringField(default='')
+    genres = ListField(default=[])
     status = StringField(default=Status.ACTIVE, max_length=100)
     store_links = ListField(default=[])
     statistic = EmbeddedDocumentField(BookStatistic.__name__, default=BookStatistic())
