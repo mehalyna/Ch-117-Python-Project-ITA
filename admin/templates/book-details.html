@@ -4,8 +4,7 @@
 {% block body %}
 <div class="container">
     <h1>Book details</h1>
-    <div class="alert alert-info">
-        <h2>{{ book.title }}</h2>
+        <h2>Title: {{ book.title }}</h2>
         <p>Author: <b>{{ book.author }}</b></p>
         <p>Genre: <b>{{ book.genres }}</b></p>
         <p>Number of pages: <b>{{ book.pages }}</b></p>
@@ -13,7 +12,6 @@
         <p>Published: <b>{{ book.year }}</b></p>
         <p>Language: <b>{{ book.language }}</b></p>
         <p>Status: <b>{{ book.status }}</b></p>
-    </div>
     <h2>Community Comments</h2>
 </div>
 {% endblock %}

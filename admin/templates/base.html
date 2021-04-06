@@ -31,22 +31,12 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="add" role="button" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
-                    Add Book
-                </a>
-                <div class="dropdown-menu" aria-labelledby="add">
-                    <a class="dropdown-item" href="{{ url_for('add_book') }}">Add Book</a>
-                    <a class="dropdown-item" href="{{ url_for('uploadFiles') }}">Import File</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="book" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false">
                     Book Management
                 </a>
-                <div class="dropdown-menu" aria-labelledby="book">
+                <div class="dropdown-menu" aria-labelledby="add">
                     <a class="dropdown-item" href="{{ url_for('book_storage') }}">Book Storage</a>
-                    <a class="dropdown-item" href="{{ url_for('book_active') }}">Active Books</a>
-                    <a class="dropdown-item" href="{{ url_for('book_inactive') }}">Inactive Books</a>
+                    <a class="dropdown-item" href="{{ url_for('add_book') }}">Add Book</a>
+                    <a class="dropdown-item" href="{{ url_for('uploadFiles') }}">Import File</a>
                 </div>
             </li>
           </header>

@@ -215,21 +215,21 @@ def uploadFiles():
 @app.route('/book-storage')
 @login_required
 def book_storage():
-    books = Book.objects()
+    books = Book.objects.order_by('title', 'status')
     return render_template('book-storage.html', books=books)
 
 @app.route('/book-active')
 @login_required
 def book_active():
-    books = Book.objects(status=Status.ACTIVE)
-    return render_template('book-active.html', books=books)
+    books = Book.objects(status=Status.ACTIVE).order_by('title', 'status')
+    return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-inactive')
 @login_required
 def book_inactive():
-    books = Book.objects(status=Status.INACTIVE)
-    return render_template('book-inactive.html', books=books)
+    books = Book.objects(status=Status.INACTIVE).order_by('title', 'status')
+    return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-storage/<string:_id>')
@@ -261,7 +261,7 @@ def book_update(_id):
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/home')
+        return redirect('/book-storage')
     return render_template('update-book.html', book=book, form=form)
 
 
@@ -271,11 +271,11 @@ def book_delete(_id):
     try:
         book = Book.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
         book.update(status=Status.INACTIVE)
-        return redirect('/book-active')
+        return redirect('/book-storage')
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/home')
+        return redirect('/book-storage')
 
 
 @app.route('/book-restore/<string:_id>')
@@ -284,11 +284,11 @@ def book_restore(_id):
     try:
         book = Book.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
         book.update(status=Status.ACTIVE)
-        return redirect('/book-inactive')
+        return redirect('/book-storage')
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/home')
+        return redirect('/book-storage')
 
 
 if __name__ == '__main__':
