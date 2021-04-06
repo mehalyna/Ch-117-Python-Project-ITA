@@ -10,7 +10,7 @@ from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
-from models import Book, Status, User, Author
+from models import Author, Book, Status, User
 
 load_dotenv()
 
@@ -179,14 +179,16 @@ def add_book():
         book.pages = form.pages.data
         book.genres = [form.genre.data]
         book.save()
-        author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
-        if author and not str(book.pk) in author.books:
-            author.books.append(str(book.pk))
-        if not author:
-            author = Author(name=author_name,birthdate=author_birthdate,death_date=author_death_date,books=[str(book.id)])
 
-        author.save()
         try:
+            author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
+            if author and not str(book.pk) in author.books:
+                author.books.append(str(book.pk))
+
+            if not author:
+                author = Author(name=author_name,birthdate=author_birthdate,death_date=author_death_date,books=[str(book.id)])
+
+            author.save()
             book.author_id = author.pk
             book.save()
             return redirect('/book-storage')
@@ -267,14 +269,13 @@ def book_update(_id):
             pages = form.pages.data
             genres = form.genre.data
             status = form.status.data
-            if str(book.id) in  book.author_id.books:
+            if str(book.id) in book.author_id.books:
                 book.author_id.books.remove(str(book.id))
                 book.cascade_save()
             # take only first author
             author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
             if author and not str(book.id) in author.books:
                 author.books.append(str(book.id))
-
             if not author:
                 author = Author(name=author_name,birthdate=author_birthdate,death_date=author_death_date,books=[str(book.id)])
             author.save()
