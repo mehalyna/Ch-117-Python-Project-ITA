@@ -1,21 +1,63 @@
 {% extends 'base.html' %}
 
 {% block title %} Book Storage {% endblock %}
+
 {% block body %}
-<div class="container">
-    <h1>Book Storage</h1>
+    <form action="" method="post">
+        <input type="text" class="form-control" placeholder="Search" id="mySearch" name="mySearch">
+    </form>
 
-    {% for book in books %}
-        <div class="alert alert-info">
-            <h2>{{ book.title }}</h2>
-            <p>Author: <b>{{ book.author }}</b></p>
-            <p>Published: <b>{{ book.year }}</b></p>
-            <p>Status: <b>{{ book.status }}</b></p>
-            <a href="{{ url_for('book_details', _id=book.id) }}" class="btn btn-warning">Details</a>
-            <a href="{{ url_for('book_update', _id=book.id) }}" class="btn btn-success">Update</a>
-            <a href="{{ url_for('book_delete', _id=book.id) }}" class="btn btn-danger">Delete</a>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Published</th>
+                <th scope="col">
+                    <div class="btn-group">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Status
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="{{ url_for('book_storage') }}">Book Storage</a>
+                        <a class="dropdown-item" href="{{ url_for('book_active') }}">Active Books</a>
+                        <a class="dropdown-item" href="{{ url_for('book_inactive') }}">Inactive Books</a>
+                    </div>
+                </div>
+                </th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        {% for book in books %}
+        <tbody id="bookTable">
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.title }}</td>
+                <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.author }}</td>
+                <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.year }}</td>
+                <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.status }}</td>
+                <td>
+                    {% if book.status == 'active' %}
+                    <a href="{{ url_for('book_details', _id=book.id) }}" class="btn btn-warning">Details</a>
+                    <a href="{{ url_for('book_update', _id=book.id) }}" class="btn btn-success">Update</a>
+                    <a href="{{ url_for('book_delete', _id=book.id) }}" class="btn btn-danger">Delete</a>
+                    {% endif %}
 
-        </div>
-    {% endfor %}
-</div>
+                    {% if book.status == 'inactive' %}
+                    <a href="{{ url_for('book_details', _id=book.id) }}" class="btn btn-warning">Details</a>
+                    <a href="{{ url_for('book_update', _id=book.id) }}" class="btn btn-success">Update</a>
+                    <a href="{{ url_for('book_restore', _id=book.id) }}" class="btn btn-primary">Restore</a>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
 {% endblock %}
+
+
+
+
+
