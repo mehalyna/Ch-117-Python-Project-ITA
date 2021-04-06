@@ -169,15 +169,25 @@ def add_book():
     if request.method == 'POST':
         book = Book()
         book.title = form.title.data
-        book.author = form.author_name.data
+        author_name = form.author_name.data
+        author_birthdate = str(form.author_birthdate.data)
+        author_death_date = str(form.author_death_date.data)
         book.year = form.year.data
         book.publisher = form.publisher.data
         book.language = form.language.data
         book.description = form.description.data
         book.pages = form.pages.data
-        book.genres = form.genre.data
-        book.status = Status.ACTIVE
+        book.genres = [form.genre.data]
+        book.save()
+        author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
+        if author and not str(book.pk) in author.books:
+            author.books.append(str(book.pk))
+        if not author:
+            author = Author(name=author_name,birthdate=author_birthdate,death_date=author_death_date,books=[str(book.id)])
+
+        author.save()
         try:
+            book.author_id = author.pk
             book.save()
             return redirect('/book-storage')
         except Exception as e:
@@ -264,12 +274,12 @@ def book_update(_id):
             author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
             if author and not str(book.id) in author.books:
                 author.books.append(str(book.id))
-                author.save()
+
             if not author:
                 author = Author(name=author_name,birthdate=author_birthdate,death_date=author_death_date,books=[str(book.id)])
-                author.save()
+            author.save()
             book.update(title=title, author_id=author.pk, year=year, publisher=publisher, language=language,
-                        description=description, pages=pages, genres=genres, status=status)
+                        description=description, pages=pages, genres=[genres], status=status)
             return redirect('/book-storage')
     except Exception as e:
         print(e)
