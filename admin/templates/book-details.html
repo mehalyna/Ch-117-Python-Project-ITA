@@ -6,7 +6,7 @@
     <h1>Book details</h1>
     <div class="alert alert-info">
         <h2>{{ book.title }}</h2>
-        <p>Author: <b>{{ book.author }}</b></p>
+        <p>Author: <b>{{ book.author_id.name }}</b> <b>({{book.author_id.birthdate}} - {{book.author_id.death_date}})</b></p>
         <p>Genre: <b>{{ book.genres }}</b></p>
         <p>Number of pages: <b>{{ book.pages }}</b></p>
         <p><b>Description: </b> {{ book.description }}</p>
