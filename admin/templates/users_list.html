@@ -25,7 +25,7 @@
                     </div>
                 </div>
             </th>
-            <th scope="col">Actions</th>
+            <th scope="col" style="width: 200px">Actions</th>
         </tr>
         </thead>
         {% for user in users.items %}
@@ -36,7 +36,7 @@
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.firstname }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.role }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.status }}</td>
-                <td class="custom">
+                <td class="custom text-right">
                     {% if user.status != 'inactive' %}
                         <a href="{{ url_for('update_user', _id=user.id) }}"
                            class="btn btn-warning btn-secondary"
