@@ -200,7 +200,7 @@ def import_file():
 
 @app.route('/import-file', methods=['POST', 'GET'])
 @login_required
-def uploadFiles():
+def upload_files():
     if request.method == 'POST' and request.files:
         uploaded_file = request.files['file']
         if uploaded_file.filename == '':
