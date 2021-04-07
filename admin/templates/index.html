@@ -15,4 +15,21 @@
 {% endblock %}
 
 {% block body %}
+<div style="text-align: center">
+    <h1>Welcome to administrator panel</h1>
+    <h3>General statistics</h3>
+    <br>
+    <h4>Users</h4>
+    <hr>
+    <h5>Total: {{statistics.number_users}}</h5>
+    <h5>Active: {{statistics.number_active_users}}</h5>
+    <h5>Inactive: {{statistics.number_inactive_users}}</h5>
+    <h5>Muted: {{statistics.number_muted_users}}</h5>
+    <br>
+    <h4>Books</h4>
+    <hr>
+    <h5>Total: {{statistics.number_books}}</h5>
+    <h5>Active: {{statistics.number_active_books}}</h5>
+    <h5>Inactive: {{statistics.number_inactive_books}}</h5>
+</div>
 {% endblock %}
