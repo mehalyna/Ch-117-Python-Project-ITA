@@ -59,6 +59,7 @@ def get_inactive_users_list():
 
 
 @app.route('/create_user', methods=['GET', 'POST'])
+@login_required
 def create_user():
     form = AddUserForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
