@@ -47,7 +47,7 @@ class UpdateUserForm(AddUserForm):
         unique_check('email', update=True)
     ])
     login = StringField('Login', validators=[
-        DataRequired(), unique_check('login', update=True)
+        DataRequired(), unique_check('login', update=True), Length(min=6)
     ])
     status = SelectField('Status', choices=[
         (Status.ACTIVE, Status.ACTIVE),
