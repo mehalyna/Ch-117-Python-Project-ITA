@@ -1,11 +1,13 @@
-.user-inf {
-    font-size: 20px;
-}
-
-.create_user_form .update_user_form {
-    margin-left: 20px;
-}
-
 .to_red {
 color: red !important;
+}
+
+.custom input,.custom a, .custom button{
+    width: 78px;
+}
+
+.custom_border{
+    -webkit-box-shadow: -1px 1px 10px 3px #B9B5B4;
+    -moz-box-shadow: -1px 1px 10px 3px #B9B5B4;
+    box-shadow: -1px 1px 10px 3px #B9B5B4;
 }
