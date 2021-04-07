@@ -6,7 +6,6 @@
     <form action="" method="post">
         <input type="text" class="form-control" placeholder="Search" id="mySearch" name="mySearch">
     </form>
-
     <table class="table">
         <thead class="thead-dark">
             <tr>
@@ -35,7 +34,7 @@
             <tr>
                 <th scope="row">{{ loop.index }}</th>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.title }}</td>
-                <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.author }}</td>
+                <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.author_id.name }} ({{book.author_id.birthdate}} - {{book.author_id.death_date}})</td>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.year }}</td>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.status }}</td>
                 <td>

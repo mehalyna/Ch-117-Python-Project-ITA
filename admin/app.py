@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
-from models import Book, Status, User
+from models import Author, Book, Status, User
 
 load_dotenv()
 
@@ -171,15 +171,27 @@ def add_book():
     if request.method == 'POST':
         book = Book()
         book.title = form.title.data
-        book.author = form.author.data
+        author_name = form.author_name.data
+        author_birthdate = str(form.author_birthdate.data)
+        author_death_date = str(form.author_death_date.data)
         book.year = form.year.data
         book.publisher = form.publisher.data
         book.language = form.language.data
         book.description = form.description.data
         book.pages = form.pages.data
-        book.genres = form.genre.data
-        book.status = Status.ACTIVE
+        book.genres = [form.genre.data]
+        book.save()
+
         try:
+            author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
+            if author and not str(book.pk) in author.books:
+                author.books.append(str(book.pk))
+
+            if not author:
+                author = Author(name=author_name,birthdate=author_birthdate,death_date=author_death_date,books=[str(book.id)])
+
+            author.save()
+            book.author_id = author.pk
             book.save()
             return redirect('/book-storage')
         except Exception as e:
@@ -263,7 +275,9 @@ def book_update(_id):
         form = UpdateBookForm(request.form)
         if request.method == 'POST':
             title = form.title.data
-            author = form.author.data
+            author_name = form.author_name.data
+            author_birthdate = str(form.author_birthdate.data)
+            author_death_date = str(form.author_death_date.data)
             year = form.year.data
             publisher = form.publisher.data
             language = form.language.data
@@ -271,8 +285,18 @@ def book_update(_id):
             pages = form.pages.data
             genres = form.genre.data
             status = form.status.data
-            book.update(title=title, author=author, year=year, publisher=publisher, language=language,
-                        description=description, pages=pages, genres=genres, status=status)
+            if str(book.id) in book.author_id.books:
+                book.author_id.books.remove(str(book.id))
+                book.cascade_save()
+            # take only first author
+            author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
+            if author and not str(book.id) in author.books:
+                author.books.append(str(book.id))
+            if not author:
+                author = Author(name=author_name,birthdate=author_birthdate,death_date=author_death_date,books=[str(book.id)])
+            author.save()
+            book.update(title=title, author_id=author.pk, year=year, publisher=publisher, language=language,
+                        description=description, pages=pages, genres=[genres], status=status)
             return redirect('/book-storage')
     except Exception as e:
         print(e)

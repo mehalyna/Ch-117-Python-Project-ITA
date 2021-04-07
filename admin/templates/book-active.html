@@ -8,7 +8,7 @@
     {% for book in books %}
         <div class="alert alert-info">
             <h2>{{ book.title }}</h2>
-            <p>Author: <b>{{ book.author }}</b></p>
+            <p>Author: <b>{{ book.author_id.name }}</b> <b>({{book.author_id.birthdate}} - {{book.author_id.death_date}})</b>
             <p>Published: <b>{{ book.year }}</b></p>
             <p>Status: <b>{{ book.status }}</b></p>
             <a href="{{ url_for('book_details', _id=book.id) }}" class="btn btn-warning">Details</a>
