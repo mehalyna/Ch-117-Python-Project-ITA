@@ -1,23 +1,29 @@
+import json
 import os
-import traceback
 
 from bson import ObjectId
-from datetime import timedelta
 from dotenv import load_dotenv
+from flask import flash, Flask, redirect, render_template, request, url_for
+from flask_login import LoginManager, login_required,  login_user, logout_user
 from flask import flash, Flask, redirect, render_template, request, url_for,session
 from flask_login import LoginManager, logout_user, login_user, login_required
 from forms import LoginForm, AddUserForm, UpdateUserForm
 from models import User
 from mongoengine import connect
-from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
+from werkzeug.urls import url_parse
+from werkzeug.utils import secure_filename
 
+
+from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
+from models import Book, Status, User
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)
+app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
+
 connect(
     db=os.getenv('DB_NAME'),
     host=os.getenv('MONGO_URL'),
@@ -34,17 +40,23 @@ def start_page():
     return render_template('index.html')
 
 
+@app.route('/users_list')
+def get_users_list():
+    users = User.objects.order_by('email', 'status')
+    return render_template('users_list.html', users=users)
+
+
 @app.route('/active_users_list')
 @login_required
 def get_active_users_list():
-    users = User.objects(status='active')
+    users = User.objects(status=Status.ACTIVE).order_by('email', 'status')
     return render_template('users_list.html', users=users)
 
 
 @app.route('/inactive_users_list')
 @login_required
 def get_inactive_users_list():
-    users = User.objects(status='inactive')
+    users = User.objects(status=Status.INACTIVE).order_by('email', 'status')
     return render_template('users_list.html', users=users)
 
 
@@ -60,13 +72,13 @@ def create_user():
             user.login = form.login.data
             user.set_password(form.password.data)
             user.role = form.role.data
-            user.status = 'active'
+            user.status = Status.ACTIVE
             user.save()
             flash('User successfully created', 'success')
-            return redirect(url_for('get_active_users_list'))
+            return redirect(url_for('get_users_list'))
         except Exception as e:
-            print("Something went wrong!")
-            traceback.print_exc()
+            print(e)
+            flash(str(e), 'danger')
             return redirect(url_for('create_user'))
     return render_template('create_user.html', form=form)
 
@@ -76,7 +88,10 @@ def create_user():
 def update_user(_id: str):
     try:
         user = User.objects.get(id=ObjectId(_id))
-        form = UpdateUserForm(request.form, role=user.role, status=user.status)
+        form = UpdateUserForm(
+            request.form, firstname=user.firstname, lastname=user.lastname,
+            email=user.email, login=user.login, role=user.role, status=user.status)
+        form.user_id.data = user.id
         if request.method == 'POST' and form.validate_on_submit():
             firstname = form.firstname.data
             lastname = form.lastname.data
@@ -90,11 +105,11 @@ def update_user(_id: str):
                         role=role, status=status)
 
             flash('User successfully updated', 'success')
-            return redirect(url_for('get_active_users_list'))
+            return redirect(url_for('get_users_list'))
     except Exception as e:
-        print('Something went wrong!')
-        traceback.print_exc()
-        return redirect(url_for('get_active_users_list'))
+        print(e)
+        flash(str(e), 'danger')
+        return redirect(url_for('get_users_list'))
     return render_template('update_user.html', user=user, form=form)
 
 
@@ -105,11 +120,11 @@ def delete_user(_id: str):
         user = User.objects.get(id=ObjectId(_id), status='active')
         user.update(status='inactive')
         flash('User successfully deleted', 'danger')
-        return redirect(url_for('get_active_users_list'))
+        return redirect(url_for('get_users_list'))
     except Exception as e:
-        print('Something went wrong!')
-        traceback.print_exc()
-        return redirect(url_for('get_active_users_list'))
+        print(e)
+        flash(str(e), 'danger')
+        return redirect(url_for('get_users_list'))
 
 
 @app.route('/restore_user/<string:_id>')
@@ -119,11 +134,11 @@ def restore_user(_id: str):
         user = User.objects.get(id=ObjectId(_id), status='inactive')
         user.update(status='active')
         flash('User successfully restored', 'success')
-        return redirect(url_for('get_active_users_list'))
+        return redirect(url_for('get_users_list'))
     except Exception as e:
-        print('Something went wrong!')
-        traceback.print_exc()
-        return redirect(url_for('get_active_users_list'))
+        print(e)
+        flash(str(e), 'danger')
+        return redirect(url_for('get_users_list'))
 
 
 @app.route('/admin_login', methods=['GET', 'POST'])
@@ -149,10 +164,152 @@ def logout():
     logout_user()
     return redirect(url_for('start_page'))
 
-
 @login.user_loader
 def load_user(user_id):
     return User.objects.get(id=user_id)
+
+
+@app.route('/add-book', methods=['POST', 'GET'])
+@login_required
+def add_book():
+    form = AddBookForm(request.form)
+    if request.method == 'POST':
+        book = Book()
+        book.title = form.title.data
+        book.author = form.author.data
+        book.year = form.year.data
+        book.publisher = form.publisher.data
+        book.language = form.language.data
+        book.description = form.description.data
+        book.pages = form.pages.data
+        book.genres = form.genre.data
+        book.status = Status.ACTIVE
+        try:
+            book.save()
+            return redirect('/book-storage')
+        except Exception as e:
+            print(e)
+            flash(str(e), 'danger')
+            return redirect('/add-book')
+    return render_template('add-book.html', form=form)
+
+@app.route('/import-file')
+@login_required
+def import_file():
+    return render_template('csv-import.html')
+
+
+@app.route('/import-file', methods=['POST', 'GET'])
+@login_required
+def uploadFiles():
+    if request.method == 'POST' and request.files:
+        uploaded_file = request.files['file']
+        if uploaded_file.filename == '':
+            flash('File has not been selected, please choose one.', 'warning')
+            return redirect(request.url)
+        if not (uploaded_file.filename.endswith('.json')):
+            flash('Incorrect type of file (.JSON is needed)', 'danger')
+            return redirect(request.url)
+        else:
+            filename = secure_filename(uploaded_file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            uploaded_file.save(file_path)
+        try:
+            with open(os.getenv('UPLOAD_FOLDER') + filename) as f:
+                file_data = json.load(f)
+        except Exception as e:
+            flash(str(e), 'danger')
+            return redirect(request.url)
+        finally:
+            os.remove(file_path)
+        try:
+            for example in file_data:
+                book = Book.from_json(json.dumps(example))
+                book.save(force_insert=True)
+            flash('Books added successfully', 'success')
+            return redirect(url_for('import_file'))
+        except Exception as e:
+            flash(str(e), 'danger')
+            return redirect(url_for('import_file'))
+
+
+@app.route('/book-storage')
+@login_required
+def book_storage():
+    books = Book.objects.order_by('title', 'status')
+    return render_template('book-storage.html', books=books)
+
+@app.route('/book-active')
+@login_required
+def book_active():
+    books = Book.objects(status=Status.ACTIVE).order_by('title', 'status')
+    return render_template('book-storage.html', books=books)
+
+
+@app.route('/book-inactive')
+@login_required
+def book_inactive():
+    books = Book.objects(status=Status.INACTIVE).order_by('title', 'status')
+    return render_template('book-storage.html', books=books)
+
+
+@app.route('/book-storage/<string:_id>')
+@login_required
+def book_details(_id):
+    book = Book.objects.get(id=ObjectId(_id))
+    return render_template('book-details.html', book=book)
+
+
+@app.route('/book-update/<string:_id>', methods=['POST', 'GET'])
+@login_required
+def book_update(_id):
+    try:
+        book = Book.objects.get(id=ObjectId(_id))
+        form = UpdateBookForm(request.form)
+        if request.method == 'POST':
+            title = form.title.data
+            author = form.author.data
+            year = form.year.data
+            publisher = form.publisher.data
+            language = form.language.data
+            description = form.description.data
+            pages = form.pages.data
+            genres = form.genre.data
+            status = form.status.data
+            book.update(title=title, author=author, year=year, publisher=publisher, language=language,
+                        description=description, pages=pages, genres=genres, status=status)
+            return redirect('/book-storage')
+    except Exception as e:
+        print(e)
+        flash(str(e), 'danger')
+        return redirect('/book-storage')
+    return render_template('update-book.html', book=book, form=form)
+
+
+@app.route('/book-delete/<string:_id>')
+@login_required
+def book_delete(_id):
+    try:
+        book = Book.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
+        book.update(status=Status.INACTIVE)
+        return redirect('/book-storage')
+    except Exception as e:
+        print(e)
+        flash(str(e), 'danger')
+        return redirect('/book-storage')
+
+
+@app.route('/book-restore/<string:_id>')
+@login_required
+def book_restore(_id):
+    try:
+        book = Book.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
+        book.update(status=Status.ACTIVE)
+        return redirect('/book-storage')
+    except Exception as e:
+        print(e)
+        flash(str(e), 'danger')
+        return redirect('/book-storage')
 
 
 if __name__ == '__main__':

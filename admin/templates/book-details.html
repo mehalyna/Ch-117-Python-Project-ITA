@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %} Book details {% endblock %}
+{% block body %}
+<div class="container">
+    <h1>Book details</h1>
+        <h2>Title: {{ book.title }}</h2>
+        <p>Author: <b>{{ book.author }}</b></p>
+        <p>Genre: <b>{{ book.genres }}</b></p>
+        <p>Number of pages: <b>{{ book.pages }}</b></p>
+        <p><b>Description: </b> {{ book.description }}</p>
+        <p>Published: <b>{{ book.year }}</b></p>
+        <p>Language: <b>{{ book.language }}</b></p>
+        <p>Status: <b>{{ book.status }}</b></p>
+    <h2>Community Comments</h2>
+</div>
+{% endblock %}
