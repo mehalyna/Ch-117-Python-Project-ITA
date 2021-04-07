@@ -4,12 +4,12 @@ import os
 from bson import ObjectId
 from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, url_for
-from flask_login import LoginManager, login_required,  login_user, logout_user
+from flask_login import LoginManager, login_required, login_user, logout_user
+from flask_mongoengine import Pagination
 from mongoengine import connect
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
-
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Book, Status, User
@@ -29,6 +29,7 @@ login = LoginManager(app)
 login.login_view = 'admin_login'
 login.init_app(app)
 
+ROWS_PER_PAGE = 1
 
 @app.route('/')
 @login_required
@@ -38,7 +39,8 @@ def start_page():
 
 @app.route('/users_list')
 def get_users_list():
-    users = User.objects.order_by('email', 'status')
+    page = request.args.get('page', 1, type=int)
+    users = Pagination(iterable=User.objects.order_by('email', 'status'), page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -159,6 +161,7 @@ def logout():
     logout_user()
     return redirect(url_for('start_page'))
 
+
 @login.user_loader
 def load_user(user_id):
     return User.objects.get(id=user_id)
@@ -187,6 +190,7 @@ def add_book():
             flash(str(e), 'danger')
             return redirect('/add-book')
     return render_template('add-book.html', form=form)
+
 
 @app.route('/import-file')
 @login_required
@@ -233,6 +237,7 @@ def uploadFiles():
 def book_storage():
     books = Book.objects.order_by('title', 'status')
     return render_template('book-storage.html', books=books)
+
 
 @app.route('/book-active')
 @login_required
