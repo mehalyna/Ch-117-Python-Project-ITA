@@ -28,7 +28,7 @@ class UpdateUserForm(AddUserForm):
 
 
 class LoginForm(FlaskForm):
-    admin = StringField('Admin', validators=[DataRequired()])
+    admin = StringField('Admin', validators=[DataRequired(), Length(min=6)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=35)])
     submit = SubmitField('Sign In')
 

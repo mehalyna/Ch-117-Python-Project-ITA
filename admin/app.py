@@ -2,8 +2,9 @@ import os
 import traceback
 
 from bson import ObjectId
+from datetime import timedelta
 from dotenv import load_dotenv
-from flask import flash, Flask, redirect, render_template, request, url_for
+from flask import flash, Flask, redirect, render_template, request, url_for,session
 from flask_login import LoginManager, logout_user, login_user, login_required
 from forms import LoginForm, AddUserForm, UpdateUserForm
 from models import User
@@ -16,6 +17,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)
 connect(
     db=os.getenv('DB_NAME'),
     host=os.getenv('MONGO_URL'),
@@ -134,6 +136,7 @@ def admin_login():
             return redirect('/admin_login')
         if admin.role == 'admin':
             login_user(admin)
+            session.permanent = True
             next_page = request.args.get('next')
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('start_page')

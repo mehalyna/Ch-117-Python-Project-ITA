@@ -28,7 +28,12 @@
             </li>
 
         </ul>
-        <a class="nav-link btn btn-sm btn-outline-secondary" href="{{ url_for('logout') }}">Logout</a>
+        <div>
+            <span class="navbar-text mr-3">Welcome, {{ current_user.firstname }}!</span>
+        </div>
+        <div>
+            <a class="nav-link btn btn-sm btn-outline-light" href="{{ url_for('logout') }}">Logout</a>
+        </div>
     </div>
 </nav>
 {% with messages = get_flashed_messages(with_categories=true) %}
