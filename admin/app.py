@@ -47,14 +47,18 @@ def get_users_list():
 @app.route('/active_users_list')
 @login_required
 def get_active_users_list():
-    users = User.objects(status=Status.ACTIVE).order_by('email', 'status')
+    page = request.args.get('page', 1, type=int)
+    users = Pagination(User.objects(status=Status.ACTIVE).order_by('email', 'status'),
+                       page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
 @app.route('/inactive_users_list')
 @login_required
 def get_inactive_users_list():
-    users = User.objects(status=Status.INACTIVE).order_by('email', 'status')
+    page = request.args.get('page', 1, type=int)
+    users = Pagination(User.objects(status=Status.INACTIVE).order_by('email', 'status'),
+                       page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 

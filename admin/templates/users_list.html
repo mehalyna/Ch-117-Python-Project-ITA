@@ -11,6 +11,7 @@
             <th scope="col">#</th>
             <th scope="col">Email</th>
             <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
             <th scope="col">Role</th>
             <th scope="col">
                 <div class="btn-group">
@@ -34,6 +35,7 @@
                 <th scope="row">{{ loop.index }}</th>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.email }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.firstname }}</td>
+                <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.lastname }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.role }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.status }}</td>
                 <td class="custom text-right">
