@@ -2,9 +2,10 @@ import json
 import os
 
 from bson import ObjectId
+from datetime import timedelta
 from dotenv import load_dotenv
-from flask import flash, Flask, redirect, render_template, request, url_for
-from flask_login import LoginManager, login_required,  login_user, logout_user
+from flask import flash, Flask, redirect, render_template, request, url_for, session
+from flask_login import LoginManager, logout_user, login_user, login_required
 from mongoengine import connect
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
@@ -19,6 +20,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=90)
 
 connect(
     db=os.getenv('DB_NAME'),
@@ -147,6 +149,7 @@ def admin_login():
             return redirect('/admin_login')
         if admin.role == 'admin':
             login_user(admin)
+            session.permanent = True
             next_page = request.args.get('next')
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('start_page')
@@ -158,6 +161,7 @@ def admin_login():
 def logout():
     logout_user()
     return redirect(url_for('start_page'))
+
 
 @login.user_loader
 def load_user(user_id):
