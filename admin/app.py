@@ -29,7 +29,7 @@ login = LoginManager(app)
 login.login_view = 'admin_login'
 login.init_app(app)
 
-ROWS_PER_PAGE = 1
+ROWS_PER_PAGE = 6
 
 @app.route('/')
 @login_required
@@ -239,21 +239,26 @@ def upload_files():
 @app.route('/book-storage')
 @login_required
 def book_storage():
-    books = Book.objects.order_by('title', 'status')
+    page = request.args.get('page', 1, type=int)
+    books = Pagination(Book.objects.order_by('title', 'status'),page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-active')
 @login_required
 def book_active():
-    books = Book.objects(status=Status.ACTIVE).order_by('title', 'status')
+    page = request.args.get('page', 1, type=int)
+    books = Pagination(Book.objects(status=Status.ACTIVE).order_by('title', 'status'),
+                       page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-inactive')
 @login_required
 def book_inactive():
-    books = Book.objects(status=Status.INACTIVE).order_by('title', 'status')
+    page = request.args.get('page', 1, type=int)
+    books = Pagination(Book.objects(status=Status.INACTIVE).order_by('title', 'status'),
+                       page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
