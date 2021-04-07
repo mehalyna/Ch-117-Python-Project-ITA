@@ -227,20 +227,20 @@ def uploadFiles():
 @app.route('/book-storage')
 @login_required
 def book_storage():
-    books = Book.objects()[:10]
+    books = Book.objects()
     return render_template('book-storage.html', books=books)
 
 @app.route('/book-active')
 @login_required
 def book_active():
-    books = Book.objects(status=Status.ACTIVE)[:10]
+    books = Book.objects(status=Status.ACTIVE)
     return render_template('book-active.html', books=books)
 
 
 @app.route('/book-inactive')
 @login_required
 def book_inactive():
-    books = Book.objects(status=Status.INACTIVE)[:10]
+    books = Book.objects(status=Status.INACTIVE)
     return render_template('book-inactive.html', books=books)
 
 
