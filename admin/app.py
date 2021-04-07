@@ -6,8 +6,10 @@ from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, url_for
 from flask_login import LoginManager, login_required,  login_user, logout_user
 from mongoengine import connect
-from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash
+from werkzeug.urls import url_parse
+from werkzeug.utils import secure_filename
+
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Author, Book, Status, User
@@ -207,41 +209,55 @@ def import_file():
 @app.route('/import-file', methods=['POST', 'GET'])
 @login_required
 def uploadFiles():
-    try:
+    if request.method == 'POST' and request.files:
         uploaded_file = request.files['file']
-        if uploaded_file.filename:
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
+        if uploaded_file.filename == '':
+            flash('File has not been selected, please choose one.', 'warning')
+            return redirect(request.url)
+        if not (uploaded_file.filename.endswith('.json')):
+            flash('Incorrect type of file (.JSON is needed)', 'danger')
+            return redirect(request.url)
+        else:
+            filename = secure_filename(uploaded_file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             uploaded_file.save(file_path)
-            with open(os.getenv('UPLOAD_FOLDER') + '/' + uploaded_file.filename) as f:
+        try:
+            with open(os.getenv('UPLOAD_FOLDER') + filename) as f:
                 file_data = json.load(f)
+        except Exception as e:
+            flash(str(e), 'danger')
+            return redirect(request.url)
+        finally:
+            os.remove(file_path)
+        try:
             for example in file_data:
                 book = Book.from_json(json.dumps(example))
                 book.save(force_insert=True)
-        return redirect(url_for('import_file'))
-    except Exception as e:
-        print(e)
-        flash(str(e), 'danger')
-        return redirect(url_for('import_file'))
+            flash('Books added successfully', 'success')
+            return redirect(url_for('import_file'))
+        except Exception as e:
+            flash(str(e), 'danger')
+            return redirect(url_for('import_file'))
 
 
 @app.route('/book-storage')
 @login_required
 def book_storage():
-    books = Book.objects()
+    books = Book.objects.order_by('title', 'status')
     return render_template('book-storage.html', books=books)
 
 @app.route('/book-active')
 @login_required
 def book_active():
-    books = Book.objects(status=Status.ACTIVE)
-    return render_template('book-active.html', books=books)
+    books = Book.objects(status=Status.ACTIVE).order_by('title', 'status')
+    return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-inactive')
 @login_required
 def book_inactive():
-    books = Book.objects(status=Status.INACTIVE)
-    return render_template('book-inactive.html', books=books)
+    books = Book.objects(status=Status.INACTIVE).order_by('title', 'status')
+    return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-storage/<string:_id>')
@@ -285,7 +301,7 @@ def book_update(_id):
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/home')
+        return redirect('/book-storage')
     return render_template('update-book.html', book=book, form=form)
 
 
@@ -295,11 +311,11 @@ def book_delete(_id):
     try:
         book = Book.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
         book.update(status=Status.INACTIVE)
-        return redirect('/book-active')
+        return redirect('/book-storage')
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/home')
+        return redirect('/book-storage')
 
 
 @app.route('/book-restore/<string:_id>')
@@ -308,11 +324,11 @@ def book_restore(_id):
     try:
         book = Book.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
         book.update(status=Status.ACTIVE)
-        return redirect('/book-inactive')
+        return redirect('/book-storage')
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/home')
+        return redirect('/book-storage')
 
 
 if __name__ == '__main__':

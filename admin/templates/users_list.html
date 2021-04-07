@@ -36,31 +36,31 @@
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.firstname }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.role }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.status }}</td>
-                <td>
+                <td class="custom">
                     {% if user.status != 'inactive' %}
                         <a href="{{ url_for('update_user', _id=user.id) }}"
                            class="btn btn-warning btn-secondary"
                            data-toggle="tooltip"
                            data-placement="bottom"
                            title="click for editing user">
-                            Edit user
+                            Update
                         </a>
                         <button class="btn btn-danger btn-secondary"
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="click for deleting user"
                                 onclick="change_status('{{ url_for('delete_user', _id=user.id) }}', status='delete' )">
-                            Delete user
+                            Delete
                         </button>
                     {% endif %}
                     {% if user.status != 'active' %}
                         <button id="restore_user"
-                                class="btn btn-danger btn-secondary"
+                                class="btn btn-primary"
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="click for deleting user"
                                 onclick="change_status('{{ url_for('restore_user', _id=user.id) }}', status='restore')">
-                            Restore user
+                            Restore
                         </button>
                     {% endif %}
                 </td>

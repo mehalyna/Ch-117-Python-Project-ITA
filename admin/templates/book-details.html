@@ -5,7 +5,7 @@
 <div class="container">
     <h1>Book details</h1>
     <div class="alert alert-info">
-        <h2>{{ book.title }}</h2>
+        <h2>Title: {{ book.title }}</h2>
         <p>Author: <b>{{ book.author_id.name }}</b> <b>({{book.author_id.birthdate}} - {{book.author_id.death_date}})</b></p>
         <p>Genre: <b>{{ book.genres }}</b></p>
         <p>Number of pages: <b>{{ book.pages }}</b></p>
@@ -13,7 +13,6 @@
         <p>Published: <b>{{ book.year }}</b></p>
         <p>Language: <b>{{ book.language }}</b></p>
         <p>Status: <b>{{ book.status }}</b></p>
-    </div>
     <h2>Community Comments</h2>
 </div>
 {% endblock %}
