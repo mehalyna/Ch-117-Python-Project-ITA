@@ -59,7 +59,6 @@ def get_inactive_users_list():
 
 
 @app.route('/create_user', methods=['GET', 'POST'])
-@login_required
 def create_user():
     form = AddUserForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
@@ -187,7 +186,7 @@ def add_book():
         book.save()
 
         try:
-            author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
+            author = Author.objects(name=author_name, birthdate=author_birthdate, death_date=author_death_date).first()
             if author and not str(book.pk) in author.books:
                 author.books.append(str(book.pk))
 
@@ -293,7 +292,7 @@ def book_update(_id):
                 book.author_id.books.remove(str(book.id))
                 book.cascade_save()
             # take only first author
-            author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
+            author = Author.objects(name=author_name, birthdate=author_birthdate, death_date=author_death_date).first()
             if author and not str(book.id) in author.books:
                 author.books.append(str(book.id))
             if not author:

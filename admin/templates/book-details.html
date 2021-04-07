@@ -4,7 +4,6 @@
 {% block body %}
 <div class="container">
     <h1>Book details</h1>
-    <div class="alert alert-info">
         <h2>Title: {{ book.title }}</h2>
         <p>Author: <b>{{ book.author_id.name }}</b> <b>({{book.author_id.birthdate}} - {{book.author_id.death_date}})</b></p>
         <p>Genre: <b>{{ book.genres }}</b></p>
