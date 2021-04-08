@@ -15,17 +15,21 @@ $(document).ready(function () {
 });
 
 
-window.setTimeout(function() {
-    $(".alert").fadeTo(500, 0, function (){
+window.setTimeout(function () {
+    $(".alert").fadeTo(500, 0, function () {
     })
 }, 2000);
 
 
-$(document).ready(function(){
-  $("#mySearch").on("keyup", function() {
-    let value = $(this).val().toLowerCase();
-    $("#bookTable tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+$(document).ready(function () {
+    $("#mySearch").on("keyup", function () {
+        let value = $(this).val().toLowerCase();
+        $("#bookTable tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
     });
-  });
 });
+
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})

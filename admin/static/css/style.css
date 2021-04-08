@@ -11,3 +11,17 @@ color: red !important;
     -moz-box-shadow: -1px 1px 10px 3px #B9B5B4;
     box-shadow: -1px 1px 10px 3px #B9B5B4;
 }
+
+#cover_image{
+    max-width: 225px;
+    max-height: 250px;
+}
+
+.book_details_text{
+    margin-left: 10px;
+    max-width: 650px!important;
+}
+
+.book_details_img{
+    max-width: 225px;
+}
