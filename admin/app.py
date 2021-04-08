@@ -33,6 +33,7 @@ login.init_app(app)
 
 ROWS_PER_PAGE = 6
 
+
 @app.route('/')
 @login_required
 def start_page():
@@ -267,7 +268,7 @@ def upload_files():
 @login_required
 def book_storage():
     page = request.args.get('page', 1, type=int)
-    books = Pagination(Book.objects.order_by('title', 'status'),page=page, per_page=ROWS_PER_PAGE)
+    books = Pagination(Book.objects.order_by('title', 'status'), page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 

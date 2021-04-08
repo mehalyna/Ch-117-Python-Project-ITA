@@ -25,3 +25,8 @@ color: red !important;
 .book_details_img{
     max-width: 225px;
 }
+
+.book_details_frame{
+    background: #EEFCFC;
+    max-width: 925px!important;
+}
