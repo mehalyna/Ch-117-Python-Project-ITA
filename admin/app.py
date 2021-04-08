@@ -11,9 +11,8 @@ from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 
-
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
-from models import Author, Book, Status, User
+from models import Author, Book, Statistics, Status, User
 
 load_dotenv()
 
@@ -35,7 +34,18 @@ login.init_app(app)
 @app.route('/')
 @login_required
 def start_page():
-    return render_template('index.html')
+    num_users = User.objects.count()
+    num_books = Book.objects.count()
+    num_active_users = User.objects(status=Status.ACTIVE).count()
+    num_inactive_users = User.objects(status=Status.INACTIVE).count()
+    num_muted_users = User.objects(status=Status.MUTED).count()
+    num_active_books = User.objects(status=Status.ACTIVE).count()
+    num_inactive_books = User.objects(status=Status.INACTIVE).count()
+
+    statistics = Statistics(num_users, num_books, num_active_users, num_inactive_users, num_muted_users,
+                            num_active_books, num_inactive_books)
+
+    return render_template('index.html', statistics=statistics)
 
 
 @app.route('/users_list')
@@ -187,12 +197,13 @@ def add_book():
         book.save()
 
         try:
-            author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
+            author = Author.objects(name=author_name, birthdate=author_birthdate, death_date=author_death_date).first()
             if author and not str(book.pk) in author.books:
                 author.books.append(str(book.pk))
 
             if not author:
-                author = Author(name=author_name,birthdate=author_birthdate,death_date=author_death_date,books=[str(book.id)])
+                author = Author(name=author_name, birthdate=author_birthdate, death_date=author_death_date,
+                                books=[str(book.id)])
 
             author.save()
             book.author_id = author.pk
@@ -203,6 +214,7 @@ def add_book():
             flash(str(e), 'danger')
             return redirect('/add-book')
     return render_template('add-book.html', form=form)
+
 
 @app.route('/import-file')
 @login_required
@@ -250,6 +262,7 @@ def book_storage():
     books = Book.objects.order_by('title', 'status')
     return render_template('book-storage.html', books=books)
 
+
 @app.route('/book-active')
 @login_required
 def book_active():
@@ -293,11 +306,12 @@ def book_update(_id):
                 book.author_id.books.remove(str(book.id))
                 book.cascade_save()
             # take only first author
-            author = Author.objects(name=author_name,birthdate=author_birthdate,death_date=author_death_date).first()
+            author = Author.objects(name=author_name, birthdate=author_birthdate, death_date=author_death_date).first()
             if author and not str(book.id) in author.books:
                 author.books.append(str(book.id))
             if not author:
-                author = Author(name=author_name,birthdate=author_birthdate,death_date=author_death_date,books=[str(book.id)])
+                author = Author(name=author_name, birthdate=author_birthdate, death_date=author_death_date,
+                                books=[str(book.id)])
             author.save()
             book.update(title=title, author_id=author.pk, year=year, publisher=publisher, language=language,
                         description=description, pages=pages, genres=[genres], status=status)

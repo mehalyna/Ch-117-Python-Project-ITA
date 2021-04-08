@@ -5,6 +5,18 @@ from mongoengine import DateTimeField, Document, EmailField, EmbeddedDocument, E
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
+class Statistics:
+    def __init__(self, number_users=0, number_books=0, number_active_users=0, number_inactive_users=0,
+                 number_muted_users=0, number_active_books=0, number_inactive_books=0):
+        self.number_users = number_users
+        self.number_books = number_books
+        self.number_active_users = number_active_users
+        self.number_inactive_users = number_inactive_users
+        self.number_muted_users = number_muted_users
+        self.number_active_books = number_active_books
+        self.number_inactive_books = number_inactive_books
+
+
 class Status:
     ACTIVE = 'active'
     INACTIVE = 'inactive'
