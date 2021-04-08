@@ -265,10 +265,10 @@ def upload_files():
                 book.cascade_save()
         except Exception as e:
             flash(f'Error saving object: {str(e)}', 'danger')
-            print(e)
-        finally:
-            flash('All books saved successfully', 'success')
             return redirect(url_for('import_file'))
+
+        flash('All books saved successfully', 'success')
+        return redirect(url_for('import_file'))
 
 
 @app.route('/book-storage')
