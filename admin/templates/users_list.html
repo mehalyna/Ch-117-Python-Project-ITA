@@ -11,6 +11,7 @@
             <th scope="col">#</th>
             <th scope="col">Email</th>
             <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
             <th scope="col">Role</th>
             <th scope="col">
                 <div class="btn-group">
@@ -25,25 +26,26 @@
                     </div>
                 </div>
             </th>
-            <th scope="col">Actions</th>
+            <th scope="col" style="width: 200px">Actions</th>
         </tr>
         </thead>
-        {% for user in users %}
+        {% for user in users.items %}
             <tbody id="myTable">
             <tr>
                 <th scope="row">{{ loop.index }}</th>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.email }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.firstname }}</td>
+                <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.lastname }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.role }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.status }}</td>
-                <td class="custom">
+                <td class="custom text-right">
                     {% if user.status != 'inactive' %}
                         <a href="{{ url_for('update_user', _id=user.id) }}"
                            class="btn btn-warning btn-secondary"
                            data-toggle="tooltip"
                            data-placement="bottom"
                            title="click for editing user">
-                            Update
+                            Edit
                         </a>
                         <button class="btn btn-danger btn-secondary"
                                 data-toggle="tooltip"
@@ -68,4 +70,40 @@
             </tbody>
         {% endfor %}
     </table>
+    <hr>
+    <!-- Pagination Links-->
+    <div class="text-right">
+        <a href="{{ url_for(request.endpoint, page=users.prev_num) }}"
+           class="btn btn-outline-dark
+       {% if users.page == 1 %}disabled{% endif %}">
+            &laquo;
+        </a>
+        <!-- Loop through the number of pages to display a link for each-->
+        {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                <!-- Check for the active page and set the link to "Active"-->
+                {% if users.page == page_num %}
+                    <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                       class="btn btn-dark">
+                        {{ page_num }}
+                    </a>
+                {% else %}
+                    <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                       class="btn btn-outline-dark">
+                        {{ page_num }}
+                    </a>
+                {% endif %}
+            {% else %}
+                ...
+            {% endif %}
+        {% endfor %}
+        <a href="{{ url_for(request.endpoint, page=users.next_num) }}"
+           class="btn btn-outline-dark
+       {% if users.page == users.pages %}disabled{% endif %}">
+            &raquo;
+        </a>
+    </div>
+    <p class="text-right mt-3">
+        Showing page {{ users.page }} of {{ users.pages }}
+    </p>
 {% endblock %}

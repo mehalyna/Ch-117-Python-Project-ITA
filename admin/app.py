@@ -4,8 +4,9 @@ import os
 from bson import ObjectId
 from datetime import timedelta
 from dotenv import load_dotenv
-from flask import flash, Flask, redirect, render_template, request, url_for, session
-from flask_login import LoginManager, logout_user, login_user, login_required
+from flask import flash, Flask, redirect, render_template, request, url_for
+from flask_login import LoginManager, login_required, login_user, logout_user
+from flask_mongoengine import Pagination
 from mongoengine import connect
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
@@ -30,6 +31,7 @@ login = LoginManager(app)
 login.login_view = 'admin_login'
 login.init_app(app)
 
+ROWS_PER_PAGE = 6
 
 @app.route('/')
 @login_required
@@ -50,21 +52,26 @@ def start_page():
 
 @app.route('/users_list')
 def get_users_list():
-    users = User.objects.order_by('email', 'status')
+    page = request.args.get('page', 1, type=int)
+    users = Pagination(iterable=User.objects.order_by('email', 'status'), page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
 @app.route('/active_users_list')
 @login_required
 def get_active_users_list():
-    users = User.objects(status=Status.ACTIVE).order_by('email', 'status')
+    page = request.args.get('page', 1, type=int)
+    users = Pagination(User.objects(status=Status.ACTIVE).order_by('email', 'status'),
+                       page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
 @app.route('/inactive_users_list')
 @login_required
 def get_inactive_users_list():
-    users = User.objects(status=Status.INACTIVE).order_by('email', 'status')
+    page = request.args.get('page', 1, type=int)
+    users = Pagination(User.objects(status=Status.INACTIVE).order_by('email', 'status'),
+                       page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -224,7 +231,7 @@ def import_file():
 
 @app.route('/import-file', methods=['POST', 'GET'])
 @login_required
-def uploadFiles():
+def upload_files():
     if request.method == 'POST' and request.files:
         uploaded_file = request.files['file']
         if uploaded_file.filename == '':
@@ -259,21 +266,26 @@ def uploadFiles():
 @app.route('/book-storage')
 @login_required
 def book_storage():
-    books = Book.objects.order_by('title', 'status')
+    page = request.args.get('page', 1, type=int)
+    books = Pagination(Book.objects.order_by('title', 'status'),page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-active')
 @login_required
 def book_active():
-    books = Book.objects(status=Status.ACTIVE).order_by('title', 'status')
+    page = request.args.get('page', 1, type=int)
+    books = Pagination(Book.objects(status=Status.ACTIVE).order_by('title', 'status'),
+                       page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-inactive')
 @login_required
 def book_inactive():
-    books = Book.objects(status=Status.INACTIVE).order_by('title', 'status')
+    page = request.args.get('page', 1, type=int)
+    books = Pagination(Book.objects(status=Status.INACTIVE).order_by('title', 'status'),
+                       page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
