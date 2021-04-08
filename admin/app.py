@@ -7,9 +7,12 @@ from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, url_for, session
 from flask_login import LoginManager, logout_user, login_user, login_required
 from mongoengine import connect
+from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
+
+
 
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
@@ -40,7 +43,11 @@ def start_page():
 
 @app.route('/users_list')
 def get_users_list():
-    users = User.objects.order_by('email', 'status')
+    search = request.args.get('userSearch')
+    if search:
+        users = User.objects(Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search))
+    else:
+        users = User.objects.order_by('email', 'status')
     return render_template('users_list.html', users=users)
 
 
@@ -247,7 +254,11 @@ def uploadFiles():
 @app.route('/book-storage')
 @login_required
 def book_storage():
-    books = Book.objects.order_by('title', 'status')
+    search = request.args.get('bookSearch')
+    if search:
+        books = Book.objects(Q(title__contains=search) | Q(language__contains=search))
+    else:
+        books = Book.objects.order_by('title', 'status')
     return render_template('book-storage.html', books=books)
 
 @app.route('/book-active')
