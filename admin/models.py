@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask_login import UserMixin
-from mongoengine import DateTimeField, Document, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
+from flask_mongoengine import Document
+from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
 
