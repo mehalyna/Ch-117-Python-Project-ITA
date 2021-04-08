@@ -11,3 +11,7 @@ color: red !important;
     -moz-box-shadow: -1px 1px 10px 3px #B9B5B4;
     box-shadow: -1px 1px 10px 3px #B9B5B4;
 }
+
+.custom_pagination {
+    padding-right: 12px;
+}

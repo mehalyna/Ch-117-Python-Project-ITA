@@ -32,7 +32,7 @@
         {% for user in users.items %}
             <tbody id="myTable">
             <tr>
-                <th scope="row">{{ loop.index + users.page * users.per_page - users.per_page}}</th>
+                <th scope="row">{{ loop.index + users.page * users.per_page - users.per_page }}</th>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.email }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.firstname }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.lastname }}</td>
@@ -71,39 +71,41 @@
         {% endfor %}
     </table>
     <hr>
-    <!-- Pagination Links-->
-    <div class="text-right">
-        <a href="{{ url_for(request.endpoint, page=users.prev_num) }}"
-           class="btn btn-outline-dark
+    <div class="custom_pagination">
+        <!-- Pagination Links-->
+        <div class="text-right">
+            <a href="{{ url_for(request.endpoint, page=users.prev_num) }}"
+               class="btn btn-outline-dark
        {% if users.page == 1 %}disabled{% endif %}">
-            &laquo;
-        </a>
-        <!-- Loop through the number of pages to display a link for each-->
-        {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
-            {% if page_num %}
-                <!-- Check for the active page and set the link to "Active"-->
-                {% if users.page == page_num %}
-                    <a href="{{ url_for(request.endpoint, page=page_num) }}"
-                       class="btn btn-dark">
-                        {{ page_num }}
-                    </a>
+                &laquo;
+            </a>
+            <!-- Loop through the number of pages to display a link for each-->
+            {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    <!-- Check for the active page and set the link to "Active"-->
+                    {% if users.page == page_num %}
+                        <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                           class="btn btn-dark">
+                            {{ page_num }}
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                           class="btn btn-outline-dark">
+                            {{ page_num }}
+                        </a>
+                    {% endif %}
                 {% else %}
-                    <a href="{{ url_for(request.endpoint, page=page_num) }}"
-                       class="btn btn-outline-dark">
-                        {{ page_num }}
-                    </a>
+                    ...
                 {% endif %}
-            {% else %}
-                ...
-            {% endif %}
-        {% endfor %}
-        <a href="{{ url_for(request.endpoint, page=users.next_num) }}"
-           class="btn btn-outline-dark
+            {% endfor %}
+            <a href="{{ url_for(request.endpoint, page=users.next_num) }}"
+               class="btn btn-outline-dark
        {% if users.page == users.pages %}disabled{% endif %}">
-            &raquo;
-        </a>
+                &raquo;
+            </a>
+        </div>
+        <p class="text-right mt-3">
+            Showing page {{ users.page }} of {{ users.pages }}
+        </p>
     </div>
-    <p class="text-right mt-3">
-        Showing page {{ users.page }} of {{ users.pages }}
-    </p>
 {% endblock %}
