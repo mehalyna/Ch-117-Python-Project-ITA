@@ -21,7 +21,7 @@
                 {{ book.statistic.total_read }}
             </span>
                 <span data-toggle="tooltip" data-placement="top" title="Reading now {{ book.statistic.reading_now }}">
-                <img src="/static/images/readingNow.png" alt="total read icon">
+                <img src="/static/images/readingNow.png" alt="reading now icon">
                 {{ book.statistic.reading_now }}
             </span><br><br>
                 <p>
@@ -34,7 +34,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         {% for link in book.store_links %}
-                            <a class="dropdown-item" href="{{ link }}">{{ link }}</a>
+                            <a class="dropdown-item" href="{{ link }}">Resource {{ loop.index }}</a>
                         {% endfor %}
                     </div>
                 </div>
