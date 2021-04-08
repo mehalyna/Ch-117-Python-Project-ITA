@@ -32,7 +32,7 @@
         {% for user in users.items %}
             <tbody id="myTable">
             <tr>
-                <th scope="row">{{ loop.index }}</th>
+                <th scope="row">{{ loop.index + users.page * users.per_page - users.per_page}}</th>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.email }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.firstname }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.lastname }}</td>
