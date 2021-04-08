@@ -3,9 +3,15 @@
 {% block title %} Book Storage {% endblock %}
 
 {% block body %}
-    <form action="" method="post">
-        <input type="text" class="form-control" placeholder="Search" id="mySearch" name="mySearch">
+<div class="container">
+    <form action="" method="get" class="d-flex">
+        <input type="text" class="form-control col-md-10" placeholder="Search" id="bookSearch" name="bookSearch">
+        <div class="d-flex col-md 2 custom">
+            <input type="submit" class="btn btn-success mr-3" value="Find">
+            <a href="/book-storage" class="btn btn-primary">Reset</a>
+        </div>
     </form>
+</div><br>
     <table class="table">
         <thead class="thead-dark">
         <tr>
