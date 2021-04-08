@@ -8,64 +8,70 @@
           integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 </head>
 <body>
-{% block content %}
-<div class="row justify-content-center col-sm-100% col-md-6 col-lg-12"
-     style="top: 30%; margin-right: auto;margin-left: auto;">
-    <h1>Sign In</h1>
-</div>
-<div class="big_banner_1">
-    <div class="container" id="main_form">
-        <div class="row justify-content-center col-sm-100% col-md-6 col-lg-12"
-             style="top: 30%; margin-right: auto;margin-left: auto;">
-            <form action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
-                <div>
-                    {% if not form.admin.errors %}
-                    {{ form.admin(size=32, class='form-control', placeholder='Admin') }}
-                    {% else %}
-                    {{ form.admin(size=32, class='form-control is-invalid', placeholder='Admin') }}
-                    {% for error in form.admin.errors %}
-                        <span class="to_red">{{ error }}</span>
-                    {% endfor %}
-                    {% endif %}
-                </div>
+<div class="container">
+    <div class="row justify-content-center col-sm-100% col-md-6 col-lg-12"
+         style="top: 30%; margin-right: auto;margin-left: auto;">
+        <h1>Sign In</h1>
+    </div>
 
-                <br>
+    <div class="big_banner_1">
+        <div class="container" id="main_form">
+            <div class="row justify-content-center col-sm-100% col-md-6 col-lg-12"
+                 style="top: 30%; margin-right: auto;margin-left: auto;">
+                <form class="need-validation" method="post" novalidate>
 
-                <div>
-                    {% if not form.password.errors %}
-                    {{ form.password(size=32, class='form-control', placeholder='Password') }}
-                    {% else %}
-                    {{ form.password(size=32, class='form-control is-invalid', placeholder='Password') }}
-                    {% for error in form.password.errors %}
-                        <span class="to_red">{{ error }}</span>
-                    {% endfor %}
-                    {% endif %}
-                </div>
-
-                <br>
-
-                <div>
-                    {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                    {% for message in messages %}
-                    <div class="alert alert-danger" role="alert">
-                        <a>{{ message }}</a>
+                    {{ form.hidden_tag() }}
+                    <div>
+                    <div class="mb-4">
+                        {% if not form.admin.errors %}
+                        {{ form.admin(size=32, class='form-control', placeholder='Admin') }}
+                        {% else %}
+                        {{ form.admin(size=32, class='form-control is-invalid', placeholder='Admin') }}
+                        <div class="invalid-feedback">
+                            {% for error in form.admin.errors %}
+                            <span class="to_red">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
-                    {% endfor %}
-                    {% endif %}
-                    {% endwith %}
-                </div>
 
-                <div>
-                    {{ form.submit(class="btn btn-primary btn-lg btn-block", type="submit", placeholder="Sing In") }}
-                </div>
 
-            </form>
-            {% endblock %}
+                    <div class="mb-4">
+                        {% if not form.password.errors %}
+                        {{ form.password(size=32, class='form-control', placeholder='Password') }}
+                        {% else %}
+                        {{ form.password(size=32, class='form-control is-invalid', placeholder='Password') }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                            <span class="to_red">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.submit(class="btn btn-primary btn-lg btn-block", type="submit", placeholder="Sing In")
+                        }}
+                    </div>
+
+
+                    <div>
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-danger" role="alert">
+                            <a>{{ message }}</a>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
 </body>
 </html>

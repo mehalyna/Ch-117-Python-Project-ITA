@@ -6,6 +6,18 @@ from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDoc
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
+class Statistics:
+    def __init__(self, number_users=0, number_books=0, number_active_users=0, number_inactive_users=0,
+                 number_muted_users=0, number_active_books=0, number_inactive_books=0):
+        self.number_users = number_users
+        self.number_books = number_books
+        self.number_active_users = number_active_users
+        self.number_inactive_users = number_inactive_users
+        self.number_muted_users = number_muted_users
+        self.number_active_books = number_active_books
+        self.number_inactive_books = number_inactive_books
+
+
 class Status:
     ACTIVE = 'active'
     INACTIVE = 'inactive'
@@ -80,14 +92,14 @@ class Author(Document):
 
 class Book(Document):
     title = StringField(default='', max_length=200)
-    author = StringField(default='Author', max_length=200)
+    author_id = ReferenceField(Author.__name__)
     year = StringField(default='', max_length=20)
     publisher = StringField(default='', max_length=200)
     language = StringField(default='', max_length=20)
     description = StringField(default='', max_length=10000)
     link_img = StringField(default='', max_length=1000)
     pages = IntField(default=1, min_value=1)
-    genres = StringField(default='')
+    genres = ListField(default=[])
     status = StringField(default=Status.ACTIVE, max_length=100)
     store_links = ListField(default=[])
     statistic = EmbeddedDocumentField(BookStatistic.__name__, default=BookStatistic())
