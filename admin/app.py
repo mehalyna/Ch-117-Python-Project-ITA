@@ -12,9 +12,6 @@ from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 
-
-
-
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Author, Book, Status, User
 
