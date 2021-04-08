@@ -274,7 +274,13 @@ def book_storage():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('bookSearch')
     if search:
-        books = Pagination(iterable=Book.objects(Q(title__contains=search) | Q(language__contains=search)), page=page, per_page=ROWS_PER_PAGE)
+        books = Pagination(iterable=Book.objects(Q(title__contains=search) | Q(year__contains=search)), page=page, per_page=ROWS_PER_PAGE)
+        author = Author.objects(name__contains=search).first()
+        if author:
+            arr = []
+            for i in author.books:
+                arr.append(Book.objects(id=i).first())
+            books.items += arr
     else:
         books = Pagination(iterable=Book.objects.order_by('title', 'status'), page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
