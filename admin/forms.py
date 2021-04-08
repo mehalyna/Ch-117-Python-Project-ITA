@@ -47,7 +47,7 @@ class UpdateUserForm(AddUserForm):
         unique_check('email', update=True)
     ])
     login = StringField('Login', validators=[
-        DataRequired(), unique_check('login', update=True)
+        DataRequired(), unique_check('login', update=True), Length(min=6)
     ])
     status = SelectField('Status', choices=[
         (Status.ACTIVE, Status.ACTIVE),
@@ -57,7 +57,7 @@ class UpdateUserForm(AddUserForm):
 
 
 class LoginForm(FlaskForm):
-    admin = StringField('Admin', validators=[DataRequired()])
+    admin = StringField('Admin', validators=[DataRequired(), Length(min=6)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=35)])
     submit = SubmitField('Sign In')
 
@@ -67,7 +67,9 @@ class LoginForm(FlaskForm):
 
 class AddBookForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
-    author = StringField('Author', validators=[DataRequired()])
+    author_name = StringField('Author name', validators=[DataRequired()])
+    author_birthdate = IntegerField('Author birthdate', validators=[DataRequired()])
+    author_death_date = IntegerField('Author death date', validators=[DataRequired()])
     genre = StringField('Genre', validators=[DataRequired()])
     year = StringField('Year', validators=[DataRequired()])
     publisher = StringField('Publisher', validators=[DataRequired()])

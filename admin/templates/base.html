@@ -36,13 +36,18 @@
                 <div class="dropdown-menu" aria-labelledby="add">
                     <a class="dropdown-item" href="{{ url_for('book_storage') }}">Book Storage</a>
                     <a class="dropdown-item" href="{{ url_for('add_book') }}">Add Book</a>
-                    <a class="dropdown-item" href="{{ url_for('uploadFiles') }}">Import File</a>
+                    <a class="dropdown-item" href="{{ url_for('upload_files') }}">Import File</a>
                 </div>
             </li>
           </header>
         </li>
         </ul>
-        <a class="nav-link btn btn-sm btn-outline-secondary" href="{{ url_for('logout') }}">Logout</a>
+        <div>
+            <span class="navbar-text mr-3">Welcome, {{ current_user.firstname }}!</span>
+        </div>
+        <div>
+            <a class="nav-link btn btn-sm btn-outline-light" href="{{ url_for('logout') }}">Logout</a>
+        </div>
     </div>
 </nav>
     {% with messages = get_flashed_messages(with_categories=true) %}
