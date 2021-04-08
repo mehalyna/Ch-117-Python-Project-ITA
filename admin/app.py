@@ -4,7 +4,7 @@ import os
 from bson import ObjectId
 from datetime import timedelta
 from dotenv import load_dotenv
-from flask import flash, Flask, redirect, render_template, request, url_for
+from flask import flash, Flask, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_required, login_user, logout_user
 from flask_mongoengine import Pagination
 from mongoengine import connect
@@ -27,11 +27,13 @@ connect(
     host=os.getenv('MONGO_URL'),
     port=int(os.getenv('PORT'))
 )
+
 login = LoginManager(app)
 login.login_view = 'admin_login'
 login.init_app(app)
 
 ROWS_PER_PAGE = 6
+
 
 @app.route('/')
 @login_required
@@ -41,8 +43,8 @@ def start_page():
     num_active_users = User.objects(status=Status.ACTIVE).count()
     num_inactive_users = User.objects(status=Status.INACTIVE).count()
     num_muted_users = User.objects(status=Status.MUTED).count()
-    num_active_books = User.objects(status=Status.ACTIVE).count()
-    num_inactive_books = User.objects(status=Status.INACTIVE).count()
+    num_active_books = Book.objects(status=Status.ACTIVE).count()
+    num_inactive_books = Book.objects(status=Status.INACTIVE).count()
 
     statistics = Statistics(num_users, num_books, num_active_users, num_inactive_users, num_muted_users,
                             num_active_books, num_inactive_books)
@@ -267,7 +269,7 @@ def upload_files():
 @login_required
 def book_storage():
     page = request.args.get('page', 1, type=int)
-    books = Pagination(Book.objects.order_by('title', 'status'),page=page, per_page=ROWS_PER_PAGE)
+    books = Pagination(Book.objects.order_by('title', 'status'), page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
