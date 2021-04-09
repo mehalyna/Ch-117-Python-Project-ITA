@@ -11,9 +11,27 @@
                 <small>Language: <b>{{ book.language.title() }}</b></small><br>
                 <small>Status: <b>{{ book.status }}</b></small><br>
                 <small>Rating: <b>{{ book.statistic.rating }}</b></small>
+                <div class="dropdown show mt-2">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Links on book
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        {% for link in book.store_links %}
+                            <a class="dropdown-item" href="{{ link }}">Resource {{ loop.index }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
             <div class="book_details_text">
-                <h3 class="align-top">{{ book.title }}</h3>
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <span class="h3">{{ book.title }}</span>
+                    </div>
+                    <div class="custom">
+                        <a class="btn btn-secondary" href="{{ url_for('book_storage') }}">Back</a>
+                    </div>
+                </div>
                 <p>by <b>{{ book.author_id.name }}</b></p>
                 <p>Genres: <b>{% for genre in book.genres %}{{ genre }} {% endfor %}</b></p>
                 <span data-toggle="tooltip" data-placement="top" title="Total read {{ book.statistic.total_read }}">
@@ -27,17 +45,6 @@
                 <p>
                     {{ book.description }}
                 </p>
-                <div class="dropdown show">
-                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Links on book
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        {% for link in book.store_links %}
-                            <a class="dropdown-item" href="{{ link }}">Resource {{ loop.index }}</a>
-                        {% endfor %}
-                    </div>
-                </div>
             </div>
         </div>
     </div>
