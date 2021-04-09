@@ -10,7 +10,6 @@ from mongoengine import connect
 from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
-from werkzeug.utils import secure_filename
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Author, Book, Statistics, Status, User
@@ -19,8 +18,8 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=90)
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024    # 10 Mb limit
 
 connect(
     db=os.getenv('DB_NAME'),
@@ -244,27 +243,36 @@ def upload_files():
         if not (uploaded_file.filename.endswith('.json')):
             flash('Incorrect type of file (.JSON is needed)', 'danger')
             return redirect(request.url)
-        else:
-            filename = secure_filename(uploaded_file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            uploaded_file.save(file_path)
         try:
-            with open(os.getenv('UPLOAD_FOLDER') + filename) as f:
-                file_data = json.load(f)
+            data = json.loads(uploaded_file.read().decode())
         except Exception as e:
-            flash(str(e), 'danger')
+            flash(f'Error parsing file: {str(e)}', 'danger')
+            print(e)
             return redirect(request.url)
-        finally:
-            os.remove(file_path)
+
         try:
-            for example in file_data:
-                book = Book.from_json(json.dumps(example))
-                book.save(force_insert=True)
-            flash('Books added successfully', 'success')
-            return redirect(url_for('import_file'))
+            books = []
+            for row in data:
+                author = Author.objects(**row['author']).first()
+                if author:
+                    row.pop('author')
+                    books.append(Book(author_id = author.pk, **row))
+                else:
+                    author = Author(**row['author'])
+                    author.save()
+                    row.pop('author')
+                    books.append(Book(author_id = author.pk, **row))
+
+            Book.objects.insert(books)
+            for book in books:
+                book.author_id.books.append(str(book.id))
+                book.cascade_save()
         except Exception as e:
-            flash(str(e), 'danger')
+            flash(f'Error saving object: {str(e)}', 'danger')
             return redirect(url_for('import_file'))
+
+        flash('All books saved successfully', 'success')
+        return redirect(url_for('import_file'))
 
 
 @app.route('/book-storage')
