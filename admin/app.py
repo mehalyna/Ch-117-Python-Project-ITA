@@ -6,7 +6,6 @@ from datetime import timedelta
 from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_required, login_user, logout_user
-from flask_mongoengine import Pagination
 from mongoengine import connect
 from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
@@ -67,8 +66,7 @@ def get_users_list():
 @login_required
 def get_active_users_list():
     page = request.args.get('page', 1, type=int)
-    users = Pagination(User.objects(status=Status.ACTIVE).order_by('email', 'status'),
-                       page=page, per_page=ROWS_PER_PAGE)
+    users = User.objects(status=Status.ACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -76,8 +74,7 @@ def get_active_users_list():
 @login_required
 def get_inactive_users_list():
     page = request.args.get('page', 1, type=int)
-    users = Pagination(User.objects(status=Status.INACTIVE).order_by('email', 'status'),
-                       page=page, per_page=ROWS_PER_PAGE)
+    users = User.objects(status=Status.INACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -291,8 +288,7 @@ def book_storage():
 @login_required
 def book_active():
     page = request.args.get('page', 1, type=int)
-    books = Pagination(Book.objects(status=Status.ACTIVE).order_by('title', 'status'),
-                       page=page, per_page=ROWS_PER_PAGE)
+    books = Book.objects(status=Status.ACTIVE).order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
@@ -300,8 +296,7 @@ def book_active():
 @login_required
 def book_inactive():
     page = request.args.get('page', 1, type=int)
-    books = Pagination(Book.objects(status=Status.INACTIVE).order_by('title', 'status'),
-                       page=page, per_page=ROWS_PER_PAGE)
+    books = Book.objects(status=Status.INACTIVE).order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
