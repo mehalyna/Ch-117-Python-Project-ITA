@@ -8,4 +8,4 @@ function change_status(url, status) {
 window.setTimeout(function() {
     $(".alert").fadeTo(500, 0, function (){
     })
-}, 2000);
+}, 5000);

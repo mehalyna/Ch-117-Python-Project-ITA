@@ -4,7 +4,7 @@ import os
 from bson import ObjectId
 from datetime import timedelta
 from dotenv import load_dotenv
-from flask import flash, Flask, redirect, render_template, request, url_for, session
+from flask import flash, Flask, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_required, login_user, logout_user
 from flask_mongoengine import Pagination
 from mongoengine import connect
@@ -33,6 +33,7 @@ login.login_view = 'admin_login'
 login.init_app(app)
 
 ROWS_PER_PAGE = 6
+
 
 @app.route('/')
 @login_required
