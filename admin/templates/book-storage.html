@@ -3,19 +3,24 @@
 {% block title %} Book Storage {% endblock %}
 
 {% block body %}
-    <form action="" method="post">
-        <input type="text" class="form-control" placeholder="Search" id="mySearch" name="mySearch">
+<div class="container">
+    <form action="" method="get" class="d-flex">
+        <input type="text" class="form-control col-md-10" placeholder="Search" id="bookSearch" name="bookSearch">
+        <div class="d-flex col-md 2 custom">
+            <input type="submit" class="btn btn-success mr-3" value="Find">
+            <a href="/book-storage" class="btn btn-primary">Reset</a>
+        </div>
     </form>
-
+</div><br>
     <table class="table">
         <thead class="thead-dark">
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Title</th>
-                <th scope="col">Author</th>
-                <th scope="col">Published</th>
-                <th scope="col">
-                    <div class="btn-group">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Author</th>
+            <th scope="col">Published</th>
+            <th scope="col">
+                <div class="btn-group">
                     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false">
                         Status
@@ -26,33 +31,68 @@
                         <a class="dropdown-item" href="{{ url_for('book_inactive') }}">Inactive Books</a>
                     </div>
                 </div>
-                </th>
-                <th scope="col">Actions</th>
-            </tr>
+            </th>
+            <th scope="col">Actions</th>
+        </tr>
         </thead>
-        {% for book in books %}
-        <tbody id="bookTable">
+        {% for book in books.items %}
+            <tbody id="bookTable">
             <tr>
                 <th scope="row">{{ loop.index }}</th>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.title }}</td>
-                <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.author }}</td>
+                <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.author_id.name }} ({{book.author_id.birthdate}} - {{book.author_id.death_date}})</td>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.year }}</td>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.status }}</td>
-                <td>
+                <td class="custom">
                     {% if book.status == 'active' %}
-                    <a href="{{ url_for('book_details', _id=book.id) }}" class="btn btn-warning">Details</a>
-                    <a href="{{ url_for('book_update', _id=book.id) }}" class="btn btn-success">Update</a>
-                    <a href="{{ url_for('book_delete', _id=book.id) }}" class="btn btn-danger">Delete</a>
+                        <a href="{{ url_for('book_details', _id=book.id) }}" class="btn btn-warning">Details</a>
+                        <a href="{{ url_for('book_update', _id=book.id) }}" class="btn btn-success">Update</a>
+                        <a href="{{ url_for('book_delete', _id=book.id) }}" class="btn btn-danger">Delete</a>
                     {% endif %}
-
                     {% if book.status == 'inactive' %}
-                    <a href="{{ url_for('book_details', _id=book.id) }}" class="btn btn-warning">Details</a>
-                    <a href="{{ url_for('book_update', _id=book.id) }}" class="btn btn-success">Update</a>
-                    <a href="{{ url_for('book_restore', _id=book.id) }}" class="btn btn-primary">Restore</a>
+                        <a href="{{ url_for('book_details', _id=book.id) }}" class="btn btn-warning">Details</a>
+                        <a href="{{ url_for('book_update', _id=book.id) }}" class="btn btn-success">Update</a>
+                        <a href="{{ url_for('book_restore', _id=book.id) }}" class="btn btn-primary">Restore</a>
                     {% endif %}
                 </td>
             </tr>
-        </tbody>
+            </tbody>
         {% endfor %}
     </table>
+    <hr>
+    <!-- Pagination Links-->
+    <div class="text-right">
+        <a href="{{ url_for(request.endpoint, page=books.prev_num) }}"
+           class="btn btn-outline-dark
+       {% if books.page == 1 %}disabled{% endif %}">
+            &laquo;
+        </a>
+        <!-- Loop through the number of pages to display a link for each-->
+        {% for page_num in books.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                <!-- Check for the active page and set the link to "Active"-->
+                {% if books.page == page_num %}
+                    <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                       class="btn btn-dark">
+                        {{ page_num }}
+                    </a>
+                {% else %}
+                    <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                       class="btn btn-outline-dark">
+                        {{ page_num }}
+                    </a>
+                {% endif %}
+            {% else %}
+                ...
+            {% endif %}
+        {% endfor %}
+        <a href="{{ url_for(request.endpoint, page=books.next_num) }}"
+           class="btn btn-outline-dark
+       {% if books.page == books.pages %}disabled{% endif %}">
+            &raquo;
+        </a>
+    </div>
+    <p class="text-right mt-3">
+        Showing page {{ books.page }} of {{ books.pages }}
+    </p>
 {% endblock %}

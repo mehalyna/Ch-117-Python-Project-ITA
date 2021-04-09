@@ -11,7 +11,7 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
@@ -36,7 +36,7 @@
                 <div class="dropdown-menu" aria-labelledby="add">
                     <a class="dropdown-item" href="{{ url_for('book_storage') }}">Book Storage</a>
                     <a class="dropdown-item" href="{{ url_for('add_book') }}">Add Book</a>
-                    <a class="dropdown-item" href="{{ url_for('uploadFiles') }}">Import File</a>
+                    <a class="dropdown-item" href="{{ url_for('upload_files') }}">Import File</a>
                 </div>
             </li>
           </header>
@@ -55,6 +55,8 @@
         {% for category, message in messages %}
             <div class="alert alert-{{ category }}"> {{ message }} </div>
         {% endfor %}
+    {% else %}
+        <div class="alert">&nbsp;</div>
     {% endif %}
 {% endwith %}
     {% block body %}{% endblock %}

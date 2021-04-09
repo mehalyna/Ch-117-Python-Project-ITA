@@ -28,16 +28,16 @@ class AddUserForm(FlaskForm):
     email = EmailField('Email', validators=[
         DataRequired(), Regexp(regex=EMAIL_PATTERN, message='Invalid email'),
         unique_check('email')])
-    login = StringField('Login', validators=[DataRequired(), unique_check('login')])
+    login = StringField('Login', validators=[DataRequired(), Length(min=6), unique_check('login')])
     password = PasswordField('Password', validators=[
-        DataRequired(), Length(min=8, message='Password should be at least 8 symbols in length')
+        DataRequired(), Length(min=8)
     ])
     role = SelectField('Role', choices=[
         (Role.ADMIN, Role.ADMIN),
         (Role.MODERATOR, Role.MODERATOR),
         (Role.USER, Role.USER)
     ], validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    submit = SubmitField('Add')
 
 
 class UpdateUserForm(AddUserForm):
@@ -47,12 +47,13 @@ class UpdateUserForm(AddUserForm):
         unique_check('email', update=True)
     ])
     login = StringField('Login', validators=[
-        DataRequired(), unique_check('login', update=True)
+        DataRequired(), unique_check('login', update=True), Length(min=6)
     ])
     status = SelectField('Status', choices=[
         (Status.ACTIVE, Status.ACTIVE),
         (Status.INACTIVE, Status.INACTIVE)
     ], validators=[DataRequired()])
+    submit = SubmitField('Update')
 
 
 class LoginForm(FlaskForm):
@@ -63,9 +64,12 @@ class LoginForm(FlaskForm):
     def get_user(self):
         return User.objects(admin=self.admin.data).first()
 
+
 class AddBookForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
-    author = StringField('Author', validators=[DataRequired()])
+    author_name = StringField('Author name', validators=[DataRequired()])
+    author_birthdate = IntegerField('Author birthdate', validators=[DataRequired()])
+    author_death_date = IntegerField('Author death date', validators=[DataRequired()])
     genre = StringField('Genre', validators=[DataRequired()])
     year = StringField('Year', validators=[DataRequired()])
     publisher = StringField('Publisher', validators=[DataRequired()])
@@ -73,6 +77,7 @@ class AddBookForm(FlaskForm):
     description = StringField('Description', validators=[DataRequired()])
     language = StringField('Language', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
 
 class UpdateBookForm(AddBookForm):
     status = SelectField('Status', choices=[
