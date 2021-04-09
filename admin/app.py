@@ -19,7 +19,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=90)
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024    # 10 Mb limit
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 Mb limit
 
 connect(
     db=os.getenv('DB_NAME'),
@@ -56,9 +56,12 @@ def get_users_list():
     search = request.args.get('userSearch')
     page = request.args.get('page', 1, type=int)
     if search:
-        users = Pagination(iterable=User.objects(Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search)), page=page, per_page=ROWS_PER_PAGE)
+        users = User.objects(
+            Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search),
+            status=Status.ACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     else:
-        users = Pagination(iterable=User.objects.order_by('email', 'status'), page=page, per_page=ROWS_PER_PAGE)
+        users = User.objects(status=Status.ACTIVE).order_by('email', 'status').paginate(page=page,
+                                                                                        per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -256,12 +259,12 @@ def upload_files():
                 author = Author.objects(**row['author']).first()
                 if author:
                     row.pop('author')
-                    books.append(Book(author_id = author.pk, **row))
+                    books.append(Book(author_id=author.pk, **row))
                 else:
                     author = Author(**row['author'])
                     author.save()
                     row.pop('author')
-                    books.append(Book(author_id = author.pk, **row))
+                    books.append(Book(author_id=author.pk, **row))
 
             Book.objects.insert(books)
             for book in books:
@@ -281,8 +284,7 @@ def book_storage():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('bookSearch')
     if search:
-        books = Pagination(iterable=Book.objects(Q(title__contains=search) | Q(year__contains=search)), page=page,
-                           per_page=ROWS_PER_PAGE)
+        books = Book.objects(Q(title__contains=search) | Q(year__contains=search)).paginate(page=page, per_page=ROWS_PER_PAGE)
         author = Author.objects(name__contains=search).first()
         if author:
             arr = []
@@ -290,7 +292,7 @@ def book_storage():
                 arr.append(Book.objects(id=i).first())
             books.items += arr
     else:
-        books = Pagination(iterable=Book.objects.order_by('title', 'status'), page=page, per_page=ROWS_PER_PAGE)
+        books = Book.objects.order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
