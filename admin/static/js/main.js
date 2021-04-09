@@ -9,3 +9,7 @@ window.setTimeout(function() {
     $(".alert").fadeTo(500, 0, function (){
     })
 }, 5000);
+
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
