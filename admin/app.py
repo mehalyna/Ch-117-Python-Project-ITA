@@ -8,6 +8,7 @@ from flask import flash, Flask, redirect, render_template, request, session, url
 from flask_login import LoginManager, login_required, login_user, logout_user
 from flask_mongoengine import Pagination
 from mongoengine import connect
+from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
@@ -54,8 +55,12 @@ def start_page():
 
 @app.route('/users_list')
 def get_users_list():
+    search = request.args.get('userSearch')
     page = request.args.get('page', 1, type=int)
-    users = Pagination(iterable=User.objects.order_by('email', 'status'), page=page, per_page=ROWS_PER_PAGE)
+    if search:
+        users = Pagination(iterable=User.objects(Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search)), page=page, per_page=ROWS_PER_PAGE)
+    else:
+        users = Pagination(iterable=User.objects.order_by('email', 'status'), page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -269,7 +274,17 @@ def upload_files():
 @login_required
 def book_storage():
     page = request.args.get('page', 1, type=int)
-    books = Pagination(Book.objects.order_by('title', 'status'), page=page, per_page=ROWS_PER_PAGE)
+    search = request.args.get('bookSearch')
+    if search:
+        books = Pagination(iterable=Book.objects(Q(title__contains=search) | Q(year__contains=search)), page=page, per_page=ROWS_PER_PAGE)
+        author = Author.objects(name__contains=search).first()
+        if author:
+            arr = []
+            for i in author.books:
+                arr.append(Book.objects(id=i).first())
+            books.items += arr
+    else:
+        books = Pagination(iterable=Book.objects.order_by('title', 'status'), page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
