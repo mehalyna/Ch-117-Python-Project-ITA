@@ -164,7 +164,7 @@ def admin_login():
     form = LoginForm()
     if form.validate_on_submit():
         admin = User.objects(login=form.admin.data).first()
-        if admin is None or not admin.check_password(form.password.data):
+        if admin is None or not admin.check_password(form.password.data) or admin.status != 'active':
             flash('Invalid username or password')
             return redirect('/admin_login')
         if admin.role == 'admin':
@@ -180,7 +180,7 @@ def admin_login():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('start_page'))
+    return redirect(url_for('admin_login'))
 
 
 @login.user_loader
