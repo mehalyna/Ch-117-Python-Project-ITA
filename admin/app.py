@@ -144,10 +144,10 @@ def admin_login():
     form = LoginForm()
     if form.validate_on_submit():
         admin = User.objects(login=form.admin.data).first()
-        if admin is None or not admin.check_password(form.password.data):
+        if admin is None or not admin.check_password(form.password.data) or admin.status != 'active':
             flash('Invalid username or password')
             return redirect('/admin_login')
-        if admin.role == 'admin' and admin.status == 'ACTIVE':
+        if admin.role == 'admin':
             login_user(admin)
             session.permanent = True
             next_page = request.args.get('next')
