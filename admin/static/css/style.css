@@ -30,3 +30,7 @@ color: red !important;
     background: #EEFCFC;
     max-width: 925px!important;
 }
+
+.custom_pagination {
+    padding-right: 12px;
+}
