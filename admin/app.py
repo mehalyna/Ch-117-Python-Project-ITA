@@ -27,6 +27,7 @@ connect(
     host=os.getenv('MONGO_URL'),
     port=int(os.getenv('PORT'))
 )
+
 login = LoginManager(app)
 login.login_view = 'admin_login'
 login.init_app(app)
@@ -42,8 +43,8 @@ def start_page():
     num_active_users = User.objects(status=Status.ACTIVE).count()
     num_inactive_users = User.objects(status=Status.INACTIVE).count()
     num_muted_users = User.objects(status=Status.MUTED).count()
-    num_active_books = User.objects(status=Status.ACTIVE).count()
-    num_inactive_books = User.objects(status=Status.INACTIVE).count()
+    num_active_books = Book.objects(status=Status.ACTIVE).count()
+    num_inactive_books = Book.objects(status=Status.INACTIVE).count()
 
     statistics = Statistics(num_users, num_books, num_active_users, num_inactive_users, num_muted_users,
                             num_active_books, num_inactive_books)
