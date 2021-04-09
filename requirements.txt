@@ -5,6 +5,6 @@ flask-mongoengine=1.0.0
 flask_wtf==0.14.3
 mongoengine==0.23.0
 pylint==2.7.4
-python-dotenv==0.16.0
+python-dotenv==0.17.0
 Werkzeug==1.0.1
 WTForms==2.3.3
