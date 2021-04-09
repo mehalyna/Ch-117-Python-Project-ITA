@@ -147,7 +147,7 @@ def admin_login():
         if admin is None or not admin.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect('/admin_login')
-        if admin.role == 'admin':
+        if admin.role == 'admin' and admin.status == 'ACTIVE':
             login_user(admin)
             session.permanent = True
             next_page = request.args.get('next')
@@ -160,7 +160,7 @@ def admin_login():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('start_page'))
+    return redirect(url_for('admin_login'))
 
 
 @login.user_loader
