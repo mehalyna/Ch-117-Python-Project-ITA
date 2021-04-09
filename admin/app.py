@@ -56,7 +56,7 @@ def get_users_list():
     search = request.args.get('userSearch')
     page = request.args.get('page', 1, type=int)
     if search:
-        users = users = User.objects(
+        users = User.objects(
             Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search),
             status=Status.ACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     else:
