@@ -22,9 +22,10 @@
 
                     {{ form.hidden_tag() }}
                     <div>
-                    <div class="mb-4">
+                    <div class="mb-1">
                         {% if not form.admin.errors %}
                         {{ form.admin(size=32, class='form-control', placeholder='Admin') }}
+                        <span>&nbsp</span>
                         {% else %}
                         {{ form.admin(size=32, class='form-control is-invalid', placeholder='Admin') }}
                         <div class="invalid-feedback">
@@ -36,9 +37,10 @@
                     </div>
 
 
-                    <div class="mb-4">
+                    <div class="mb-1">
                         {% if not form.password.errors %}
                         {{ form.password(size=32, class='form-control', placeholder='Password') }}
+                        <span>&nbsp</span>
                         {% else %}
                         {{ form.password(size=32, class='form-control is-invalid', placeholder='Password') }}
                         <div class="invalid-feedback">
