@@ -11,6 +11,17 @@
                 <small>Language: <b>{{ book.language.title() }}</b></small><br>
                 <small>Status: <b>{{ book.status }}</b></small><br>
                 <small>Rating: <b>{{ book.statistic.rating }}</b></small>
+                <div class="dropdown show mt-2">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Links on book
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        {% for link in book.store_links %}
+                            <a class="dropdown-item" href="{{ link }}">Resource {{ loop.index }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
             <div class="book_details_text">
                 <h3 class="align-top">{{ book.title }}</h3>
@@ -27,17 +38,6 @@
                 <p>
                     {{ book.description }}
                 </p>
-                <div class="dropdown show">
-                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Links on book
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        {% for link in book.store_links %}
-                            <a class="dropdown-item" href="{{ link }}">Resource {{ loop.index }}</a>
-                        {% endfor %}
-                    </div>
-                </div>
             </div>
         </div>
     </div>
