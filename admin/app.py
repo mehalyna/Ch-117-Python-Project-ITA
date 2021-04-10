@@ -13,6 +13,7 @@ from werkzeug.urls import url_parse
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Author, Book, Statistics, Status, User
+import utils
 
 load_dotenv()
 
@@ -53,23 +54,14 @@ def start_page():
 
 @app.route('/users_list')
 def get_users_list():
-    search = request.args.get('userSearch')
-    page = request.args.get('page', 1, type=int)
-    if search:
-        users = User.objects(
-            Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search)
-        ).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
-    else:
-        users = User.objects.order_by('status', 'email').paginate(page=page,
-                                                                  per_page=ROWS_PER_PAGE)
+    users = utils.search_and_pagination('email')
     return render_template('users_list.html', users=users)
 
 
 @app.route('/active_users_list')
 @login_required
 def get_active_users_list():
-    page = request.args.get('page', 1, type=int)
-    users = User.objects(status=Status.ACTIVE).order_by('email').paginate(page=page, per_page=ROWS_PER_PAGE)
+    users = utils.search_and_pagination(order_field='email', status=Status.ACTIVE)
     return render_template('users_list.html', users=users)
 
 
