@@ -5,8 +5,8 @@ function change_status(url, status) {
     }
 }
 
-window.setTimeout(function() {
-    $(".alert").fadeTo(500, 0, function (){
+window.setTimeout(function () {
+    $(".alert").fadeTo(500, 0, function () {
     })
 }, 5000);
 
@@ -14,13 +14,26 @@ $(function () {
     $('[data-toggle="tooltip"]').tooltip()
 })
 
+
 /* Here you can add more inputs to set value. if it's saved */
+const paths_names = ['/users_list', '/active_users_list', '/inactive_users_list']
 let search = document.getElementById("searchInput");
-search.value = getSavedValue("searchInput");
-document.getElementById("searchReset").addEventListener("click", () =>{
-    localStorage.clear();
-})
-//Save the value function - save it to localStorage as (ID, VALUE)
+let reset = document.getElementById("searchReset");
+
+if (search) {
+    search.value = getSavedValue("searchInput");
+}
+
+if (reset) {
+    reset.addEventListener("click", () => {
+        localStorage.removeItem(search.id);
+    })
+}
+
+if (!paths_names.includes(window.location.pathname)){
+    localStorage.removeItem("searchInput");
+}
+
 function saveValue(e) {
     var id = e.id;  // get the sender's id to save it .
     var val = e.value; // get the value.

@@ -118,7 +118,7 @@
             </a>
         </div>
         <p class="text-right mt-3">
-            Showing page {{ users.page }} of {{ users.pages }}
+            Showing page {{ 0 if users.pages == 0 else users.page }} of {{ users.pages }}
         </p>
     </div>
 {% endblock %}
