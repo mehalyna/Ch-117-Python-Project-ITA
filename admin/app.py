@@ -53,6 +53,7 @@ def start_page():
 
 
 @app.route('/users_list')
+@login_required
 def get_users_list():
     users = utils.search_and_pagination('email')
     return render_template('users_list.html', users=users)
@@ -98,6 +99,8 @@ def create_user():
 @app.route('/update_user/<string:_id>', methods=['POST', 'GET'])
 @login_required
 def update_user(_id: str):
+    search = request.args.get('searchInput')
+    page = request.args.get('page', 1, type=int)
     try:
         user = User.objects.get(id=ObjectId(_id))
         form = UpdateUserForm(
@@ -115,42 +118,45 @@ def update_user(_id: str):
             user.update(firstname=firstname, lastname=lastname,
                         email=email, login=login, password_hash=password_hash,
                         role=role, status=status)
-
             flash('User successfully updated', 'success')
-            return redirect(url_for('get_users_list'))
+            return redirect(url_for('get_users_list', searchInput=search, page=page))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect(url_for('get_users_list'))
+        return redirect(url_for('get_users_list', searchInput=search, page=page))
     return render_template('update_user.html', user=user, form=form)
 
 
 @app.route('/delete_user/<string:_id>')
 @login_required
 def delete_user(_id: str):
+    search = request.args.get('searchInput')
+    page = request.args.get('page', 1, type=int)
     try:
         user = User.objects.get(id=ObjectId(_id), status='active')
         user.update(status='inactive')
         flash('User successfully deleted', 'danger')
-        return redirect(url_for('get_users_list'))
+        return redirect(url_for('get_users_list', searchInput=search, page=page))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect(url_for('get_users_list'))
+        return redirect(url_for('get_users_list', searchInput=search, page=page))
 
 
 @app.route('/restore_user/<string:_id>')
 @login_required
 def restore_user(_id: str):
+    search = request.args.get('searchInput')
+    page = request.args.get('page', 1, type=int)
     try:
         user = User.objects.get(id=ObjectId(_id), status='inactive')
         user.update(status='active')
         flash('User successfully restored', 'success')
-        return redirect(url_for('get_users_list'))
+        return redirect(url_for('get_users_list', searchInput=search, page=page))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect(url_for('get_users_list'))
+        return redirect(url_for('get_users_list', searchInput=search, page=page))
 
 
 @app.route('/admin_login', methods=['GET', 'POST'])

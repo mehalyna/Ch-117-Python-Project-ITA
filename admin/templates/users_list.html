@@ -10,7 +10,7 @@
                    onkeyup='saveValue(this);'>
             <div class="d-flex col-md 2 custom">
                 <input type="submit" class="btn btn-success mr-3" value="Find">
-                <a href="{{ url_for(request.endpoint) }}" class="btn btn-primary" id="searchReset">Reset</a>
+                <a href="{{ url_for('get_users_list') }}" class="btn btn-primary" id="searchReset">Reset</a>
             </div>
         </form>
     </div><br>
@@ -54,7 +54,7 @@
                 <td class="custom text-right">
                     {% if user.status != 'inactive' %}
                         <a href="{{ url_for('update_user', _id=user.id) }}"
-                           class="btn btn-warning btn-secondary"
+                           class="btn btn-warning btn-secondary update_user"
                            data-toggle="tooltip"
                            data-placement="bottom"
                            title="click for editing user">
@@ -64,7 +64,9 @@
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="click for deleting user"
-                                onclick="change_status('{{ url_for('delete_user', _id=user.id) }}', status='delete' )">
+                                onclick="change_status('{{ url_for('delete_user', _id=user.id,
+                                    searchInput=request.args.get('searchInput'),
+                                    page=request.args.get('page')) }}', status='delete' )">
                             Delete
                         </button>
                     {% endif %}
@@ -74,7 +76,9 @@
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="click for deleting user"
-                                onclick="change_status('{{ url_for('restore_user', _id=user.id) }}', status='restore')">
+                                onclick="change_status('{{ url_for('restore_user', _id=user.id,
+                                    searchInput=request.args.get('searchInput'),
+                                    page=request.args.get('page')) }}', status='restore')">
                             Restore
                         </button>
                     {% endif %}
