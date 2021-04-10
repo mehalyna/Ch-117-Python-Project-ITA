@@ -202,6 +202,7 @@ def add_book():
         author_birthdate = str(form.author_birthdate.data)
         author_death_date = str(form.author_death_date.data)
         book.year = form.year.data
+        book.link_img = form.img_link.data
         book.publisher = form.publisher.data
         book.language = form.language.data
         book.description = form.description.data
@@ -331,6 +332,7 @@ def book_update(_id):
             author_birthdate = str(form.author_birthdate.data)
             author_death_date = str(form.author_death_date.data)
             year = form.year.data
+            book.link_img = form.img_link.data
             publisher = form.publisher.data
             language = form.language.data
             description = form.description.data
