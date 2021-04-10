@@ -57,11 +57,11 @@ def get_users_list():
     page = request.args.get('page', 1, type=int)
     if search:
         users = User.objects(
-            Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search),
-            status=Status.ACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+            Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search)
+        ).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     else:
-        users = User.objects(status=Status.ACTIVE).order_by('email', 'status').paginate(page=page,
-                                                                                        per_page=ROWS_PER_PAGE)
+        users = User.objects.order_by('status', 'email').paginate(page=page,
+                                                                  per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -69,7 +69,7 @@ def get_users_list():
 @login_required
 def get_active_users_list():
     page = request.args.get('page', 1, type=int)
-    users = User.objects(status=Status.ACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    users = User.objects(status=Status.ACTIVE).order_by('email').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -77,7 +77,7 @@ def get_active_users_list():
 @login_required
 def get_inactive_users_list():
     page = request.args.get('page', 1, type=int)
-    users = User.objects(status=Status.INACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    users = User.objects(status=Status.INACTIVE).order_by('email').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -285,7 +285,8 @@ def book_storage():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('bookSearch')
     if search:
-        books = Book.objects(Q(title__contains=search) | Q(year__contains=search)).paginate(page=page, per_page=ROWS_PER_PAGE)
+        books = Book.objects(Q(title__contains=search) | Q(year__contains=search)).paginate(page=page,
+                                                                                            per_page=ROWS_PER_PAGE)
         author = Author.objects(name__contains=search).first()
         if author:
             arr = []
@@ -293,7 +294,7 @@ def book_storage():
                 arr.append(Book.objects(id=i).first())
             books.items += arr
     else:
-        books = Book.objects.order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+        books = Book.objects.order_by('status', 'title').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
@@ -301,7 +302,7 @@ def book_storage():
 @login_required
 def book_active():
     page = request.args.get('page', 1, type=int)
-    books = Book.objects(status=Status.ACTIVE).order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    books = Book.objects(status=Status.ACTIVE).order_by('title').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
@@ -309,7 +310,7 @@ def book_active():
 @login_required
 def book_inactive():
     page = request.args.get('page', 1, type=int)
-    books = Book.objects(status=Status.INACTIVE).order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    books = Book.objects(status=Status.INACTIVE).order_by('title').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 

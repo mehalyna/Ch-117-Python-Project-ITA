@@ -82,7 +82,7 @@
     <div class="custom_pagination">
         <!-- Pagination Links-->
         <div class="text-right">
-            <a href="{{ url_for(request.endpoint, page=users.prev_num) }}"
+            <a href="{{ url_for(request.endpoint, userSearch=request.args.get('userSearch'), page=users.prev_num) }}"
                class="btn btn-outline-dark
        {% if users.page == 1 %}disabled{% endif %}">
                 &laquo;
@@ -92,12 +92,12 @@
                 {% if page_num %}
                     <!-- Check for the active page and set the link to "Active"-->
                     {% if users.page == page_num %}
-                        <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                        <a href="{{ url_for(request.endpoint, userSearch=request.args.get('userSearch'), page=page_num) }}"
                            class="btn btn-dark">
                             {{ page_num }}
                         </a>
                     {% else %}
-                        <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                        <a href="{{ url_for(request.endpoint, userSearch=request.args.get('userSearch'), page=page_num) }}"
                            class="btn btn-outline-dark">
                             {{ page_num }}
                         </a>
@@ -106,7 +106,7 @@
                     ...
                 {% endif %}
             {% endfor %}
-            <a href="{{ url_for(request.endpoint, page=users.next_num) }}"
+            <a href="{{ url_for(request.endpoint, userSearch=request.args.get('userSearch'), page=users.next_num) }}"
                class="btn btn-outline-dark
        {% if users.page == users.pages %}disabled{% endif %}">
                 &raquo;
