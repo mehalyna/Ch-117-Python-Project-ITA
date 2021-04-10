@@ -7,7 +7,7 @@ ROWS_PER_PAGE = 6
 
 
 def search_and_pagination(order_field: str, status: str = None):
-    search = request.args.get('userSearch')
+    search = request.args.get('searchInput')
     page = request.args.get('page', 1, type=int)
     status = ['active', 'inactive'] if not status else [status]
     if search:
