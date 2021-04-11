@@ -13,6 +13,7 @@ from werkzeug.urls import url_parse
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Author, Book, Statistics, Status, User
+import utils
 
 load_dotenv()
 
@@ -282,34 +283,21 @@ def upload_files():
 @app.route('/book-storage')
 @login_required
 def book_storage():
-    page = request.args.get('page', 1, type=int)
-    search = request.args.get('bookSearch')
-    if search:
-        books = Book.objects(Q(title__contains=search) | Q(year__contains=search)).paginate(page=page, per_page=ROWS_PER_PAGE)
-        author = Author.objects(name__contains=search).first()
-        if author:
-            arr = []
-            for i in author.books:
-                arr.append(Book.objects(id=i).first())
-            books.items += arr
-    else:
-        books = Book.objects.order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    books = utils.search_and_pagination(collection=Book, order_field='title')
     return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-active')
 @login_required
 def book_active():
-    page = request.args.get('page', 1, type=int)
-    books = Book.objects(status=Status.ACTIVE).order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    books = utils.search_and_pagination(collection=Book, order_field='title', status=Status.ACTIVE)
     return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-inactive')
 @login_required
 def book_inactive():
-    page = request.args.get('page', 1, type=int)
-    books = Book.objects(status=Status.INACTIVE).order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    books = utils.search_and_pagination(collection=Book, order_field='title', status=Status.INACTIVE)
     return render_template('book-storage.html', books=books)
 
 
