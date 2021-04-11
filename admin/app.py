@@ -311,6 +311,8 @@ def book_details(_id):
 @app.route('/book-update/<string:_id>', methods=['POST', 'GET'])
 @login_required
 def book_update(_id):
+    search = request.args.get('bookSearch')
+    page = request.args.get('page', 1, type=int)
     try:
         book = Book.objects.get(id=ObjectId(_id))
         form = UpdateBookForm(request.form)
@@ -340,38 +342,42 @@ def book_update(_id):
             author.save()
             book.update(title=title, author_id=author.pk, year=year, publisher=publisher, language=language,
                         description=description, pages=pages, genres=[genres], status=status)
-            return redirect('/book-storage')
+            return redirect(url_for('book_storage', bookSearch=search, page=page))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/book-storage')
+        return redirect(url_for('book_storage', bookSearch=search, page=page))
     return render_template('update-book.html', book=book, form=form)
 
 
 @app.route('/book-delete/<string:_id>')
 @login_required
 def book_delete(_id):
+    search = request.args.get('bookSearch')
+    page = request.args.get('page', 1, type=int)
     try:
         book = Book.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
         book.update(status=Status.INACTIVE)
-        return redirect('/book-storage')
+        return redirect(url_for('book_storage', bookSearch=search, page=page))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/book-storage')
+        return redirect(url_for('book_storage', bookSearch=search, page=page))
 
 
 @app.route('/book-restore/<string:_id>')
 @login_required
 def book_restore(_id):
+    search = request.args.get('bookSearch')
+    page = request.args.get('page', 1, type=int)
     try:
         book = Book.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
         book.update(status=Status.ACTIVE)
-        return redirect('/book-storage')
+        return redirect(url_for('book_storage', bookSearch=search, page=page))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/book-storage')
+        return redirect(url_for('book_storage', bookSearch=search, page=page))
 
 
 if __name__ == '__main__':

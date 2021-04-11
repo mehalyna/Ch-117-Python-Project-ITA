@@ -9,7 +9,7 @@
                    id="bookSearch" name="bookSearch" onkeyup='saveValue(this);'>
             <div class="d-flex col-md 2">
                 <input type="submit" class="btn btn-success custom_button" value="Find">
-                <a href="{{ url_for('book_storage') }}" class="btn btn-primary custom_button">Reset</a>
+                <a href="{{ url_for('book_storage') }}" class="btn btn-primary custom_button" id="searchReset">Reset</a>
             </div>
         </form>
     </div><br>
@@ -27,9 +27,9 @@
                         Status
                     </button>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="{{ url_for('book_storage') }}">Book Storage</a>
-                        <a class="dropdown-item" href="{{ url_for('book_active') }}">Active Books</a>
-                        <a class="dropdown-item" href="{{ url_for('book_inactive') }}">Inactive Books</a>
+                        <a class="dropdown-item" href="{{ url_for('book_storage',bookSearch=request.args.get('bookSearch')) }}">Book Storage</a>
+                        <a class="dropdown-item" href="{{ url_for('book_active',bookSearch=request.args.get('bookSearch')) }}">Active Books</a>
+                        <a class="dropdown-item" href="{{ url_for('book_inactive', bookSearch=request.args.get('bookSearch')) }}">Inactive Books</a>
                     </div>
                 </div>
             </th>
@@ -47,15 +47,19 @@
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.year }}</td>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.status }}</td>
                 <td class="custom">
-                    <a href="{{ url_for('book_details', _id=book.id) }}"
+                    <a href="{{ url_for('book_details', _id=book.id, 
+                    bookSearch=request.args.get('bookSearch'), page=request.args.get('page')) }}"
                        class="btn btn-warning custom_button save_url">Details</a>
-                    <a href="{{ url_for('book_update', _id=book.id) }}"
+                    <a href="{{ url_for('book_update', _id=book.id,
+                    bookSearch=request.args.get('bookSearch'), page=request.args.get('page')) }}"
                        class="btn btn-success custom_button save_url">Update</a>
                     {% if book.status == 'active' %}
-                        <a href="{{ url_for('book_delete', _id=book.id) }}"
+                        <a href="{{ url_for('book_delete', _id=book.id,
+                        bookSearch=request.args.get('bookSearch'), page=request.args.get('page')) }}"
                            class="btn btn-danger custom_button">Delete</a>
                     {% elif book.status == 'inactive' %}
-                        <a href="{{ url_for('book_restore', _id=book.id) }}"
+                        <a href="{{ url_for('book_restore', _id=book.id,
+                         bookSearch=request.args.get('bookSearch'), page=request.args.get('page')) }}"
                            class="btn btn-primary custom_button">Restore</a>
                     {% endif %}
                 </td>
@@ -66,7 +70,7 @@
     <hr>
     <!-- Pagination Links-->
     <div class="text-right">
-        <a href="{{ url_for(request.endpoint, page=books.prev_num) }}"
+        <a href="{{ url_for(request.endpoint, bookSearch=request.args.get('bookSearch'), page=books.prev_num) }}"
            class="btn btn-outline-dark
        {% if books.page == 1 %}disabled{% endif %}">
             &laquo;
@@ -76,12 +80,12 @@
             {% if page_num %}
                 <!-- Check for the active page and set the link to "Active"-->
                 {% if books.page == page_num %}
-                    <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                    <a href="{{ url_for(request.endpoint, bookSearch=request.args.get('bookSearch'), page=page_num) }}"
                        class="btn btn-dark">
                         {{ page_num }}
                     </a>
                 {% else %}
-                    <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                    <a href="{{ url_for(request.endpoint, bookSearch=request.args.get('bookSearch'), page=page_num) }}"
                        class="btn btn-outline-dark">
                         {{ page_num }}
                     </a>
@@ -90,7 +94,7 @@
                 ...
             {% endif %}
         {% endfor %}
-        <a href="{{ url_for(request.endpoint, page=books.next_num) }}"
+        <a href="{{ url_for(request.endpoint, bookSearch=request.args.get('bookSearch'), page=books.next_num) }}"
            class="btn btn-outline-dark
        {% if books.page == books.pages %}disabled{% endif %}">
             &raquo;
