@@ -38,7 +38,7 @@
         {% for book in books.items %}
             <tbody id="bookTable">
             <tr>
-                <th scope="row">{{ loop.index }}</th>
+                <th scope="row">{{ loop.index + books.page * books.per_page - books.per_page }}</th>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.title }}</td>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.author_id.name }}
                     ({{ book.author_id.birthdate }} - {{ book.author_id.death_date }})
@@ -95,8 +95,8 @@
                 &raquo;
             </a>
         </div>
-        <p class="text-right mt-3">
-            Showing page {{ books.page }} of {{ books.pages }}
-        </p>
+            <p class="text-right mt-3">
+                Showing page {{ 0 if books.pages == 0 else books.page }} of {{ books.pages }}
+            </p>
     </div>
 {% endblock %}
