@@ -5,7 +5,8 @@
 {% block body %}
     <div class="container">
         <form action="" method="get" class="d-flex">
-            <input type="text" class="form-control col-md-10" placeholder="Search" id="bookSearch" name="bookSearch">
+            <input type="text" class="form-control col-md-10" placeholder="Search"
+                   id="bookSearch" name="bookSearch" onkeyup='saveValue(this);'>
             <div class="d-flex col-md 2">
                 <input type="submit" class="btn btn-success custom_button" value="Find">
                 <a href="{{ url_for('book_storage') }}" class="btn btn-primary custom_button">Reset</a>
