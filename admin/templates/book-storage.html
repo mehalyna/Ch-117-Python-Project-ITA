@@ -95,6 +95,6 @@
         </a>
     </div>
     <p class="text-right mt-3">
-        Showing page {{ books.page }} of {{ books.pages }}
+        Showing page {{ 0 if books.pages == 0 else books.page }} of {{ books.pages }}
     </p>
 {% endblock %}
