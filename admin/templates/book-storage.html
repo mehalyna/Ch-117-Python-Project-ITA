@@ -6,9 +6,9 @@
     <div class="container">
         <form action="" method="get" class="d-flex">
             <input type="text" class="form-control col-md-10" placeholder="Search" id="bookSearch" name="bookSearch">
-            <div class="d-flex col-md 2 custom">
-                <input type="submit" class="btn btn-success mr-3" value="Find">
-                <a href="/book-storage" class="btn btn-primary">Reset</a>
+            <div class="d-flex col-md 2">
+                <input type="submit" class="btn btn-success mr-3 custom_button" value="Find">
+                <a href="{{ url_for('book_storage') }}" class="btn btn-primary custom_button">Reset</a>
             </div>
         </form>
     </div><br>
@@ -46,15 +46,16 @@
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.year }}</td>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.status }}</td>
                 <td class="custom">
+                    <a href="{{ url_for('book_details', _id=book.id) }}"
+                       class="btn btn-warning custom_button">Details</a>
+                    <a href="{{ url_for('book_update', _id=book.id) }}"
+                       class="btn btn-success custom_button">Update</a>
                     {% if book.status == 'active' %}
-                        <a href="{{ url_for('book_details', _id=book.id) }}" class="btn btn-warning">Details</a>
-                        <a href="{{ url_for('book_update', _id=book.id) }}" class="btn btn-success">Update</a>
-                        <a href="{{ url_for('book_delete', _id=book.id) }}" class="btn btn-danger">Delete</a>
-                    {% endif %}
-                    {% if book.status == 'inactive' %}
-                        <a href="{{ url_for('book_details', _id=book.id) }}" class="btn btn-warning">Details</a>
-                        <a href="{{ url_for('book_update', _id=book.id) }}" class="btn btn-success">Update</a>
-                        <a href="{{ url_for('book_restore', _id=book.id) }}" class="btn btn-primary">Restore</a>
+                        <a href="{{ url_for('book_delete', _id=book.id) }}"
+                           class="btn btn-danger custom_button">Delete</a>
+                    {% elif book.status == 'inactive' %}
+                        <a href="{{ url_for('book_restore', _id=book.id) }}"
+                           class="btn btn-primary custom_button">Restore</a>
                     {% endif %}
                 </td>
             </tr>

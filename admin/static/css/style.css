@@ -6,7 +6,7 @@ color: red !important;
     display: flex;
 }
 
-.custom input,.custom a, .custom button{
+.custom_button{
     width: 78px;
     margin-left: 4px;
 }
