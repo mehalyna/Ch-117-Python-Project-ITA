@@ -62,39 +62,41 @@
         {% endfor %}
     </table>
     <hr>
-    <!-- Pagination Links-->
-    <div class="text-right">
-        <a href="{{ url_for(request.endpoint, page=books.prev_num) }}"
-           class="btn btn-outline-dark
+    <div class="custom_pagination">
+        <!-- Pagination Links-->
+        <div class="text-right">
+            <a href="{{ url_for(request.endpoint, page=books.prev_num) }}"
+               class="btn btn-outline-dark
        {% if books.page == 1 %}disabled{% endif %}">
-            &laquo;
-        </a>
-        <!-- Loop through the number of pages to display a link for each-->
-        {% for page_num in books.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
-            {% if page_num %}
-                <!-- Check for the active page and set the link to "Active"-->
-                {% if books.page == page_num %}
-                    <a href="{{ url_for(request.endpoint, page=page_num) }}"
-                       class="btn btn-dark">
-                        {{ page_num }}
-                    </a>
+                &laquo;
+            </a>
+            <!-- Loop through the number of pages to display a link for each-->
+            {% for page_num in books.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    <!-- Check for the active page and set the link to "Active"-->
+                    {% if books.page == page_num %}
+                        <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                           class="btn btn-dark">
+                            {{ page_num }}
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                           class="btn btn-outline-dark">
+                            {{ page_num }}
+                        </a>
+                    {% endif %}
                 {% else %}
-                    <a href="{{ url_for(request.endpoint, page=page_num) }}"
-                       class="btn btn-outline-dark">
-                        {{ page_num }}
-                    </a>
+                    ...
                 {% endif %}
-            {% else %}
-                ...
-            {% endif %}
-        {% endfor %}
-        <a href="{{ url_for(request.endpoint, page=books.next_num) }}"
-           class="btn btn-outline-dark
+            {% endfor %}
+            <a href="{{ url_for(request.endpoint, page=books.next_num) }}"
+               class="btn btn-outline-dark
        {% if books.page == books.pages %}disabled{% endif %}">
-            &raquo;
-        </a>
+                &raquo;
+            </a>
+        </div>
+            <p class="text-right mt-3">
+                Showing page {{ 0 if books.pages == 0 else books.page }} of {{ books.pages }}
+            </p>
     </div>
-    <p class="text-right mt-3">
-        Showing page {{ 0 if books.pages == 0 else books.page }} of {{ books.pages }}
-    </p>
 {% endblock %}
