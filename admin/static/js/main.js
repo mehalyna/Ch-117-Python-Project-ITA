@@ -41,10 +41,6 @@ function validateForm(formName) {
     }
 }
 
-function back_to_user() {
-    window.location.href = localStorage.getItem('back_to_url');
-}
-
 function saveValue(e) {
     var id = e.id;
     var val = e.value;
