@@ -8,11 +8,13 @@ from flask import flash, Flask, redirect, render_template, request, session, url
 from flask_login import LoginManager, login_required, login_user, logout_user
 from mongoengine import connect
 from mongoengine.queryset.visitor import Q
+from urllib import parse
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Author, Book, Statistics, Status, User
+import utils
 
 load_dotenv()
 
@@ -34,6 +36,26 @@ login.init_app(app)
 ROWS_PER_PAGE = 6
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    prev_url = request.referrer
+    query = parse.parse_qs(parse.urlparse(prev_url).query)
+    page = query.get('page')
+    user_search = query.get('userSearch')
+    if page and page[0].isdigit() or user_search:
+        url_to_redirect = prev_url.split('?')[0] + '?'
+        if page:
+            page = int(page[0]) - 1
+            url_to_redirect += f'&{"page"}={page}'
+        if user_search:
+            user_search = user_search[0]
+            url_to_redirect += f'&{"userSearch"}={user_search}'
+
+        return redirect(url_to_redirect)
+
+    return 'Page not found'
+
+
 @app.route('/')
 @login_required
 def start_page():
@@ -52,32 +74,23 @@ def start_page():
 
 
 @app.route('/users_list')
+@login_required
 def get_users_list():
-    search = request.args.get('userSearch')
-    page = request.args.get('page', 1, type=int)
-    if search:
-        users = User.objects(
-            Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search),
-            status=Status.ACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
-    else:
-        users = User.objects(status=Status.ACTIVE).order_by('email', 'status').paginate(page=page,
-                                                                                        per_page=ROWS_PER_PAGE)
+    users = utils.search_and_pagination(collection=User, order_field='email')
     return render_template('users_list.html', users=users)
 
 
 @app.route('/active_users_list')
 @login_required
 def get_active_users_list():
-    page = request.args.get('page', 1, type=int)
-    users = User.objects(status=Status.ACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    users = utils.search_and_pagination(collection=User, order_field='email', status=Status.ACTIVE)
     return render_template('users_list.html', users=users)
 
 
 @app.route('/inactive_users_list')
 @login_required
 def get_inactive_users_list():
-    page = request.args.get('page', 1, type=int)
-    users = User.objects(status=Status.INACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    users = utils.search_and_pagination(collection=User, order_field='email', status=Status.INACTIVE)
     return render_template('users_list.html', users=users)
 
 
@@ -124,13 +137,12 @@ def update_user(_id: str):
             user.update(firstname=firstname, lastname=lastname,
                         email=email, login=login, password_hash=password_hash,
                         role=role, status=status)
-
             flash('User successfully updated', 'success')
-            return redirect(url_for('get_users_list'))
+            return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect(url_for('get_users_list'))
+        return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     return render_template('update_user.html', user=user, form=form)
 
 
@@ -141,25 +153,27 @@ def delete_user(_id: str):
         user = User.objects.get(id=ObjectId(_id), status='active')
         user.update(status='inactive')
         flash('User successfully deleted', 'danger')
-        return redirect(url_for('get_users_list'))
+        return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect(url_for('get_users_list'))
+        return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
 
 
 @app.route('/restore_user/<string:_id>')
 @login_required
 def restore_user(_id: str):
+    search = request.args.get('userSearch')
+    page = request.args.get('page', 1, type=int)
     try:
         user = User.objects.get(id=ObjectId(_id), status='inactive')
         user.update(status='active')
         flash('User successfully restored', 'success')
-        return redirect(url_for('get_users_list'))
+        return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect(url_for('get_users_list'))
+        return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
 
 
 @app.route('/admin_login', methods=['GET', 'POST'])
@@ -285,7 +299,8 @@ def book_storage():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('bookSearch')
     if search:
-        books = Book.objects(Q(title__contains=search) | Q(year__contains=search)).paginate(page=page, per_page=ROWS_PER_PAGE)
+        books = Book.objects(Q(title__contains=search) | Q(year__contains=search)).paginate(page=page,
+                                                                                            per_page=ROWS_PER_PAGE)
         author = Author.objects(name__contains=search).first()
         if author:
             arr = []
@@ -293,7 +308,7 @@ def book_storage():
                 arr.append(Book.objects(id=i).first())
             books.items += arr
     else:
-        books = Book.objects.order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+        books = Book.objects.order_by('status', 'title').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
@@ -301,7 +316,7 @@ def book_storage():
 @login_required
 def book_active():
     page = request.args.get('page', 1, type=int)
-    books = Book.objects(status=Status.ACTIVE).order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    books = Book.objects(status=Status.ACTIVE).order_by('title').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
@@ -309,7 +324,7 @@ def book_active():
 @login_required
 def book_inactive():
     page = request.args.get('page', 1, type=int)
-    books = Book.objects(status=Status.INACTIVE).order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
+    books = Book.objects(status=Status.INACTIVE).order_by('title').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
