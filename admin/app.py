@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 from bson import ObjectId
 from datetime import timedelta
@@ -106,7 +107,6 @@ def create_user():
             user.login = form.login.data
             user.set_password(form.password.data)
             user.role = form.role.data
-            user.status = Status.ACTIVE
             user.save()
             flash('User successfully created', 'success')
             return redirect(url_for('get_users_list'))
@@ -153,11 +153,11 @@ def update_user(_id: str):
 @login_required
 def delete_user(_id: str):
     try:
-        user = User.objects.get(id=ObjectId(_id), status='active')
+        user = User.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
         if _id == str(user.id) and user.role == Role.ADMIN:
             flash('The administrator cannot change the status or role for himself', 'warning')
         else:
-            user.update(status='inactive')
+            user.update(status=Status.INACTIVE)
             flash('User successfully deleted', 'danger')
         return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     except Exception as e:
@@ -172,7 +172,7 @@ def restore_user(_id: str):
     search = request.args.get('userSearch')
     page = request.args.get('page', 1, type=int)
     try:
-        user = User.objects.get(id=ObjectId(_id), status='inactive')
+        user = User.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
         user.update(status='active')
         flash('User successfully restored', 'success')
         return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
@@ -227,10 +227,10 @@ def add_book():
         book.language = form.language.data
         book.description = form.description.data
         book.pages = form.pages.data
-        book.genres = [form.genre.data]
-        book.save()
+        book.genres = re.split(r',',form.genre.data)
 
         try:
+            book.save()
             author = Author.objects(name=author_name, birthdate=author_birthdate, death_date=author_death_date).first()
             if author and not str(book.pk) in author.books:
                 author.books.append(str(book.pk))
@@ -358,7 +358,7 @@ def book_update(_id):
             language = form.language.data
             description = form.description.data
             pages = form.pages.data
-            genres = form.genre.data
+            genres = re.split(r',',form.genre.data)
             status = form.status.data
             if str(book.id) in book.author_id.books:
                 book.author_id.books.remove(str(book.id))
@@ -372,7 +372,7 @@ def book_update(_id):
                                 books=[str(book.id)])
             author.save()
             book.update(title=title, author_id=author.pk, year=year, publisher=publisher, language=language,
-                        description=description, pages=pages, genres=[genres], status=status)
+                        description=description, pages=pages, genres=genres, status=status)
             return redirect('/book-storage')
     except Exception as e:
         print(e)
