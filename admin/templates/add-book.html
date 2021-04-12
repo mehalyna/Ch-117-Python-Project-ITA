@@ -4,7 +4,7 @@
 {% block body %}
 <div class="d-flex align-items-center flex-column">
     <h1>Book adding form</h1><br>
-    <form action="" method="post" class="custom_border rounded col-md-3 pt-4 pb-4">
+    <form action="" method="post" class="custom_border rounded col-md-3 pt-4 pb-4" name="bookAdding" onsubmit=" return validateForm('bookAdding')">
         <input type="text" name="title" id="title" class="form-control" placeholder="Book Title"><br>
         <input type="text" name="author_name" id="author_name" class="form-control" placeholder="Author name"><br>
         <input type="number" name="author_birthdate" id="author_birthdate" class="form-control" placeholder="Author birthdate"><br>
@@ -14,7 +14,7 @@
         <input type="text" name="year" id="year" class="form-control" placeholder="Year"><br>
         <input type="text" name="publisher" id="publisher" class="form-control" placeholder="Publisher"><br>
         <input type="number" name="pages" id="pages" class="form-control" placeholder="Number of pages"><br>
-        <textarea name="description" id="description" placeholder="Description" class="form-control"></textarea><br>
+        <textarea name="description" id="description" placeholder="Description" class="form-control" rows="1"></textarea><br>
         <input type="text" name="language" id="language" class="form-control" placeholder="Language"><br>
         <div class="custom">
             <input type="submit" class="btn btn-success custom" value="Add">

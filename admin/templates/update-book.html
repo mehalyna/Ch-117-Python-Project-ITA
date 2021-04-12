@@ -4,7 +4,7 @@
 {% block body %}
 <div class="d-flex align-items-center flex-column">
     <h1>Book updating form</h1><br>
-    <form action="" method="post" class="custom_border rounded col-md-3 pt-4 pb-4 mb-3">
+    <form action="" method="post" class="custom_border rounded col-md-3 pt-4 pb-4 mb-3" name="bookUpdating" onsubmit=" return validateForm('bookUpdating')">
         <input type="text" name="title" id="title" class="form-control" placeholder="Book Title" value="{{ book.title }}"><br>
         <input type="text" name="author_name" id="author_name" class="form-control" placeholder="Book Author" value="{{ book.author_id.name}}"><br>
         <input type="number" name="author_birthdate" id="author_birthdate" class="form-control" placeholder="Author birthdate" value="{{ book.author_id.birthdate}}"><br>
