@@ -1,5 +1,5 @@
-from typing import Type
 import re
+from typing import Type
 
 from flask import request
 from flask_mongoengine import Document
@@ -30,11 +30,12 @@ def back_to_page(page_name: str, search_name: str, prev_url_name: str = None):
         final_url = '/users_list' if 'user' in re.split(r'[-_/]', request.path) else 'book-storage'
         return final_url
     else:
-        search = request.args.get(search_name, '')
+        search = request.args.get(search_name)
         page = request.args.get(page_name, 1, type=int)
         params_dict = {search_name: search, page_name: page}
         final_url = f'{prev_url}?'
         for param_name, param_value in params_dict.items():
-            final_url += f'&{param_name}={param_value}'
+            if param_name and param_value:
+                final_url += f'&{param_name}={param_value}'
 
         return final_url
