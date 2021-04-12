@@ -43,17 +43,17 @@ def page_not_found(e):
     user_search = query.get('userSearch')
     book_search = query.get('bookSearch')
 
-    if page and page[0].isdigit() or user_search:
+    if page and page[0].isdigit() or user_search or book_search:
         url_to_redirect = prev_url.split('?')[0] + '?'
         if page:
-            page = int(page[0]) - 1
-            url_to_redirect += f'&{"page"}={page}'
+            page_value = int(page[0]) - 1
+            url_to_redirect += f'&{"page"}={page_value}'
         if user_search:
-            user_search = user_search[0]
-            url_to_redirect += f'&{"userSearch"}={user_search}'
+            user_search_value = user_search[0]
+            url_to_redirect += f'&{"userSearch"}={user_search_value}'
         if book_search:
-            book_search = book_search[0]
-            url_to_redirect += f'&{"bookSearch"}={book_search}'
+            book_search_value = book_search[0]
+            url_to_redirect += f'&{"bookSearch"}={book_search_value}'
 
         return redirect(url_to_redirect)
 
