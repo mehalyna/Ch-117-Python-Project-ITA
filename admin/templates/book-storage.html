@@ -53,18 +53,17 @@
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.year }}</td>
                 <td {% if book.status == 'inactive' %} style="opacity: 0.5" {% endif %}> {{ book.status }}</td>
                 <td class="custom text-right d-flex">
-                    <a href="{{ url_for('book_details', _id=book.id,
-                    bookSearch=request.args.get('bookSearch'), page=request.args.get('page')) }}"
+                    <a href="{{ url_for('book_details', _id=book.id) }}"
                        class="btn btn-warning save_url mr-1">Details</a>
-                    <a href="{{ url_for('book_update', _id=book.id,
+                    <a href="{{ url_for('book_update', _id=book.id, urlPath=request.path,
                     bookSearch=request.args.get('bookSearch'), page=request.args.get('page')) }}"
                        class="btn btn-success save_url mr-1">Update</a>
                     {% if book.status == 'active' %}
-                        <a href="{{ url_for('book_delete', _id=book.id,
+                        <a href="{{ url_for('book_delete', _id=book.id, urlPath=request.path,
                         bookSearch=request.args.get('bookSearch'), page=request.args.get('page')) }}"
                            class="btn btn-danger">Delete</a>
                     {% elif book.status == 'inactive' %}
-                        <a href="{{ url_for('book_restore', _id=book.id,
+                        <a href="{{ url_for('book_restore', _id=book.id, urlPath=request.path,
                          bookSearch=request.args.get('bookSearch'), page=request.args.get('page')) }}"
                            class="btn btn-primary">Restore</a>
                     {% endif %}
