@@ -8,9 +8,9 @@ from flask import flash, Flask, redirect, render_template, request, session, url
 from flask_login import LoginManager, login_required, login_user, logout_user
 from mongoengine import connect
 from mongoengine.queryset.visitor import Q
+from urllib import parse
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
-from urllib import parse
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Author, Book, Statistics, Status, User
@@ -40,13 +40,18 @@ ROWS_PER_PAGE = 6
 def page_not_found(e):
     prev_url = request.referrer
     query = parse.parse_qs(parse.urlparse(prev_url).query)
-    page = query['page'][0]
-    user_search = query['userSearch'][0]
-    if page and page.isdigit() and user_search:
-        url_to_redirect = prev_url.split('?')[0]
-        page = int(page)
-        page -= 1
-        return redirect(f'{url_to_redirect}?{"userSearch"}={user_search}&{"page"}={page}')
+    page = query.get('page')
+    user_search = query.get('userSearch')
+    if page and page[0].isdigit() or user_search:
+        url_to_redirect = prev_url.split('?')[0] + '?'
+        if page:
+            page = int(page[0]) - 1
+            url_to_redirect += f'&{"page"}={page}'
+        if user_search:
+            user_search = user_search[0]
+            url_to_redirect += f'&{"userSearch"}={user_search}'
+
+        return redirect(url_to_redirect)
 
     return 'Page not found'
 

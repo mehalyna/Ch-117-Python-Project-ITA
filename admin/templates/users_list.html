@@ -118,7 +118,7 @@
             {% endfor %}
             <a href="{{ url_for(request.endpoint, userSearch=request.args.get('userSearch'), page=users.next_num) }}"
                class="btn btn-outline-dark
-       {% if users.page == users.pages %}disabled{% endif %}">
+       {% if users.page == users.pages or users.pages == 0 %}disabled{% endif %}">
                 &raquo;
             </a>
         </div>
