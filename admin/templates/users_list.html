@@ -4,15 +4,16 @@
 {% endblock %}
 
 {% block body %}
-<div class="container">
-    <form action="" method="get" class="d-flex">
-        <input type="text" class="form-control col-md-10" placeholder="Search" id="userSearch" name="userSearch">
-        <div class="d-flex col-md 2 custom">
-            <input type="submit" class="btn btn-success mr-3" value="Find">
-            <a href="/users_list" class="btn btn-primary">Reset</a>
-        </div>
-    </form>
-</div><br>
+    <div class="container">
+        <form action="" method="get" class="d-flex">
+            <input type="text" class="form-control col-md-10" placeholder="Search" id="userSearch" name="userSearch"
+                   onkeyup='saveValue(this);'>
+            <div class="d-flex col-md 2 custom">
+                <input type="submit" class="btn btn-success mr-3" value="Find">
+                <a href="{{ url_for('get_users_list') }}" class="btn btn-primary" id="searchReset">Reset</a>
+            </div>
+        </form>
+    </div><br>
     <table class="table">
         <thead class="thead-dark">
         <tr>
@@ -28,9 +29,13 @@
                         Status
                     </button>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="{{ url_for('get_users_list') }}">All users</a>
-                        <a class="dropdown-item" href="{{ url_for('get_active_users_list') }}">Active</a>
-                        <a class="dropdown-item" href="{{ url_for('get_inactive_users_list') }}">Inactive</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for('get_users_list', userSearch=request.args.get('userSearch')) }}">All
+                            users</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for('get_active_users_list', userSearch=request.args.get('userSearch')) }}">Active</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for('get_inactive_users_list', userSearch=request.args.get('userSearch')) }}">Inactive</a>
                     </div>
                 </div>
             </th>
@@ -48,8 +53,9 @@
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.status }}</td>
                 <td class="custom text-right">
                     {% if user.status != 'inactive' %}
-                        <a href="{{ url_for('update_user', _id=user.id) }}"
-                           class="btn btn-warning btn-secondary"
+                        <a href="{{ url_for('update_user', _id=user.id, urlPath=request.path, userSearch=request.args.get('userSearch'),
+                                    page=request.args.get('page')) }}"
+                           class="btn btn-warning btn-secondary update_user"
                            data-toggle="tooltip"
                            data-placement="bottom"
                            title="click for editing user">
@@ -59,7 +65,9 @@
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="click for deleting user"
-                                onclick="change_status('{{ url_for('delete_user', _id=user.id) }}', status='delete' )">
+                                onclick="change_status('{{ url_for('delete_user', _id=user.id, urlPath=request.path,
+                                    userSearch=request.args.get('userSearch'),
+                                    page=request.args.get('page')) }}', status='delete' )">
                             Delete
                         </button>
                     {% endif %}
@@ -69,7 +77,9 @@
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="click for deleting user"
-                                onclick="change_status('{{ url_for('restore_user', _id=user.id) }}', status='restore')">
+                                onclick="change_status('{{ url_for('restore_user', _id=user.id, urlPath=request.path,
+                                    userSearch=request.args.get('userSearch'),
+                                    page=request.args.get('page')) }}', status='restore')">
                             Restore
                         </button>
                     {% endif %}
@@ -82,7 +92,7 @@
     <div class="custom_pagination">
         <!-- Pagination Links-->
         <div class="text-right">
-            <a href="{{ url_for(request.endpoint, page=users.prev_num) }}"
+            <a href="{{ url_for(request.endpoint, userSearch=request.args.get('userSearch'), page=users.prev_num) }}"
                class="btn btn-outline-dark
        {% if users.page == 1 %}disabled{% endif %}">
                 &laquo;
@@ -92,12 +102,12 @@
                 {% if page_num %}
                     <!-- Check for the active page and set the link to "Active"-->
                     {% if users.page == page_num %}
-                        <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                        <a href="{{ url_for(request.endpoint, userSearch=request.args.get('userSearch'), page=page_num) }}"
                            class="btn btn-dark">
                             {{ page_num }}
                         </a>
                     {% else %}
-                        <a href="{{ url_for(request.endpoint, page=page_num) }}"
+                        <a href="{{ url_for(request.endpoint, userSearch=request.args.get('userSearch'), page=page_num) }}"
                            class="btn btn-outline-dark">
                             {{ page_num }}
                         </a>
@@ -106,14 +116,14 @@
                     ...
                 {% endif %}
             {% endfor %}
-            <a href="{{ url_for(request.endpoint, page=users.next_num) }}"
+            <a href="{{ url_for(request.endpoint, userSearch=request.args.get('userSearch'), page=users.next_num) }}"
                class="btn btn-outline-dark
-       {% if users.page == users.pages %}disabled{% endif %}">
+       {% if users.page == users.pages or users.pages == 0 %}disabled{% endif %}">
                 &raquo;
             </a>
         </div>
         <p class="text-right mt-3">
-            Showing page {{ users.page }} of {{ users.pages }}
+            Showing page {{ 0 if users.pages == 0 else users.page }} of {{ users.pages }}
         </p>
     </div>
 {% endblock %}
