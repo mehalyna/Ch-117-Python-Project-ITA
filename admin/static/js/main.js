@@ -24,7 +24,7 @@ function validateForm(formName) {
         document.querySelector('#title').classList.add('is-invalid');
     }
 
-      if (author_name === "") {
+    if (author_name === "") {
         document.querySelector('#author_name').classList.add('is-invalid');
     }
 
@@ -39,6 +39,7 @@ function validateForm(formName) {
     if (author_name === '' || title === '' || year === '' || language === '') {
         return false
     }
+}
 
 function saveValue(e) {
     var id = e.id;
@@ -55,33 +56,47 @@ function getSavedValue(v) {
 
 (() => {
     'use strict';
-    const paths_names = ['users_list', 'active_users_list', 'inactive_users_list', 'update_user'];
-    let search = document.getElementById('userSearch');
+    const bookPathsNames = ['book-storage', 'book-active', 'book-inactive', 'book-update'];
+    const userPathsNames = ['users_list', 'active_users_list', 'inactive_users_list', 'update_user'];
+    let userSearch = document.getElementById('userSearch');
+    let bookSearch = document.getElementById('bookSearch');
     let reset = document.getElementById('searchReset');
-    if (search){
-        search.value = getSavedValue('userSearch');
+
+    if (userSearch) {
+        userSearch.value = getSavedValue('userSearch');
     }
-        if (reset){
-            reset.addEventListener('click', () => {
+
+    if (bookSearch) {
+        bookSearch.value = getSavedValue('bookSearch');
+    }
+
+    if (reset) {
+        reset.addEventListener('click', () => {
+            localStorage.removeItem('bookSearch');
             localStorage.removeItem('userSearch');
         })
-        }
+    }
 
-    if (!paths_names.includes(window.location.pathname.split('/')[1])) {
+    if (!userPathsNames.includes(window.location.pathname.split('/')[1])) {
         localStorage.removeItem('userSearch');
+    }
+
+    if (!bookPathsNames.includes(window.location.pathname.split('/')[1])) {
+        localStorage.removeItem('bookSearch');
     }
 })();
 
 (() => {
     'use strict';
-    let edit_button_list = document.querySelectorAll('.update_user');
-    edit_button_list.forEach(button =>{button.addEventListener('click', (event) => {
-        localStorage.removeItem('back_to_url');
-        localStorage.setItem('back_to_url', window.location);
-    }, false);
+    let edit_button_list = document.querySelectorAll('.save_url');
+    edit_button_list.forEach(button => {
+        button.addEventListener('click', (event) => {
+            localStorage.removeItem('back_to_url');
+            localStorage.setItem('back_to_url', window.location);
+        }, false);
     })
 })();
 
-function back_to_user(){
+function back_to_list() {
     window.location.href = localStorage.getItem('back_to_url');
 }

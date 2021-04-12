@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_required, login_user, logout_user
 from mongoengine import connect
-from mongoengine.queryset.visitor import Q
 from urllib import parse
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
@@ -43,14 +42,19 @@ def page_not_found(e):
     query = parse.parse_qs(parse.urlparse(prev_url).query)
     page = query.get('page')
     user_search = query.get('userSearch')
-    if page and page[0].isdigit() or user_search:
+    book_search = query.get('bookSearch')
+
+    if page and page[0].isdigit() or user_search or book_search:
         url_to_redirect = prev_url.split('?')[0] + '?'
         if page:
-            page = int(page[0]) - 1
-            url_to_redirect += f'&{"page"}={page}'
+            page_value = int(page[0]) - 1
+            url_to_redirect += f'&{"page"}={page_value}'
         if user_search:
-            user_search = user_search[0]
-            url_to_redirect += f'&{"userSearch"}={user_search}'
+            user_search_value = user_search[0]
+            url_to_redirect += f'&{"userSearch"}={user_search_value}'
+        if book_search:
+            book_search_value = book_search[0]
+            url_to_redirect += f'&{"bookSearch"}={book_search_value}'
 
         return redirect(url_to_redirect)
 
@@ -169,8 +173,6 @@ def delete_user(_id: str):
 @app.route('/restore_user/<string:_id>')
 @login_required
 def restore_user(_id: str):
-    search = request.args.get('userSearch')
-    page = request.args.get('page', 1, type=int)
     try:
         user = User.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
         user.update(status='active')
@@ -302,35 +304,21 @@ def upload_files():
 @app.route('/book-storage')
 @login_required
 def book_storage():
-    page = request.args.get('page', 1, type=int)
-    search = request.args.get('bookSearch')
-    if search:
-        books = Book.objects(Q(title__contains=search) | Q(year__contains=search)).paginate(page=page,
-                                                                                            per_page=ROWS_PER_PAGE)
-        author = Author.objects(name__contains=search).first()
-        if author:
-            arr = []
-            for i in author.books:
-                arr.append(Book.objects(id=i).first())
-            books.items += arr
-    else:
-        books = Book.objects.order_by('status', 'title').paginate(page=page, per_page=ROWS_PER_PAGE)
+    books = utils.search_and_pagination(collection=Book, order_field='title')
     return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-active')
 @login_required
 def book_active():
-    page = request.args.get('page', 1, type=int)
-    books = Book.objects(status=Status.ACTIVE).order_by('title').paginate(page=page, per_page=ROWS_PER_PAGE)
+    books = utils.search_and_pagination(collection=Book, order_field='title', status=Status.ACTIVE)
     return render_template('book-storage.html', books=books)
 
 
 @app.route('/book-inactive')
 @login_required
 def book_inactive():
-    page = request.args.get('page', 1, type=int)
-    books = Book.objects(status=Status.INACTIVE).order_by('title').paginate(page=page, per_page=ROWS_PER_PAGE)
+    books = utils.search_and_pagination(collection=Book, order_field='title', status=Status.INACTIVE)
     return render_template('book-storage.html', books=books)
 
 
@@ -372,12 +360,12 @@ def book_update(_id):
                                 books=[str(book.id)])
             author.save()
             book.update(title=title, author_id=author.pk, year=year, publisher=publisher, language=language,
-                        description=description, pages=pages, genres=genres, status=status)
-            return redirect('/book-storage')
+                        description=description, pages=pages, genres=[genres], status=status)
+            return redirect(utils.back_to_page('page', 'bookSearch', 'urlPath'))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/book-storage')
+        return redirect(utils.back_to_page('page', 'bookSearch', 'urlPath'))
     return render_template('update-book.html', book=book, form=form)
 
 
@@ -387,11 +375,11 @@ def book_delete(_id):
     try:
         book = Book.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
         book.update(status=Status.INACTIVE)
-        return redirect('/book-storage')
+        return redirect(utils.back_to_page('page', 'bookSearch', 'urlPath'))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/book-storage')
+        return redirect(utils.back_to_page('page', 'bookSearch', 'urlPath'))
 
 
 @app.route('/book-restore/<string:_id>')
@@ -400,11 +388,11 @@ def book_restore(_id):
     try:
         book = Book.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
         book.update(status=Status.ACTIVE)
-        return redirect('/book-storage')
+        return redirect(utils.back_to_page('page', 'bookSearch', 'urlPath'))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect('/book-storage')
+        return redirect(utils.back_to_page('page', 'bookSearch', 'urlPath'))
 
 
 if __name__ == '__main__':

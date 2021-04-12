@@ -55,7 +55,7 @@
                     {% if user.status != 'inactive' %}
                         <a href="{{ url_for('update_user', _id=user.id, urlPath=request.path, userSearch=request.args.get('userSearch'),
                                     page=request.args.get('page')) }}"
-                           class="btn btn-warning btn-secondary update_user"
+                           class="btn btn-warning btn-secondary save_url"
                            data-toggle="tooltip"
                            data-placement="bottom"
                            title="click for editing user">
