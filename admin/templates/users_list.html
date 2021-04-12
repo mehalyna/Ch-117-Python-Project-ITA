@@ -51,17 +51,17 @@
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.lastname }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.role }}</td>
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.status }}</td>
-                <td class="custom text-right d-flex">
+                <td class="custom text-right">
                     {% if user.status != 'inactive' %}
                         <a href="{{ url_for('update_user', _id=user.id, urlPath=request.path, userSearch=request.args.get('userSearch'),
                                     page=request.args.get('page')) }}"
-                           class="btn btn-warning btn-secondary update_user mr-1"
+                           class="btn btn-warning btn-secondary save_url"
                            data-toggle="tooltip"
                            data-placement="bottom"
                            title="click for editing user">
                             Edit
                         </a>
-                        <button class="btn btn-danger btn-secondary mr-1"
+                        <button class="btn btn-danger btn-secondary"
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="click for deleting user"

@@ -41,7 +41,7 @@ function validateForm(formName) {
     }
 }
 
-function back_to_user(){
+function back_to_user() {
     window.location.href = localStorage.getItem('back_to_url');
 }
 
@@ -60,19 +60,32 @@ function getSavedValue(v) {
 
 (() => {
     'use strict';
-    const paths_names = ['book-storage', 'book-active', 'book-inactive', 'book-update'];
-    let search = document.getElementById('bookSearch');
+    const bookPathsNames = ['book-storage', 'book-active', 'book-inactive', 'book-update'];
+    const userPathsNames = ['users_list', 'active_users_list', 'inactive_users_list', 'update_user'];
+    let userSearch = document.getElementById('userSearch');
+    let bookSearch = document.getElementById('bookSearch');
     let reset = document.getElementById('searchReset');
-    if (search) {
-        search.value = getSavedValue('bookSearch');
+
+    if (userSearch) {
+        userSearch.value = getSavedValue('userSearch');
     }
+
+    if (bookSearch) {
+        bookSearch.value = getSavedValue('bookSearch');
+    }
+
     if (reset) {
         reset.addEventListener('click', () => {
             localStorage.removeItem('bookSearch');
+            localStorage.removeItem('userSearch');
         })
     }
 
-    if (!paths_names.includes(window.location.pathname.split('/')[1])) {
+    if (!userPathsNames.includes(window.location.pathname.split('/')[1])) {
+        localStorage.removeItem('userSearch');
+    }
+
+    if (!bookPathsNames.includes(window.location.pathname.split('/')[1])) {
         localStorage.removeItem('bookSearch');
     }
 })();
