@@ -8,9 +8,9 @@ from flask import flash, Flask, redirect, render_template, request, session, url
 from flask_login import LoginManager, login_required, login_user, logout_user
 from mongoengine import connect
 from mongoengine.queryset.visitor import Q
+from urllib import parse
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
-from urllib import parse
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Author, Book, Statistics, Status, User
