@@ -53,7 +53,7 @@
                 <td {% if user.status == 'inactive' %} style="opacity: 0.3" {% endif %}>{{ user.status }}</td>
                 <td class="custom text-right">
                     {% if user.status != 'inactive' %}
-                        <a href="{{ url_for('update_user', _id=user.id, userSearch=request.args.get('userSearch'),
+                        <a href="{{ url_for('update_user', _id=user.id, urlPath=request.path, userSearch=request.args.get('userSearch'),
                                     page=request.args.get('page')) }}"
                            class="btn btn-warning btn-secondary update_user"
                            data-toggle="tooltip"
@@ -65,7 +65,7 @@
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="click for deleting user"
-                                onclick="change_status('{{ url_for('delete_user', _id=user.id,
+                                onclick="change_status('{{ url_for('delete_user', _id=user.id, urlPath=request.path,
                                     userSearch=request.args.get('userSearch'),
                                     page=request.args.get('page')) }}', status='delete' )">
                             Delete
@@ -77,7 +77,7 @@
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="click for deleting user"
-                                onclick="change_status('{{ url_for('restore_user', _id=user.id,
+                                onclick="change_status('{{ url_for('restore_user', _id=user.id, urlPath=request.path,
                                     userSearch=request.args.get('userSearch'),
                                     page=request.args.get('page')) }}', status='restore')">
                             Restore

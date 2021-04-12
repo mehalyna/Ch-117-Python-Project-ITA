@@ -10,6 +10,7 @@ from mongoengine import connect
 from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
+from urllib import parse
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Author, Book, Statistics, Status, User
@@ -33,6 +34,21 @@ login.login_view = 'admin_login'
 login.init_app(app)
 
 ROWS_PER_PAGE = 6
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    prev_url = request.referrer
+    query = parse.parse_qs(parse.urlparse(prev_url).query)
+    page = query['page'][0]
+    user_search = query['userSearch'][0]
+    if page and page.isdigit() and user_search:
+        url_to_redirect = prev_url.split('?')[0]
+        page = int(page)
+        page -= 1
+        return redirect(f'{url_to_redirect}?{"userSearch"}={user_search}&{"page"}={page}')
+
+    return 'Page not found'
 
 
 @app.route('/')
@@ -99,8 +115,6 @@ def create_user():
 @app.route('/update_user/<string:_id>', methods=['POST', 'GET'])
 @login_required
 def update_user(_id: str):
-    search = request.args.get('userSearch')
-    page = request.args.get('page', 1, type=int)
     try:
         user = User.objects.get(id=ObjectId(_id))
         form = UpdateUserForm(
@@ -119,28 +133,26 @@ def update_user(_id: str):
                         email=email, login=login, password_hash=password_hash,
                         role=role, status=status)
             flash('User successfully updated', 'success')
-            return redirect(url_for('get_users_list', userSearch=search, page=page))
+            return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect(url_for('get_users_list', userSearch=search, page=page))
+        return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     return render_template('update_user.html', user=user, form=form)
 
 
 @app.route('/delete_user/<string:_id>')
 @login_required
 def delete_user(_id: str):
-    search = request.args.get('userSearch')
-    page = request.args.get('page', 1, type=int)
     try:
         user = User.objects.get(id=ObjectId(_id), status='active')
         user.update(status='inactive')
         flash('User successfully deleted', 'danger')
-        return redirect(url_for('get_users_list', userSearch=search, page=page))
+        return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect(url_for('get_users_list', userSearch=search, page=page))
+        return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
 
 
 @app.route('/restore_user/<string:_id>')
@@ -152,11 +164,11 @@ def restore_user(_id: str):
         user = User.objects.get(id=ObjectId(_id), status='inactive')
         user.update(status='active')
         flash('User successfully restored', 'success')
-        return redirect(url_for('get_users_list', userSearch=search, page=page))
+        return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     except Exception as e:
         print(e)
         flash(str(e), 'danger')
-        return redirect(url_for('get_users_list', userSearch=search, page=page))
+        return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
 
 
 @app.route('/admin_login', methods=['GET', 'POST'])
