@@ -72,6 +72,7 @@ class AddBookForm(FlaskForm):
     author_death_date = IntegerField('Author death date', validators=[DataRequired()])
     genre = StringField('Genre', validators=[DataRequired()])
     year = StringField('Year', validators=[DataRequired()])
+    img_link = StringField('Image link', validators=[DataRequired()])
     publisher = StringField('Publisher', validators=[DataRequired()])
     pages = IntegerField('Pages', validators=[DataRequired()])
     description = StringField('Description', validators=[DataRequired()])

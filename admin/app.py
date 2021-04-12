@@ -4,14 +4,12 @@ import os
 from bson import ObjectId
 from datetime import timedelta
 from dotenv import load_dotenv
-from flask import flash, Flask, redirect, render_template, request, url_for, session
+from flask import flash, Flask, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_required, login_user, logout_user
-from flask_mongoengine import Pagination
 from mongoengine import connect
 from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
-from werkzeug.utils import secure_filename
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from models import Author, Book, Statistics, Status, User
@@ -20,19 +18,21 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=90)
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 Mb limit
 
 connect(
     db=os.getenv('DB_NAME'),
     host=os.getenv('MONGO_URL'),
     port=int(os.getenv('PORT'))
 )
+
 login = LoginManager(app)
 login.login_view = 'admin_login'
 login.init_app(app)
 
 ROWS_PER_PAGE = 6
+
 
 @app.route('/')
 @login_required
@@ -42,8 +42,8 @@ def start_page():
     num_active_users = User.objects(status=Status.ACTIVE).count()
     num_inactive_users = User.objects(status=Status.INACTIVE).count()
     num_muted_users = User.objects(status=Status.MUTED).count()
-    num_active_books = User.objects(status=Status.ACTIVE).count()
-    num_inactive_books = User.objects(status=Status.INACTIVE).count()
+    num_active_books = Book.objects(status=Status.ACTIVE).count()
+    num_inactive_books = Book.objects(status=Status.INACTIVE).count()
 
     statistics = Statistics(num_users, num_books, num_active_users, num_inactive_users, num_muted_users,
                             num_active_books, num_inactive_books)
@@ -56,9 +56,12 @@ def get_users_list():
     search = request.args.get('userSearch')
     page = request.args.get('page', 1, type=int)
     if search:
-        users = Pagination(iterable=User.objects(Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search)), page=page, per_page=ROWS_PER_PAGE)
+        users = User.objects(
+            Q(firstname__contains=search) | Q(lastname__contains=search) | Q(email__contains=search),
+            status=Status.ACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     else:
-        users = Pagination(iterable=User.objects.order_by('email', 'status'), page=page, per_page=ROWS_PER_PAGE)
+        users = User.objects(status=Status.ACTIVE).order_by('email', 'status').paginate(page=page,
+                                                                                        per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -66,8 +69,7 @@ def get_users_list():
 @login_required
 def get_active_users_list():
     page = request.args.get('page', 1, type=int)
-    users = Pagination(User.objects(status=Status.ACTIVE).order_by('email', 'status'),
-                       page=page, per_page=ROWS_PER_PAGE)
+    users = User.objects(status=Status.ACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -75,8 +77,7 @@ def get_active_users_list():
 @login_required
 def get_inactive_users_list():
     page = request.args.get('page', 1, type=int)
-    users = Pagination(User.objects(status=Status.INACTIVE).order_by('email', 'status'),
-                       page=page, per_page=ROWS_PER_PAGE)
+    users = User.objects(status=Status.INACTIVE).order_by('email', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('users_list.html', users=users)
 
 
@@ -201,6 +202,7 @@ def add_book():
         author_birthdate = str(form.author_birthdate.data)
         author_death_date = str(form.author_death_date.data)
         book.year = form.year.data
+        book.link_img = form.img_link.data
         book.publisher = form.publisher.data
         book.language = form.language.data
         book.description = form.description.data
@@ -245,27 +247,36 @@ def upload_files():
         if not (uploaded_file.filename.endswith('.json')):
             flash('Incorrect type of file (.JSON is needed)', 'danger')
             return redirect(request.url)
-        else:
-            filename = secure_filename(uploaded_file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            uploaded_file.save(file_path)
         try:
-            with open(os.getenv('UPLOAD_FOLDER') + filename) as f:
-                file_data = json.load(f)
+            data = json.loads(uploaded_file.read().decode())
         except Exception as e:
-            flash(str(e), 'danger')
+            flash(f'Error parsing file: {str(e)}', 'danger')
+            print(e)
             return redirect(request.url)
-        finally:
-            os.remove(file_path)
+
         try:
-            for example in file_data:
-                book = Book.from_json(json.dumps(example))
-                book.save(force_insert=True)
-            flash('Books added successfully', 'success')
-            return redirect(url_for('import_file'))
+            books = []
+            for row in data:
+                author = Author.objects(**row['author']).first()
+                if author:
+                    row.pop('author')
+                    books.append(Book(author_id=author.pk, **row))
+                else:
+                    author = Author(**row['author'])
+                    author.save()
+                    row.pop('author')
+                    books.append(Book(author_id=author.pk, **row))
+
+            Book.objects.insert(books)
+            for book in books:
+                book.author_id.books.append(str(book.id))
+                book.cascade_save()
         except Exception as e:
-            flash(str(e), 'danger')
+            flash(f'Error saving object: {str(e)}', 'danger')
             return redirect(url_for('import_file'))
+
+        flash('All books saved successfully', 'success')
+        return redirect(url_for('import_file'))
 
 
 @app.route('/book-storage')
@@ -274,7 +285,7 @@ def book_storage():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('bookSearch')
     if search:
-        books = Pagination(iterable=Book.objects(Q(title__contains=search) | Q(year__contains=search)), page=page, per_page=ROWS_PER_PAGE)
+        books = Book.objects(Q(title__contains=search) | Q(year__contains=search)).paginate(page=page, per_page=ROWS_PER_PAGE)
         author = Author.objects(name__contains=search).first()
         if author:
             arr = []
@@ -282,7 +293,7 @@ def book_storage():
                 arr.append(Book.objects(id=i).first())
             books.items += arr
     else:
-        books = Pagination(iterable=Book.objects.order_by('title', 'status'), page=page, per_page=ROWS_PER_PAGE)
+        books = Book.objects.order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
@@ -290,8 +301,7 @@ def book_storage():
 @login_required
 def book_active():
     page = request.args.get('page', 1, type=int)
-    books = Pagination(Book.objects(status=Status.ACTIVE).order_by('title', 'status'),
-                       page=page, per_page=ROWS_PER_PAGE)
+    books = Book.objects(status=Status.ACTIVE).order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
@@ -299,8 +309,7 @@ def book_active():
 @login_required
 def book_inactive():
     page = request.args.get('page', 1, type=int)
-    books = Pagination(Book.objects(status=Status.INACTIVE).order_by('title', 'status'),
-                       page=page, per_page=ROWS_PER_PAGE)
+    books = Book.objects(status=Status.INACTIVE).order_by('title', 'status').paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template('book-storage.html', books=books)
 
 
@@ -323,6 +332,7 @@ def book_update(_id):
             author_birthdate = str(form.author_birthdate.data)
             author_death_date = str(form.author_death_date.data)
             year = form.year.data
+            book.link_img = form.img_link.data
             publisher = form.publisher.data
             language = form.language.data
             description = form.description.data

@@ -2,12 +2,40 @@
 color: red !important;
 }
 
+.custom{
+    display: flex;
+}
+
 .custom input,.custom a, .custom button{
     width: 78px;
+    margin-left: 4px;
 }
 
 .custom_border{
     -webkit-box-shadow: -1px 1px 10px 3px #B9B5B4;
     -moz-box-shadow: -1px 1px 10px 3px #B9B5B4;
     box-shadow: -1px 1px 10px 3px #B9B5B4;
+}
+
+#cover_image{
+    max-width: 225px;
+    max-height: 250px;
+}
+
+.book_details_text{
+    margin-left: 10px;
+    max-width: 650px!important;
+}
+
+.book_details_img{
+    max-width: 225px;
+}
+
+.book_details_frame{
+    background: #EEFCFC;
+    max-width: 925px!important;
+}
+
+.custom_pagination {
+    margin-right: 12px;
 }
