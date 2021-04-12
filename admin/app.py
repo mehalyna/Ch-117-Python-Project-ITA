@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 from bson import ObjectId
 from datetime import timedelta
@@ -7,12 +8,13 @@ from dotenv import load_dotenv
 from flask import flash, Flask, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_required, login_user, logout_user
 from mongoengine import connect
+from mongoengine.queryset.visitor import Q
 from urllib import parse
 from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
 
 from forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
-from models import Author, Book, Statistics, Status, User
+from models import Author, Book, Role, Statistics, Status, User
 import utils
 
 load_dotenv()
@@ -110,7 +112,6 @@ def create_user():
             user.login = form.login.data
             user.set_password(form.password.data)
             user.role = form.role.data
-            user.status = Status.ACTIVE
             user.save()
             flash('User successfully created', 'success')
             return redirect(url_for('get_users_list'))
@@ -138,10 +139,13 @@ def update_user(_id: str):
             password_hash = generate_password_hash(form.password.data)
             role = form.role.data
             status = form.status.data
-            user.update(firstname=firstname, lastname=lastname,
-                        email=email, login=login, password_hash=password_hash,
-                        role=role, status=status)
-            flash('User successfully updated', 'success')
+            if _id == str(user.id) and user.role == Role.ADMIN and role != Role.ADMIN:
+                flash('The administrator cannot change the status or role for himself', 'warning')
+            else:
+                user.update(firstname=firstname, lastname=lastname,
+                            email=email, login=login, password_hash=password_hash,
+                            role=role, status=status)
+                flash('User successfully updated', 'success')
             return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     except Exception as e:
         print(e)
@@ -154,9 +158,12 @@ def update_user(_id: str):
 @login_required
 def delete_user(_id: str):
     try:
-        user = User.objects.get(id=ObjectId(_id), status='active')
-        user.update(status='inactive')
-        flash('User successfully deleted', 'danger')
+        user = User.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
+        if _id == str(user.id) and user.role == Role.ADMIN:
+            flash('The administrator cannot change the status or role for himself', 'warning')
+        else:
+            user.update(status=Status.INACTIVE)
+            flash('User successfully deleted', 'danger')
         return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
     except Exception as e:
         print(e)
@@ -168,7 +175,7 @@ def delete_user(_id: str):
 @login_required
 def restore_user(_id: str):
     try:
-        user = User.objects.get(id=ObjectId(_id), status='inactive')
+        user = User.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
         user.update(status='active')
         flash('User successfully restored', 'success')
         return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
@@ -223,10 +230,10 @@ def add_book():
         book.language = form.language.data
         book.description = form.description.data
         book.pages = form.pages.data
-        book.genres = [form.genre.data]
-        book.save()
+        book.genres = re.split(r',',form.genre.data)
 
         try:
+            book.save()
             author = Author.objects(name=author_name, birthdate=author_birthdate, death_date=author_death_date).first()
             if author and not str(book.pk) in author.books:
                 author.books.append(str(book.pk))
@@ -340,7 +347,7 @@ def book_update(_id):
             language = form.language.data
             description = form.description.data
             pages = form.pages.data
-            genres = form.genre.data
+            genres = re.split(r',',form.genre.data)
             status = form.status.data
             if str(book.id) in book.author_id.books:
                 book.author_id.books.remove(str(book.id))

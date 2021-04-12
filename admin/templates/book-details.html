@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <p>by <b>{{ book.author_id.name }}</b></p>
-                <p>Genres: <b>{% for genre in book.genres %}{{ genre }} {% endfor %}</b></p>
+                <p>Genres: <b>{{','.join(book.genres)}}</b></p>
                 <span data-toggle="tooltip" data-placement="top" title="Total read {{ book.statistic.total_read }}">
                 <img src="{{ url_for('static', filename='images/totalRead.png') }}" alt="total read icon">
                 {{ book.statistic.total_read }}
