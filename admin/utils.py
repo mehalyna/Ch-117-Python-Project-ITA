@@ -35,8 +35,8 @@ def search_and_pagination(collection: Type[Document], order_field: str, status: 
                     if author_books_search:
                         arr.append(ObjectId(book))
 
-            collection_documents = collection.objects(id__in=arr).order_by('status').paginate(page=page,
-                                                                                              per_page=ROWS_PER_PAGE)
+            collection_documents = collection.objects(id__in=arr).order_by(
+                'status', order_field).paginate(page=page, per_page=ROWS_PER_PAGE)
     elif user_search and collection is User:
         collection_documents = collection.objects(
             Q(firstname__contains=user_search) | Q(lastname__contains=user_search) | Q(email__contains=user_search),
