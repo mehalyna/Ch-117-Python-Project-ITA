@@ -31,11 +31,13 @@ Python Project of Ch-117 mixed group ITA
      from models import User
      ```
    - ```sh
-      u = User(firstname='UserFirstname', lastname='UserLastname', login='UserLogin', role='admin', email='UserEmail@example.com')
+      u = User(firstname='<UserFirstname>', lastname='<UserLastname>', login='<UserLogin>', role='admin', email='<UserEmail@example.com>')
       ```
+   - Minimum number of characters for login = 6  
    - ```sh
-      u.set_password('UserPassword')
+      u.set_password('<UserPassword>')
       ```
+   - Minimum number of characters for password = 8
    - ```sh   
       u.save()
    
