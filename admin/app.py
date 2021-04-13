@@ -360,7 +360,7 @@ def book_update(_id):
                                 books=[str(book.id)])
             author.save()
             book.update(title=title, author_id=author.pk, year=year, publisher=publisher, language=language,
-                        description=description, pages=pages, genres=[genres], status=status)
+                        description=description, pages=pages, genres=genres, status=status)
             return redirect(utils.back_to_page('page', 'bookSearch', 'urlPath'))
     except Exception as e:
         print(e)
