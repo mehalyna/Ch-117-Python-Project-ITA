@@ -24,17 +24,25 @@ Python Project of Ch-117 mixed group ITA
        port=PORT
     )
    ```
-   - In mongoDB compass connect to localhost mongodb://127.0.0.1:27017
-   - Create database "name DB" and create collection 'user'
-   - In collection push "ADD DATA" and select 'Insert Document'
-   - Input {"_id":{"$oid":"60636f34bb19534f686cfe0f"},"firstname":"admin","lastname":"admin","email":"thusday13081@gmail.com","login":"user123","password_hash":"pbkdf2:sha256:150000$De6yt2gS$8cea55706d35565cd9d9617c6718627892b9457dbe514ffe305d86b4629104a5","role":"admin","status":"active","last_login":{"$date":"2021-03-30T21:06:27.163Z"},"reviews":[],"recommended_books":[],"wishlist":[],"preference":{"genres":[],"authors":[],"rating":2.5,"years":[]}}
-   - Save
+   
+   - You must create the first administrator user yourself.
+   - Start flask shell from terminal:
+   - ```sh
+     from models import User
+     ```
+   - ```sh
+      u = User(firstname='UserFirstname', lastname='UserLastname', login='UserLogin', role='admin', email='UserEmail@example.com')
+      ```
+   - ```sh
+      u.set_password('UserPassword')
+      ```
+   - ```sh   
+      u.save()
+   
 6. Run the server
-   ```sh
-   app.py
-   ```
-   - your login admin123
-   - your password 12345678
+      ```sh
+    app.py
+      ```
 
 ## For contributors
 ### Project setup
