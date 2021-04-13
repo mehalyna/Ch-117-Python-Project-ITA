@@ -23,11 +23,28 @@ Python Project of Ch-117 mixed group ITA
        host=MONGO_URL,
        port=PORT
     )
-6. Run the server
-   ```sh
-   app.py
    ```
-
+   
+   - You must create the first administrator user yourself.
+   - Start flask shell from terminal:
+   - ```sh
+     from models import User
+     ```
+   - ```sh
+      u = User(firstname='<UserFirstname>', lastname='<UserLastname>', login='<UserLogin>', role='admin', email='<UserEmail@example.com>')
+      ```
+   - Minimum number of characters for login = 6  
+   - ```sh
+      u.set_password('<UserPassword>')
+      ```
+   - Minimum number of characters for password = 8
+   - ```sh   
+      u.save()
+   
+6. Run the server
+      ```sh
+    app.py
+      ```
 
 ## For contributors
 ### Project setup
