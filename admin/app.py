@@ -158,7 +158,7 @@ def update_user(_id: str):
 def delete_user(_id: str):
     try:
         user = User.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
-        if _id == str(user.id):# and user.role == Role.ADMIN:
+        if _id == str(user.id) and user.role == Role.ADMIN:
             flash('The administrator cannot change the status or role for himself', 'warning')
         else:
             user.update(status=Status.INACTIVE)
