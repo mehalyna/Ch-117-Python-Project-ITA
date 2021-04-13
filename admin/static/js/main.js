@@ -21,12 +21,9 @@ function validateForm(formName) {
     let language = document.forms[formName]['language'].value;
     let warning = '<div class="invalid-feedback">This field is required</div>';
 
-
-
     if (title === "") {
         document.querySelector('#title').classList.add('is-invalid');
         document.querySelector('#title').insertAdjacentHTML('afterend', warning);
-
     }
 
     if (author_name === "") {
