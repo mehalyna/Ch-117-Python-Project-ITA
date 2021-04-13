@@ -8,7 +8,7 @@ from models import Role, Status, User
 EMAIL_PATTERN = r'^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
 
 
-def unique_check(column, update=False):
+def unique_check(column: str, update: bool = False):
     message = f'{column.title()} is already taken'
 
     def _unique_check(form, field):
