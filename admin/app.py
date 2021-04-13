@@ -138,7 +138,7 @@ def update_user(_id: str):
             password_hash = generate_password_hash(form.password.data)
             role = form.role.data
             status = form.status.data
-            if _id == str(user.id) and user.role == Role.ADMIN and role != Role.ADMIN:
+            if _id == session.get('_user_id') and (status != Status.ACTIVE or role != Role.ADMIN):
                 flash('The administrator cannot change the status or role for himself', 'warning')
             else:
                 user.update(firstname=firstname, lastname=lastname,
@@ -158,7 +158,7 @@ def update_user(_id: str):
 def delete_user(_id: str):
     try:
         user = User.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
-        if _id == str(user.id) and user.role == Role.ADMIN:
+        if _id == session.get('_user_id'):
             flash('The administrator cannot change the status or role for himself', 'warning')
         else:
             user.update(status=Status.INACTIVE)
