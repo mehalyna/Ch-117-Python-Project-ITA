@@ -19,25 +19,33 @@ function validateForm(formName) {
     let author_name = document.forms[formName]['author_name'].value;
     let year = document.forms[formName]['year'].value;
     let language = document.forms[formName]['language'].value;
+    let warning = '<div class="invalid-feedback">This field is required</div>'
+
+
 
     if (title === "") {
         document.querySelector('#title').classList.add('is-invalid');
+        document.querySelector('#title').insertAdjacentHTML('afterend', warning)
+
     }
 
     if (author_name === "") {
         document.querySelector('#author_name').classList.add('is-invalid');
+        document.querySelector('#author_name').insertAdjacentHTML('afterend', warning)
     }
 
     if (year === "") {
         document.querySelector('#year').classList.add('is-invalid');
+        document.querySelector('#year').insertAdjacentHTML('afterend', warning)
     }
 
     if (language === "") {
         document.querySelector('#language').classList.add('is-invalid');
+        document.querySelector('#language').insertAdjacentHTML('afterend', warning)
     }
 
     if (author_name === '' || title === '' || year === '' || language === '') {
-        return false
+        return false;
     }
 }
 
