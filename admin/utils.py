@@ -22,21 +22,16 @@ def search_and_pagination(collection: Type[Document], order_field: str, status: 
     page = request.args.get('page', 1, type=int)
     status = [Status.ACTIVE, Status.INACTIVE] if not status else [status]
     if book_search and collection is Book:
+        authors = Author.objects(name__contains=book_search)
+        books_id = []
+        for author in authors:
+            for book_id in author.books:
+                books_id.append(book_id)
+
         collection_documents = collection.objects(
-            Q(title__contains=book_search) | Q(year__contains=book_search), status__in=status
+            Q(title__contains=book_search) | Q(year__contains=book_search) | Q(id__in=books_id), status__in=status
         ).order_by('status', order_field).paginate(page=page, per_page=ROWS_PER_PAGE)
 
-        authors = Author.objects(name__contains=book_search)
-        if authors:
-            arr = []
-            for author in authors:
-                for book in author.books:
-                    author_books_search = Book.objects(id=ObjectId(book), status__in=status).first()
-                    if author_books_search:
-                        arr.append(ObjectId(book))
-
-            collection_documents = collection.objects(id__in=arr).order_by(
-                'status', order_field).paginate(page=page, per_page=ROWS_PER_PAGE)
     elif user_search and collection is User:
         collection_documents = collection.objects(
             Q(firstname__contains=user_search) | Q(lastname__contains=user_search) | Q(email__contains=user_search),
