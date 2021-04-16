@@ -19,16 +19,16 @@ from admin import utils
 load_dotenv()
 
 
-def create_app(db_name, url, port):
+def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=90)
     app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 Mb limit
 
     connect(
-        db=os.getenv(db_name),
-        host=os.getenv(url),
-        port=int(os.getenv(port))
+        db=os.getenv('DB_NAME'),
+        host=os.getenv('MONGO_URL'),
+        port=int(os.getenv('PORT'))
     )
 
     login = LoginManager(app)
@@ -380,4 +380,4 @@ def create_app(db_name, url, port):
 
 
 if __name__ == '__main__':
-    create_app('DB_NAME', 'MONGO_URL', 'PORT').run()
+    create_app().run()
