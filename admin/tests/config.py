@@ -9,5 +9,5 @@ CREATE_VALID_USER = {'firstname': 'Jennifer', 'lastname': 'Klein',
                      'password': 'klein123', 'role': 'user'}
 
 CREATE_INVALID_USER = {'firstname': 'Jennifer', 'lastname': 'Klein',
-                       'email': 'klein_jennifer43@.com', 'login': 'jennifer_k',
-                       'password': 'klein432', 'role': 'user'}
+                       'email': 'klein_jennifer43gmail.com', 'login': 'jennifer_k',
+                       'password': 'klein1234', 'role': 'user'}
