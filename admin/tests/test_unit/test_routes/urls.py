@@ -1,3 +1,5 @@
 ADMIN_LOGIN = '/admin_login'
 HOME = '/'
 BOOK_STORAGE = '/book-storage'
+CREATE_USER = '/create_user'
+USERS_LIST = '/users_list'
