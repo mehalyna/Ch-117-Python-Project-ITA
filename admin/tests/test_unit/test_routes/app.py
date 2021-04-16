@@ -31,8 +31,8 @@ class App:
         response = self.client.get(BOOK_STORAGE, query_string=params)
         return response
 
-    def get_update_user(self) -> flask.Response:
-        response = self.client.get(UPDATE_USER)
+    def get_update_user(self, _id) -> flask.Response:
+        response = self.client.get(UPDATE_USER + f'/{_id}')
         return response
 
     def post_update_user(self, data: dict) -> flask.Response:

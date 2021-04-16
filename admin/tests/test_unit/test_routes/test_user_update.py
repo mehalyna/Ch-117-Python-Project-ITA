@@ -1,10 +1,9 @@
-from http import HTTPStatus
-
 from admin.tests.config import LOGIN, PASSWORD
+from admin.models import User
 
 
 def test_get_update_user(app):
     app.authorize(LOGIN, PASSWORD)
-    response = app.get_update_user()
-    assert HTTPStatus.OK == response.status_code
+    user = User.objects(login=LOGIN).first()
+    response = app.get_update_user(user.id)
     assert b'User updating form' in response.data
