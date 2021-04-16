@@ -11,11 +11,11 @@ def test_get_book_storage(app):
     assert HTTPStatus.OK == response.status_code
     assert b'Title' in response.data
     assert b'Author' in response.data
-    assert b'Showing page 1 of 27' in response.data
+    assert b'Showing page 1 of' in response.data
 
 
 def test_get_second_page_in_book_storage(app):
     app.authorize(LOGIN, PASSWORD)
     response = app.get_book_storage({'page': 2})
     assert HTTPStatus.OK == response.status_code
-    assert b'Showing page 2 of 27' in response.data
+    assert b'Showing page 2 of' in response.data

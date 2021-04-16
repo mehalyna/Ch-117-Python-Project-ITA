@@ -1,8 +1,7 @@
 import flask
 
-
 from admin.tests.test_unit.test_routes.urls import (
-    ADMIN_LOGIN, HOME, BOOK_STORAGE
+    ADMIN_LOGIN, HOME, BOOK_STORAGE, UPDATE_USER
 )
 
 
@@ -30,4 +29,12 @@ class App:
 
     def get_book_storage(self, params: dict = None) -> flask.Response:
         response = self.client.get(BOOK_STORAGE, query_string=params)
+        return response
+
+    def get_update_user(self) -> flask.Response:
+        response = self.client.get(UPDATE_USER)
+        return response
+
+    def post_update_user(self, data: dict) -> flask.Response:
+        response = self.client.post(UPDATE_USER, data=data)
         return response

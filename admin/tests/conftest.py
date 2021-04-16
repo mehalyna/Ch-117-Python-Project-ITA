@@ -3,7 +3,6 @@ import os
 import pytest
 from mongoengine import disconnect
 
-
 from admin.app import create_app
 from admin.tests.test_unit.test_routes.app import App
 

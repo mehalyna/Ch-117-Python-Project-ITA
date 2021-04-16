@@ -35,8 +35,6 @@ def create_app(db_name, url, port):
     login.login_view = 'admin_login'
     login.init_app(app)
 
-    ROWS_PER_PAGE = 6
-
     @app.errorhandler(404)
     def page_not_found(e):
         prev_url = request.referrer
