@@ -1,9 +1,9 @@
-import flask
-
-
 from admin.tests.test_unit.test_routes.urls import (
     ADMIN_LOGIN, HOME, BOOK_STORAGE
 )
+
+import flask
+from flask import url_for
 
 
 class App:
@@ -22,6 +22,13 @@ class App:
         response = self.client.post(ADMIN_LOGIN,
                                     data=data,
                                     follow_redirects=follow_redirects)
+        return response
+
+    def post_import_file(self, data: dict) -> flask.Response:
+        response = self.client.post(
+            url_for('import_file'), data=data, follow_redirects=True,
+            content_type='multipart/form-data'
+        )
         return response
 
     def get_home(self) -> flask.Response:
