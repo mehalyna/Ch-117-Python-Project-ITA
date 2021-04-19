@@ -19,7 +19,7 @@ import utils
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=90)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 Mb limit
 
