@@ -104,7 +104,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-admin/.env
 .env
 .venv
 env/
@@ -133,5 +132,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# secret data
+
+# Credentials
 admin/tests/config.py
