@@ -3,7 +3,7 @@ from wtforms import IntegerField, PasswordField, SelectField, StringField, Submi
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Regexp, ValidationError
 
-from models import Role, Status, User
+from admin.models import Role, Status, User
 
 EMAIL_PATTERN = r'^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
 

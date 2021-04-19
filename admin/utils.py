@@ -6,7 +6,7 @@ from flask import request
 from flask_mongoengine import Document
 from mongoengine.queryset.visitor import Q
 
-from models import Author, Book, Status, User
+from admin.models import Author, Book, Status, User
 
 ROWS_PER_PAGE = 6
 
