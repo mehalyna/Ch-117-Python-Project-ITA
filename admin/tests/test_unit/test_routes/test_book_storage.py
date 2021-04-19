@@ -1,6 +1,5 @@
 from http import HTTPStatus
 
-
 from admin.tests.config import LOGIN, PASSWORD
 
 
