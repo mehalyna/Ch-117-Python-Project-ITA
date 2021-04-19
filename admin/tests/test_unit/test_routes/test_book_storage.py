@@ -14,7 +14,7 @@ def test_get_book_storage(app):
     assert b'Showing page 0' in response.data
 
 
-def test_get_second_page_in_book_storage(app):
+def test_get_not_existing_page_in_book_storage(app):
     app.authorize(LOGIN, PASSWORD)
     response = app.get_book_storage({'page': 2})
     assert HTTPStatus.OK == response.status_code
