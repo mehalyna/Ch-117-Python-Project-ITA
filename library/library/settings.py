@@ -76,16 +76,15 @@ WSGI_APPLICATION = 'library.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
+MONGODB_DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
-        'NAME': os.getenv('DB_NAME'),
-        'CLIENT': {
-            'host': os.getenv('MONGO_URL'),
-            'port': int(os.getenv('PORT')),
-        },
+        'name': os.getenv('DB_NAME'),
+        'host': os.getenv('MONGO_URL'),
+        'port': int(os.getenv('PORT')),
     }
 }
+
+INSTALLED_APPS += ["django_mongoengine"]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
