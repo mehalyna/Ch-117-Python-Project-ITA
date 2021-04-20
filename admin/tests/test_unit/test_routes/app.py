@@ -1,9 +1,10 @@
 import json
 
 import flask
+from flask import url_for
 
 from admin.tests.test_unit.test_routes.urls import (
-    ADMIN_LOGIN, BOOK_STORAGE, CREATE_USER, HOME
+    ADMIN_LOGIN, BOOK_STORAGE, CREATE_USER, HOME, UPDATE_USER
 )
 
 
@@ -25,6 +26,13 @@ class App:
                                     follow_redirects=follow_redirects)
         return response
 
+    def post_import_file(self, data: dict) -> flask.Response:
+        response = self.client.post(
+            url_for('import_file'), data=data, follow_redirects=True,
+            content_type='multipart/form-data'
+        )
+        return response
+
     def get_home(self) -> flask.Response:
         response = self.client.get(HOME)
         return response
@@ -40,4 +48,10 @@ class App:
     def post_user_create(self, data: dict, follow_redirects: bool = True) -> flask.Response:
         response = self.client.post(CREATE_USER, data=data, follow_redirects=follow_redirects)
 
+    def get_update_user(self, _id) -> flask.Response:
+        response = self.client.get(UPDATE_USER + f'/{_id}')
+        return response
+
+    def post_update_user(self, data: dict) -> flask.Response:
+        response = self.client.post(UPDATE_USER, data=data)
         return response
