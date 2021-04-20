@@ -47,6 +47,7 @@ class App:
 
     def post_user_create(self, data: dict, follow_redirects: bool = True) -> flask.Response:
         response = self.client.post(CREATE_USER, data=data, follow_redirects=follow_redirects)
+        return response
 
     def get_update_user(self, _id) -> flask.Response:
         response = self.client.get(UPDATE_USER + f'/{_id}')
