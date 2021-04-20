@@ -14,7 +14,8 @@ from werkzeug.urls import url_parse
 
 from admin.forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from admin.models import Author, Book, Role, Statistics, Status, User
-from admin import utils
+import admin.utils as utils
+
 
 load_dotenv()
 

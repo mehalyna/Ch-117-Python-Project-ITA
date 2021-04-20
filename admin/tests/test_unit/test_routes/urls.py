@@ -1,4 +1,6 @@
 ADMIN_LOGIN = '/admin_login'
-HOME = '/'
 BOOK_STORAGE = '/book-storage'
+CREATE_USER = '/create_user'
+HOME = '/'
+USERS_LIST = '/users_list'
 UPDATE_USER = '/update_user'
