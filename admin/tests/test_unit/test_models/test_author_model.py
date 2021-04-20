@@ -23,14 +23,6 @@ def test_author_save_with_invalid_name(client):
     assert 'StringField only accepts string values' in exception.value.message
 
 
-def test_author_save_with_invalid_death_date(client):
-    with pytest.raises(ValidationError) as exception:
-        author = Author(name='reincarnated', birthdate='2000', death_date='1995')
-        author.save()
-        author.delete()
-    assert 'Death date should be greater then birthdate' in exception.value.message
-
-
 def test_get_not_existing_author(client):
     author = Author.objects(name='some not existing author')
     # If author is in db it will be instance of Author class
