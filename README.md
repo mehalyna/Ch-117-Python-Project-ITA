@@ -45,6 +45,10 @@ Python Project of Ch-117 mixed group ITA
       ```sh
     app.py
       ```
+7. Run tests 
+   ```sh
+    pytest
+      ```
 
 ## For contributors
 ### Project setup
