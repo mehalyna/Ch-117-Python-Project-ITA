@@ -24,67 +24,32 @@
 
     <nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top">
         <a class="navbar-brand ml-5" href="#">Library</a>
-        <ul class="navbar-nav mx-auto">
-            <li class="nav-item">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-light">
-                            <img class="mb-1" src="{% static 'catalog/images/search.png' %}"
-                                 alt="search" width="15" height="15">
-                        </button>
-                    </div>
-                </div>
-            </li>
-        </ul>
 
-        <ul class="navbar-nav mr-5">
-            <li class="nav-item">
-                <button class="btn btn-outline-light" data-toggle="modal" data-target="#myModal">
-                    Sign In
-                </button>
-            </li>
-
-        </ul>
+        {% block nav_header %}
+        {% endblock %}
+{#        <ul class="navbar-nav mx-auto">#}
+{#            <li class="nav-item">#}
+{#                <div class="input-group">#}
+{#                    <input type="text" class="form-control" placeholder="Search">#}
+{#                    <div class="input-group-append">#}
+{#                        <button class="btn btn-outline-light">#}
+{#                            <img class="mb-1" src="{% static 'catalog/images/search.png' %}"#}
+{#                                 alt="search" width="15" height="15">#}
+{#                        </button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </li>#}
+{#        </ul>#}
+{##}
+{#        <ul class="navbar-nav mr-5">#}
+{#            <li class="nav-item">#}
+{#                <button class="btn btn-outline-light">#}
+{#                    Sign In#}
+{#                </button>#}
+{#            </li>#}
+{#        </ul>#}
 
     </nav>
-
-    <div class="modal" id="myModal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-
-          <div class="modal-header">
-            <h4 class="modal-title">Sign In</h4>
-{#            <button type="button" class="close" data-dismiss="modal">&times;</button>#}
-          </div>
-
-          <div class="modal-body">
-            <form action="#">
-                <div class="form-group">
-                    <label for="login">Login:</label>
-                    <input type="text" class="form-control" placeholder="Enter login" id="login">
-                </div>
-                <div class="form-group">
-                   <label for="pwd">Password:</label>
-                   <input type="password" class="form-control" placeholder="Enter password" id="pwd">
-                </div>
-              <div class="form-group form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox"> Remember me
-                </label>
-              </div>
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
 
 {% block body %}
 {% endblock %}
