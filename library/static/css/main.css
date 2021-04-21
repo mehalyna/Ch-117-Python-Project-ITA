@@ -1,0 +1,21 @@
+.image_h1 {
+    width: auto;
+    height: 35px;
+}
+.text-ultramarine {
+    color: #1a73e8;
+}
+.registration-border {
+    box-shadow: 12px 12px 5px #1a73e8;
+}
+
+.sign-up-button {
+    width: 110px;
+    border-radius: 20px;
+    background-color: #1a73e8;
+    color: white;
+}
+
+.sign-up-button:hover{
+    color:white;
+}
