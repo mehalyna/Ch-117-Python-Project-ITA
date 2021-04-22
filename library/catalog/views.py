@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
-from catalog.forms import RegistrationForm
+from .forms import RegistrationForm
 
 
 def home(request):
