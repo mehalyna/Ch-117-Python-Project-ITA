@@ -8,6 +8,10 @@ def home(request):
     return HttpResponse('<h1>Home page</h1>')
 
 
+
+def base(request):
+    return render(request, 'base.html')
+
 def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
