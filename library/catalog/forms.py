@@ -1,4 +1,4 @@
-from django.forms import Form, CharField, EmailField, PasswordInput, TextInput
+from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
 
 
 class RegistrationForm(Form):
