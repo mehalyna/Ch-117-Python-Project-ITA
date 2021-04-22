@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <title>{% block title %}{% endblock %}</title>
+    {% load static %}
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top">
+        <a class="navbar-brand ml-5" href="#">Library</a>
+
+        {% block nav_header %}
+        {% endblock %}
+{#        <ul class="navbar-nav mx-auto">#}
+{#            <li class="nav-item">#}
+{#                <div class="input-group">#}
+{#                    <input type="text" class="form-control" placeholder="Search">#}
+{#                    <div class="input-group-append">#}
+{#                        <button class="btn btn-outline-light">#}
+{#                            <img class="mb-1" src="{% static 'images/search.png' %}"#}
+{#                                 alt="search" width="15" height="15">#}
+{#                        </button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </li>#}
+{#        </ul>#}
+{#        {% if user.is_authenticated %}#}
+{#            <ul class="navbar-nav ml-auto">#}
+{#                <li class="nav-item dropdown mr-5">#}
+{#                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">#}
+{#                        <img src="{% static 'images/user-regular.svg' %}"#}
+{#                             width="40" height="40"#}
+{#                             alt="user">#}
+{#                    </a>#}
+{#                    <div class="dropdown-menu">#}
+{#                        <a class="dropdown-item" href="#">Profile</a>#}
+{#                        <a class="dropdown-item" href="#">Log out</a>#}
+{#                    </div>#}
+{#                </li>#}
+{#            </ul>#}
+{#        {% else %}#}
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item mr-5">
+                    <button class="btn btn-outline-light">
+                        Sign In
+                    </button>
+                </li>
+            </ul>
+{#        {% endif %}#}
+
+    </nav>
+
+{% block body %}
+{% endblock %}
+
+
+<!-- Remove the container if you want to extend the Footer to full width. -->
+<div style="margin-top: 362px;">
+    <!-- Footer -->
+    <footer
+            class="text-center text-lg-start text-white bg-secondary"
+
+    >
+        <!-- Grid container -->
+        <div class="container p-4 pb-0">
+            <!-- Section: Links -->
+            <section class="">
+                <!--Grid row-->
+                <div class="row">
+                    <!-- Grid column -->
+                    <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                        <h6 class="text-uppercase mb-4 font-weight-bold">
+                            About us
+                        </h6>
+                        <p>
+                            Our site is one of the largest open libraries,
+                            here you can find many books by different authors
+                            and years of publication, as well as our service
+                            will help you follow the latest literature and
+                            find books to your preference
+                        </p>
+                    </div>
+                    <!-- Grid column -->
+
+                    <hr class="w-100 clearfix d-md-none" />
+                    <!-- Grid column -->
+
+                    <hr class="w-100 clearfix d-md-none" />
+
+                    <!-- Grid column -->
+                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+                        <h6 class="text-uppercase mb-4 font-weight-bold">
+                            Useful links
+                        </h6>
+                        <p>
+                            <a class="text-white">Your Account</a>
+                        </p>
+                        <p>
+                            <a class="text-white">Sing in</a>
+                        </p>
+                        <p>
+                            <a class="text-white">Sing up</a>
+                        </p>
+                        <p>
+                            <a class="text-white">Help</a>
+                        </p>
+                    </div>
+
+                    <!-- Grid column -->
+                    <hr class="w-100 clearfix d-md-none" />
+
+                    <!-- Grid column -->
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                        <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
+                        <p><i class="fas fa-envelope mr-3"></i> info@gmail.com</p>
+                        <p><i class="fas fa-phone mr-3"></i> + 01 234 567 88</p>
+                        <p><i class="fas fa-print mr-3"></i> + 01 234 567 89</p>
+                    </div>
+                    <!-- Grid column -->
+                </div>
+                <!--Grid row-->
+            </section>
+            <!-- Section: Links -->
+
+            <hr class="my-3">
+
+            <!-- Section: Copyright -->
+            <section class="p-3 pt-0">
+                <div class="row d-flex align-items-center">
+                    <!-- Grid column -->
+                    <div class="col-md-7 col-lg-8 text-center text-md-start">
+                        <!-- Copyright -->
+                        <div class="p-3">
+                            © 2020 Copyright:
+                            <a class="text-white" href="https://mdbootstrap.com/"
+                            >MDBootstrap.com</a
+                            >
+                        </div>
+                        <!-- Copyright -->
+                    </div>
+                    <!-- Grid column -->
+
+                    <!-- Grid column -->
+                    <div class="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
+                        <!-- Facebook -->
+                        <a
+                                class="btn btn-outline-light btn-floating m-1"
+                                class="text-white"
+                                role="button"
+                        ><i class="fab fa-facebook-f"></i
+                        ></a>
+
+                        <!-- Twitter -->
+                        <a
+                                class="btn btn-outline-light btn-floating m-1"
+                                class="text-white"
+                                role="button"
+                        ><i class="fab fa-twitter"></i
+                        ></a>
+
+                        <!-- Google -->
+                        <a
+                                class="btn btn-outline-light btn-floating m-1"
+                                class="text-white"
+                                role="button"
+                        ><i class="fab fa-google"></i
+                        ></a>
+
+                        <!-- Instagram -->
+                        <a
+                                class="btn btn-outline-light btn-floating m-1"
+                                class="text-white"
+                                role="button"
+                        ><i class="fab fa-instagram"></i
+                        ></a>
+                    </div>
+                    <!-- Grid column -->
+                </div>
+            </section>
+            <!-- Section: Copyright -->
+        </div>
+        <!-- Grid container -->
+    </footer>
+    <!-- Footer -->
+</div>
+
+
+<!-- MDB -->
+<script type="text/javascript" src="js/mdb.min.js"></script>
+<!-- Custom scripts -->
+<script type="text/javascript" src="js/script.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
