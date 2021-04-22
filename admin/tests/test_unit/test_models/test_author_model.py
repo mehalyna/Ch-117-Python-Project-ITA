@@ -2,7 +2,6 @@ import pytest
 from mongoengine.errors import ValidationError
 from flask_mongoengine import BaseQuerySet
 
-
 from admin.models import Author
 
 

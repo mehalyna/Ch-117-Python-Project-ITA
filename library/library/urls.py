@@ -16,5 +16,5 @@ Including another URLconf
 from django.urls import include, path
 
 urlpatterns = [
-    path('library/', include('catalog.urls'))
+    path('library/', include('catalog.urls')),
 ]
