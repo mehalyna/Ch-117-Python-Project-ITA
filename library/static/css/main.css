@@ -2,9 +2,11 @@
     width: auto;
     height: 35px;
 }
+
 .text-ultramarine {
     color: #1a73e8;
 }
+
 .registration-border {
     box-shadow: 12px 12px 5px #1a73e8;
 }
@@ -16,6 +18,15 @@
     color: white;
 }
 
-.sign-up-button:hover{
-    color:white;
+.sign-up-button:hover {
+    color: white;
+}
+
+#firstname {
+    color: red;
+}
+
+.input-icon {
+    height: 15px;
+    width: auto;
 }

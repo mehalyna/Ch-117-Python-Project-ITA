@@ -19,28 +19,58 @@
             <h3>Create your new account</h3>
         </div>
         {{ form.csrf_token }}
-        <div class="mb-3 pt-3">
-            <span class="text-ultramarine">{{ form.firstname.label }}</span>
+        <span class="text-ultramarine">{{ form.firstname.label }}</span>
+        <div class="mb-3 pt-3 input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+                </span>
+            </div>
             {{ form.firstname }}
         </div>
-        <div class="mb-3">
-            <span class="text-ultramarine">{{ form.lastname.label }}</span>
+        <span class="text-ultramarine">{{ form.lastname.label }}</span>
+        <div class="mb-3 input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+                </span>
+            </div>
             {{ form.lastname }}
         </div>
-        <div class="mb-3">
-            <span class="text-ultramarine">{{ form.email.label }}</span>
+        <span class="text-ultramarine">{{ form.email.label }}</span>
+        <div class="mb-3 input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <img class="input-icon" src="{% static 'images/envelope-square-solid.svg' %}" alt="email icon">
+                </span>
+            </div>
             {{ form.email }}
         </div>
-        <div class="mb-3">
-            <span class="text-ultramarine">{{ form.login.label }}</span>
+        <span class="text-ultramarine">{{ form.login.label }}</span>
+        <div class="mb-3 input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <img class="input-icon" src="{% static 'images/sign-in-alt-solid.svg' %}" alt="login icon">
+                </span>
+            </div>
             {{ form.login }}
         </div>
-        <div class="mb-3">
-            <span class="text-ultramarine">{{ form.password.label }}</span>
+        <span class="text-ultramarine">{{ form.password.label }}</span>
+        <div class="mb-3 input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <img class="input-icon" src="{% static 'images/key-solid.svg' %}" alt="key icon">
+                </span>
+            </div>
             {{ form.password }}
         </div>
-        <div class="mb-3">
-            <span class="text-ultramarine">{{ form.confirm_password.label }}</span>
+        <span class="text-ultramarine">{{ form.confirm_password.label }}</span>
+        <div class="mb-3 input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <img class="input-icon" src="{% static 'images/key-solid.svg' %}" alt="key icon">
+                </span>
+            </div>
             {{ form.confirm_password }}
         </div>
         <div class="mb-3 pt-3">
