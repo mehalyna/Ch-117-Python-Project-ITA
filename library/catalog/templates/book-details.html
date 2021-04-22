@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Book-details</title>
+    <style>
+
+        .custom input,.custom a, .custom button{
+            width: 90px;
+        }
+
+        #cover_image{
+            max-width: 225px;
+            max-height: 250px;
+        }
+
+        .book_details_text{
+            margin-left: 10px;
+            max-width: 650px!important;
+        }
+
+        .book_details_img{
+            max-width: 225px;
+        }
+
+        .book_details_frame{
+            background: #EEFCFC;
+            max-width: 925px!important;
+        }
+    </style>
+    {% load static %}
+</head>
+<body>
+
+{% block body %}
+
+    <div style="margin-top: 50px;background-color: #e1e5e7;" class="container border p-3 mb-3 book_details_frame rounded">
+        <div class="d-flex justify-content-start">
+            <div class="book_details_img">
+                <img style="width:200px;margin-bottom: 10px" id="cover_image" src="{{ book.link_img }}" alt="book cover">
+                <small style="font-size: medium">Paperback, <b>{{ book.pages }}</b> pages</small><br>
+                <small style="font-size: medium">Published in <b>{{ book.year }} by {{ book.publisher }}</b></small><br>
+                <small style="font-size: medium">Language: <b>{{ book.language }}</b></small><br>
+                <small style="font-size: medium">Rating: <b>{{ book.statistic.rating }} / 5</b></small>
+                <div style="margin-top: 10px" class="dropdown show mt-2">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Links on book
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        {% for link in book.store_links %}
+                            <a class="dropdown-item" href="{{ link }}">Resource {{ forloop.counter }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <button style="background-color: #4CAF50;margin-top: 10px;padding: 6px 18px;" class="btn btn-primary">Add to wishlist</button>
+            </div>
+            <div class="book_details_text">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <span class="h3">{{ book.title }}</span>
+                    </div>
+                    <div class="custom ml-1">
+                        <a class="btn btn-secondary" onclick="back_to_list()">Back</a>
+                    </div>
+                </div>
+                <p>by <a href=""><b>{{ book.author_id.name }}</b></a></p>
+                <p>
+                    Genres:
+                    {% for genre in book.genres %}
+                        <b><a style="padding-left: 10px" href="">{{ genre }}</a></b>
+                    {% endfor %}
+                </p>
+                <span data-toggle="tooltip" data-placement="top" title="Total read {{ book.statistic.total_read }}">
+                <img src="{% static 'images/totalRead.png' %}" alt="total read icon">
+                {{ book.statistic.total_read }}
+            </span>
+                <span data-toggle="tooltip" data-placement="top" title="Reading now {{ book.statistic.reading_now }}">
+                <img style="padding-left: 15px;" src="{% static 'images/readingNow.png' %}" alt="reading now icon">
+                {{ book.statistic.reading_now }}
+            </span><br><br>
+                <p>
+                    {{ book.description }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
