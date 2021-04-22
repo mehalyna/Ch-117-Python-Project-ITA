@@ -30,3 +30,26 @@
 .form-control::placeholder{
     opacity: 45%;
 }
+.swiper-container {
+    height: 420px;
+}
+
+.swiper-slide img{
+    height: 70%;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.swiper-slide p{
+    text-align: center;
+}
+
+.swiper-button-prev::after, .swiper-button-next::after{
+    color: #323232;
+    font-size: 75px !important;
+}
+
+.h2-home-page{
+    margin-top: 90px;
+    margin-bottom: 20px;
+}

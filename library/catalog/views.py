@@ -1,13 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
-from catalog.forms import RegistrationForm
+from .forms import RegistrationForm
 
 
 def home(request):
-    return HttpResponse('<h1>Home page</h1>')
-
-
+    return render(request, 'home.html')
 
 def base(request):
     return render(request, 'base.html')
