@@ -1,3 +1,4 @@
+from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
 from django.forms import CharField, EmailField, Form, PasswordInput, TextInput, BooleanField
 
 

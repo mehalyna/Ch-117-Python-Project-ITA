@@ -2,7 +2,6 @@ import pytest
 from mongoengine.errors import ValidationError
 from flask_mongoengine import BaseQuerySet
 
-
 from admin.models import Author
 
 
@@ -23,19 +22,13 @@ def test_author_save_with_invalid_name(client):
     assert 'StringField only accepts string values' in exception.value.message
 
 
-def test_author_save_with_invalid_death_date(client):
-    with pytest.raises(ValidationError) as exception:
-        author = Author(name='immortal', birthdate='2000', death_date='1995')
-        author.save()
-        author.delete()
-    assert 'Death date should be greater then birthdate' in exception.value.message
-
-
 def test_get_not_existing_author(client):
     author = Author.objects(name='some not existing author')
+    # If author is in db it will be instance of Author class
     assert isinstance(author, BaseQuerySet)
 
 
 def test_get_author_by_not_existing_attribute(client):
     author = Author.objects(gander='male')
+    # If author is in db it will be instance of Author class
     assert isinstance(author, BaseQuerySet)

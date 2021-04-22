@@ -14,14 +14,15 @@ from werkzeug.urls import url_parse
 
 from admin.forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
 from admin.models import Author, Book, Role, Statistics, Status, User
-from admin import utils
+import admin.utils as utils
+
 
 load_dotenv()
 
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=90)
     app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 Mb limit
 

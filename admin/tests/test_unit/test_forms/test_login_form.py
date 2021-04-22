@@ -7,10 +7,12 @@ def test_login_form(client):
     assert form.validate()
 
 
-def test_login_form_with_invalid_short_data(client):
+def test_login_form_with_short_password(client):
     form = LoginForm(data={'admin': '123456', 'password': '1234567'})
     assert not form.validate()
 
+
+def test_login_form_with_short_login(client):
     form = LoginForm(data={'admin': '12345', 'password': '12345678'})
     assert not form.validate()
 
