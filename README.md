@@ -41,14 +41,16 @@ Python Project of Ch-117 mixed group ITA
    - ```sh   
       u.save()
    
-6. Run the server
-      ```sh
-    app.py
-      ```
-7. Run tests 
+6. Run the server <br/>
+   In admin directory run the comand
+    ```sh
+    ..\admin>app.py
+    ```
+7. Run tests <br/>
+   In admin directory run the comand 
    ```sh
-    pytest
-      ```
+   ..\admin>pytest
+   ```
 
 ## For contributors
 ### Project setup
