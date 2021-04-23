@@ -4,8 +4,9 @@
     Registration
 {% endblock %}
 {% block body %}
-    <div class="d-flex align-items-center flex-column mt-5">
-        <form action="" method="post" class="border registration-border col-md-3 mt-2 mb-3" novalidate>
+    <br>
+    <div class="d-flex align-items-center flex-column mt-5 mb-5">
+        <form action="" method="post" class="border registration-border col-md-3 mt-2" novalidate>
             {% csrf_token %}
             <div class="text-center mt-3 mb-4">
             <span class="h1 text-ultramarine">
@@ -80,7 +81,7 @@
                 </ul>
             {% endif %}
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <input type="submit" class="btn sign-up-button" value="Sign up">
+                <input type="submit" class="btn btn-info sign-up-button" value="Sign up">
                 <a href="{% url 'library-home' %}" class="text-ultramarine">Already have an account?</a>
             </div>
         </form>

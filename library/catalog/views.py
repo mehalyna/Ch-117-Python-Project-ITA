@@ -1,9 +1,15 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from .forms import RegistrationForm
+from .models import Book
 from werkzeug.security import generate_password_hash
 
-from .forms import RegistrationForm
-from .models import User
+
+def book_details(request, book_id):
+    # book_id = '60610c2952cd4157727d8ee3'
+    book = Book.objects(id=book_id).first()
+    return render(request, 'book-details.html', {'book': book})
+
 
 def home(request):
     return render(request, 'home.html')
