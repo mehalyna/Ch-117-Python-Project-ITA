@@ -10,15 +10,15 @@
 </head>
 <body>
 <div class="d-flex align-items-center flex-column mt-5">
-    <form action="" method="post" class="border registration-border col-md-3 pt-2 pb-4 mb-3" novalidate>
-        <div class="text-center mb-4">
+    <form action="" method="post" class="border registration-border col-md-3 mt-2 mb-3" novalidate>
+        {% csrf_token %}
+        <div class="text-center mt-3 mb-4">
             <span class="h1 text-ultramarine">
                 <img class="image_h1 pb-2" src="{% static 'images/user-plus.png' %}" alt="user icon">
                 Registration
             </span>
         </div>
-        {{ form.csrf_token }}
-        <span class="text-ultramarine">{{ form.firstname.label }}</span>
+        <span class="text-ultramarine">{{ form.firstname.label }}*</span>
         <div class="mb-3 input-group">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">
@@ -27,7 +27,7 @@
             </div>
             {{ form.firstname }}
         </div>
-        <span class="text-ultramarine">{{ form.lastname.label }}</span>
+        <span class="text-ultramarine">{{ form.lastname.label }}*</span>
         <div class="mb-3 input-group">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">
@@ -36,7 +36,7 @@
             </div>
             {{ form.lastname }}
         </div>
-        <span class="text-ultramarine">{{ form.email.label }}</span>
+        <span class="text-ultramarine">{{ form.email.label }}*</span>
         <div class="mb-3 input-group">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">
@@ -45,7 +45,7 @@
             </div>
             {{ form.email }}
         </div>
-        <span class="text-ultramarine">{{ form.login.label }}</span>
+        <span class="text-ultramarine">{{ form.login.label }}*</span>
         <div class="mb-3 input-group">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">
@@ -54,7 +54,7 @@
             </div>
             {{ form.login }}
         </div>
-        <span class="text-ultramarine">{{ form.password.label }}</span>
+        <span class="text-ultramarine">{{ form.password.label }}*</span>
         <div class="mb-3 input-group">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">
@@ -63,8 +63,8 @@
             </div>
             {{ form.password }}
         </div>
-        <span class="text-ultramarine">{{ form.confirm_password.label }}</span>
-        <div class="mb-3 input-group">
+        <span class="text-ultramarine">{{ form.confirm_password.label }}*</span>
+        <div class="mb-4 input-group">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">
                     <img class="input-icon" src="{% static 'images/key-solid.svg' %}" alt="key icon">
@@ -72,9 +72,21 @@
             </div>
             {{ form.confirm_password }}
         </div>
-        <div class="mb-3 pt-3">
-            <input type="submit" class="btn sign-up-button mr-5" value="Sign up">
-            <a href="#" class="text-ultramarine">Already have an account?</a>
+        {% if form.errors %}
+            <ul class="mb-4">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li class="text-danger">{{ field.label }} - {{ error|escape }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li class="text-danger">{{ error|escape }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <input type="submit" class="btn sign-up-button" value="Sign up">
+            <a href="{% url 'library-home' %}" class="text-ultramarine">Already have an account?</a>
         </div>
     </form>
 </div>
