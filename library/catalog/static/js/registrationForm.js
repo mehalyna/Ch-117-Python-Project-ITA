@@ -22,9 +22,8 @@ login.addEventListener('input', validate);
 
 function validate(e) {
     let target = e.target;
-    if (!dataRequired(target)){
-    }
-    else if (target.name === 'email') {
+    if (!dataRequired(target)) {
+    } else if (target.name === 'email') {
         if (!emailPattern.test(target.value)) {
             target.classList.add('is-invalid');
             setErrorFor(target, 'Invalid email');
@@ -42,17 +41,14 @@ function validate(e) {
             setSuccessFor(target);
         }
     } else if (target.name === 'password' || target.name === 'confirm_password') {
-        if (!validatePasswords(target)){
+        if (!validatePasswords(target)) {
         }
-        else if (target.name === 'confirm_password') {
-            if (target.value !== password.value) {
-                target.classList.add('is-invalid');
-                setErrorFor(target, 'Passwords doesn\'t match');
-            } else {
-                target.classList.remove('is-invalid');
-                setSuccessFor(target);
-                return true;
-            }
+        else if (password.value !== confirmPassword.value) {
+            confirmPassword.classList.add('is-invalid');
+            setErrorFor(confirmPassword, 'Passwords doesn\'t match');
+        } else {
+            confirmPassword.classList.remove('is-invalid');
+            setSuccessFor(confirmPassword);
         }
     }
 
@@ -107,8 +103,7 @@ function validatePasswords(element) {
         element.classList.add('is-invalid');
         setErrorFor(element, 'Minimum 8 characters, at least 1 letter and 1 number');
         return false;
-    }
-    else {
+    } else {
         element.classList.remove('is-invalid');
         setSuccessFor(element);
         return true;
