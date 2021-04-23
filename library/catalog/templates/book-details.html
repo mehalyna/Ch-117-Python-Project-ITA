@@ -64,6 +64,22 @@
                 </p>
             </div>
         </div>
+        <h2 style="margin-left: 400px">Reviews</h2>
+        {% for review in reviews %}
+            <div style="margin-top: 5px" class="card">
+                <div style="font-size: large;font-weight: bolder" class="card-header">
+                    {{ review.firstname }} {{ review.lastname }}
+                    <a style="float: right;width: 80px;" href="#" class="btn btn-danger">Delete</a>
+                    <a style="float: right;width: 80px;margin-right: 10px;" href="#" class="btn btn-warning save_url">Edit</a>
+                </div>
+                <div class="card-body">
+                    <blockquote class="blockquote mb-0">
+                        <p style="font-size: smaller">{{ review.comment|slice:":300" }}...</p>
+                        <footer class="blockquote-footer"><cite title="Source Title">Published {{ review.date }}</cite></footer>
+                    </blockquote>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 
 {% endblock %}
