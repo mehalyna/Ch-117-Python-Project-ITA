@@ -22,28 +22,38 @@ login.addEventListener('input', validate);
 
 function validate(e) {
     let target = e.target;
-    dataRequired(target);
-    if (target.name === 'email') {
+    if (!dataRequired(target)){
+    }
+    else if (target.name === 'email') {
         if (!emailPattern.test(target.value)) {
             target.classList.add('is-invalid');
             setErrorFor(target, 'Invalid email');
         } else {
             target.classList.remove('is-invalid');
-            setSuccessFor(target)
+            setSuccessFor(target);
         }
 
-    }
-    else if (target.name === 'login') {
+    } else if (target.name === 'login') {
         if (target.value.length < 6) {
             target.classList.add('is-invalid');
             setErrorFor(target, 'Minimum 6 characters long');
         } else {
             target.classList.remove('is-invalid');
-            setSuccessFor(target)
+            setSuccessFor(target);
         }
-    }
-    else if (target.name === 'password' || target.name === 'confirm_password') {
-        validatePasswords(target);
+    } else if (target.name === 'password' || target.name === 'confirm_password') {
+        if (!validatePasswords(target)){
+        }
+        else if (target.name === 'confirm_password') {
+            if (target.value !== password.value) {
+                target.classList.add('is-invalid');
+                setErrorFor(target, 'Passwords doesn\'t match');
+            } else {
+                target.classList.remove('is-invalid');
+                setSuccessFor(target);
+                return true;
+            }
+        }
     }
 
     checkFormValid(inputsList);
@@ -84,9 +94,11 @@ function dataRequired(element) {
     if (element.value === '') {
         element.classList.add('is-invalid');
         setErrorFor(element, 'This field is required.');
+        return false;
     } else {
         element.classList.remove('is-invalid');
         setSuccessFor(element)
+        return true;
     }
 }
 
@@ -94,8 +106,11 @@ function validatePasswords(element) {
     if (!passPattern.test(element.value)) {
         element.classList.add('is-invalid');
         setErrorFor(element, 'Minimum 8 characters, at least 1 letter and 1 number');
-    } else {
+        return false;
+    }
+    else {
         element.classList.remove('is-invalid');
-        setSuccessFor(element)
+        setSuccessFor(element);
+        return true;
     }
 }
