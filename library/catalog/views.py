@@ -2,10 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from .forms import RegistrationForm
 from .models import Book
-
-
-def home(request):
-    return HttpResponse('<h1>Home page</h1>')
+from werkzeug.security import generate_password_hash
 
 
 def book_details(request, book_id):
@@ -13,6 +10,10 @@ def book_details(request, book_id):
     book = Book.objects(id=book_id).first()
     return render(request, 'book-details.html', {'book': book})
 
+
+def home(request):
+    return render(request, 'home.html')
+  
 
 def base(request):
     return render(request, 'base.html')
@@ -22,8 +23,14 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            return redirect(home)
+            user = User(email=form.cleaned_data.get('email'))
+            user.firstname = form.cleaned_data.get('firstname')
+            user.lastname = form.cleaned_data.get('lastname')
+            user.login = form.cleaned_data.get('login')
+            user.password_hash = generate_password_hash(form.cleaned_data.get('password'))
+            user.save()
 
+            return redirect(home)
     else:
         form = RegistrationForm()
 

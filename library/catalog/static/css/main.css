@@ -12,14 +12,14 @@
 }
 
 .sign-up-button {
-    width: 110px;
-    border-radius: 20px;
-    background-color: #1a73e8;
-    color: white;
+    width: 110px !important;
+    border-radius: 20px !important;
+    background-color: #1a73e8 !important;
+    color: white !important;
 }
 
 .sign-up-button:hover {
-    color: white;
+    color: white !important;
 }
 
 .input-icon {
@@ -52,4 +52,28 @@
 .book_details_frame{
     background: #EEFCFC;
     max-width: 925px!important;
+}
+
+.swiper-container {
+    height: 420px;
+}
+
+.swiper-slide img{
+    height: 70%;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.swiper-slide p{
+    text-align: center;
+}
+
+.swiper-button-prev::after, .swiper-button-next::after{
+    color: #323232;
+    font-size: 75px !important;
+}
+
+.h2-home-page{
+    margin-top: 90px;
+    margin-bottom: 20px;
 }

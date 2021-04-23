@@ -37,7 +37,7 @@ class User(Document):
     recommended_books = ListField(default=[])
     wishlist = ListField(default=[])
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
-
+    
 
 class BookStatistic(EmbeddedDocument):
     rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
