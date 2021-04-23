@@ -5,10 +5,9 @@ from werkzeug.security import generate_password_hash
 from .forms import RegistrationForm
 from .models import User
 
-
 def home(request):
-    return HttpResponse('<h1>Home page</h1>')
-
+    return render(request, 'home.html')
+  
 
 def base(request):
     return render(request, 'base.html')
