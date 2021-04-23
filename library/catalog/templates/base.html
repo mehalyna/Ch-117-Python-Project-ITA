@@ -25,60 +25,57 @@
             rel="stylesheet"
     />
     <title>{% block title %}{% endblock %}</title>
-
 </head>
 <body>
+<nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top">
+    <a class="navbar-brand ml-5" href="#">Library</a>
 
-    <nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top">
-        <a class="navbar-brand ml-5" href="#">Library</a>
+    {% block nav_header %}
+    {% endblock %}
+    {#        <ul class="navbar-nav mx-auto">#}
+    {#            <li class="nav-item">#}
+    {#                <div class="input-group">#}
+    {#                    <input type="text" class="form-control" placeholder="Search">#}
+    {#                    <div class="input-group-append">#}
+    {#                        <button class="btn btn-outline-light">#}
+    {#                            <img class="mb-1" src="{% static 'images/search.png' %}"#}
+    {#                                 alt="search" width="15" height="15">#}
+    {#                        </button>#}
+    {#                    </div>#}
+    {#                </div>#}
+    {#            </li>#}
+    {#        </ul>#}
+    {#        {% if user.is_authenticated %}#}
+    {#            <ul class="navbar-nav ml-auto">#}
+    {#                <li class="nav-item dropdown mr-5">#}
+    {#                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">#}
+    {#                        <img src="{% static 'images/user-regular.svg' %}"#}
+    {#                             width="40" height="40"#}
+    {#                             alt="user">#}
+    {#                    </a>#}
+    {#                    <div class="dropdown-menu">#}
+    {#                        <a class="dropdown-item" href="#">Profile</a>#}
+    {#                        <a class="dropdown-item" href="#">Log out</a>#}
+    {#                    </div>#}
+    {#                </li>#}
+    {#            </ul>#}
+    {#        {% else %}#}
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item mr-5">
+            <button class="btn btn-outline-light">
+                Sign In
+            </button>
+        </li>
+    </ul>
+    {#        {% endif %}#}
 
-        {% block nav_header %}
-        {% endblock %}
-{#        <ul class="navbar-nav mx-auto">#}
-{#            <li class="nav-item">#}
-{#                <div class="input-group">#}
-{#                    <input type="text" class="form-control" placeholder="Search">#}
-{#                    <div class="input-group-append">#}
-{#                        <button class="btn btn-outline-light">#}
-{#                            <img class="mb-1" src="{% static 'images/search.png' %}"#}
-{#                                 alt="search" width="15" height="15">#}
-{#                        </button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </li>#}
-{#        </ul>#}
-{#        {% if user.is_authenticated %}#}
-{#            <ul class="navbar-nav ml-auto">#}
-{#                <li class="nav-item dropdown mr-5">#}
-{#                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">#}
-{#                        <img src="{% static 'images/user-regular.svg' %}"#}
-{#                             width="40" height="40"#}
-{#                             alt="user">#}
-{#                    </a>#}
-{#                    <div class="dropdown-menu">#}
-{#                        <a class="dropdown-item" href="#">Profile</a>#}
-{#                        <a class="dropdown-item" href="#">Log out</a>#}
-{#                    </div>#}
-{#                </li>#}
-{#            </ul>#}
-{#        {% else %}#}
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item mr-5">
-                    <button class="btn btn-outline-light">
-                        Sign In
-                    </button>
-                </li>
-            </ul>
-{#        {% endif %}#}
-
-    </nav>
-
+</nav>
 {% block body %}
 {% endblock %}
 
 
 <!-- Remove the container if you want to extend the Footer to full width. -->
-<div style="margin-top: 362px;">
+<div class="mt-4">
     <!-- Footer -->
     <footer
             class="text-center text-lg-start text-white bg-secondary"
@@ -105,10 +102,10 @@
                     </div>
                     <!-- Grid column -->
 
-                    <hr class="w-100 clearfix d-md-none" />
+                    <hr class="w-100 clearfix d-md-none"/>
                     <!-- Grid column -->
 
-                    <hr class="w-100 clearfix d-md-none" />
+                    <hr class="w-100 clearfix d-md-none"/>
 
                     <!-- Grid column -->
                     <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
@@ -130,7 +127,7 @@
                     </div>
 
                     <!-- Grid column -->
-                    <hr class="w-100 clearfix d-md-none" />
+                    <hr class="w-100 clearfix d-md-none"/>
 
                     <!-- Grid column -->
                     <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">

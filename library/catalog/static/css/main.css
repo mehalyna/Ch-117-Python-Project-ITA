@@ -12,14 +12,14 @@
 }
 
 .sign-up-button {
-    width: 110px;
-    border-radius: 20px;
-    background-color: #1a73e8;
-    color: white;
+    width: 110px !important;
+    border-radius: 20px !important;
+    background-color: #1a73e8 !important;
+    color: white !important;
 }
 
 .sign-up-button:hover {
-    color: white;
+    color: white !important;
 }
 
 .input-icon {
