@@ -1,7 +1,6 @@
 from datetime import datetime
-from django_mongoengine import Document
-from django.db import models
-from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
+from django_mongoengine import Document, EmbeddedDocument
+from mongoengine import DateTimeField, EmailField, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 
 
