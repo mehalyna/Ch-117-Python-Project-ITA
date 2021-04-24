@@ -5,8 +5,16 @@ from .models import Book
 from werkzeug.security import generate_password_hash
 
 
-def profile(request):
-    return render(request, 'profile.html')
+def profile_details(request):
+    return render(request, 'profile_details.html')
+
+
+def profile_edit(request):
+    return render(request, 'profile_edit.html')
+
+
+def change_password(request):
+    return render(request, 'change_password.html')
 
 
 def book_details(request, book_id):

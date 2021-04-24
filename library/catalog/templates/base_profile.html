@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title  %}User Profile{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="d-flex">
+            <div class="mr-3 bg-dark">
+                <div>
+                    <div class="text-center my-3">
+                        <img src="{% static 'images/user-solid.svg' %}" width="100px" height="100px" alt="user">
+                    </div>
+                </div>
+                <ul class="nav flex-column nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link text-white {% block details_link_class %}{% endblock %}"
+                           href="{% url 'profile_details' %}"
+                           >
+                            Profile details
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                            <a class="nav-link text-white {% block edit_link_class %}{% endblock %}"
+                               href="{% url 'profile_edit' %}">
+                            Edit profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white {% block change_password_link_class %}{% endblock %}"
+                           href="{% url 'change_password' %}">
+                            Change password
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="flex-grow-1">
+            {% block profile_content %}
+            {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
