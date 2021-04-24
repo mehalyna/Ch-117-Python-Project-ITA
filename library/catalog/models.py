@@ -74,4 +74,5 @@ class Review(Document):
     lastname = StringField(default='', max_length=50)
     status = StringField(default=Status.ACTIVE, max_length=100)
     comment = StringField(default='', max_length=5000)
+    rating = IntField(default=0, min_value=0.0, max_value=5)
     date = DateTimeField(default=datetime.now)
