@@ -27,6 +27,7 @@ function validate(event) {
         if (!emailPattern.test(target.value)) {
             target.classList.add('is-invalid');
             setErrorFor(target, 'Invalid email');
+        } else if (!validateUnique(target)) {
         } else {
             target.classList.remove('is-invalid');
             setSuccessFor(target);
@@ -36,6 +37,7 @@ function validate(event) {
         if (target.value.length < 6) {
             target.classList.add('is-invalid');
             setErrorFor(target, 'Minimum 6 characters long');
+        } else if (!validateUnique(target)) {
         } else {
             target.classList.remove('is-invalid');
             setSuccessFor(target);
@@ -81,11 +83,11 @@ function checkFormValid(inputsList) {
 function dataRequired(element) {
     if (element.value === '') {
         element.classList.add('is-invalid');
-        setErrorFor(element, 'This field is required.');
+        setErrorFor(element, 'This field is required');
         return false;
     } else {
         element.classList.remove('is-invalid');
-        setSuccessFor(element)
+        setSuccessFor(element);
         return true;
     }
 }
@@ -98,6 +100,26 @@ function validatePasswords(element) {
     } else if (password.value !== confirmPassword.value && password.value && confirmPassword.value) {
         confirmPassword.classList.add('is-invalid');
         setErrorFor(confirmPassword, 'Passwords doesn\'t match');
+    } else {
+        element.classList.remove('is-invalid');
+        setSuccessFor(element);
+        return true;
+    }
+}
+
+function validateUnique(element) {
+    let validationText = '';
+    let validateUrl = `/library/registration_validation/${element.value}`;
+    let request = new XMLHttpRequest();
+    request.open("GET", validateUrl, false); // true for asynchronous
+    request.send(null);
+        if (request.readyState === 4 && request.status === 200) {
+        validationText = request.responseText;
+    }
+    if (validationText) {
+        element.classList.add('is-invalid');
+        setErrorFor(element, validationText);
+        return false;
     } else {
         element.classList.remove('is-invalid');
         setSuccessFor(element);

@@ -1,4 +1,6 @@
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
 from .forms import RegistrationForm
@@ -35,3 +37,10 @@ def registration(request):
         form = RegistrationForm()
 
     return render(request, 'registration.html', {'form': form})
+
+
+def unique_registration_check(request, field_value):
+    user = User.objects(Q(login=field_value) | Q(email=field_value))
+    if user:
+        return HttpResponse('Already taken', content_type="text/plain")
+    return HttpResponse('', content_type="text/plain")
