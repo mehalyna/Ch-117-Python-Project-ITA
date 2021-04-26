@@ -24,7 +24,7 @@
                     </div>
                     {{ form.firstname }}
                 </div>
-                <small class="error-message text-danger">Error message</small>
+                <small class="error-message text-danger" id="firstnameError">Error message</small>
             </div>
             <div class="mb-2">
                 <span class="text-ultramarine">{{ form.lastname.label }}*</span>
@@ -36,7 +36,7 @@
                     </div>
                     {{ form.lastname }}
                 </div>
-                <small class="error-message text-danger">Error message</small>
+                <small class="error-message text-danger" id="lastnameError">Error message</small>
             </div>
             <div class="mb-2">
                 <span class="text-ultramarine">{{ form.email.label }}*</span>
@@ -49,7 +49,7 @@
                     </div>
                     {{ form.email }}
                 </div>
-                <small class="error-message text-danger">Error message</small>
+                <small class="error-message text-danger" id="emailError">Error message</small>
             </div>
             <div class="mb-2">
                 <span class="text-ultramarine">{{ form.login.label }}*</span>
@@ -62,7 +62,7 @@
                     </div>
                     {{ form.login }}
                 </div>
-                <small class="error-message text-danger">Error message</small>
+                <small class="error-message text-danger" id="loginError">Error message</small>
             </div>
             <div class="mb-2">
                 <span class="text-ultramarine">{{ form.password.label }}*</span>
@@ -74,7 +74,7 @@
                     </div>
                     {{ form.password }}
                 </div>
-                <small class="error-message text-danger">Error message</small>
+                <small class="error-message text-danger" id="passwordError">Error message</small>
             </div>
             <div class="mb-4">
                 <span class="text-ultramarine">{{ form.confirm_password.label }}*</span>
@@ -86,7 +86,7 @@
                     </div>
                     {{ form.confirm_password }}
                 </div>
-                <small class="error-message text-danger">Error message</small>
+                <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
             <div>
                 {% if form.errors %}

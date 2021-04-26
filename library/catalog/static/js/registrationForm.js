@@ -27,43 +27,46 @@ confirmPassword.addEventListener('input', checkFormValid);
 
 
 function validateFirstname() {
-    dataRequired(firstname);
+    dataRequired(firstname, '#firstnameError');
 }
 
 function validateLastname() {
-    dataRequired(lastname);
+    dataRequired(lastname, '#lastnameError');
 }
 
 function validateEmail() {
-    if (!dataRequired(email)) {
+    let errorId = '#emailError';
+
+    if (!dataRequired(email, errorId)) {
     } else if (!emailPattern.test(email.value)) {
         email.classList.add('is-invalid');
-        setErrorFor(email, 'Invalid email');
-    } else if (!validateUnique(email)) {
+        setErrorFor(errorId, 'Invalid email');
+    } else if (!validateUnique(email, errorId)) {
     } else {
         email.classList.remove('is-invalid');
-        setSuccessFor(email);
+        setSuccessFor(errorId);
     }
 }
 
 function validateLogin() {
-    if (!dataRequired(login)) {
+    let errorId = '#loginError'
+    if (!dataRequired(login, errorId)) {
     } else if (login.value.length < 6) {
         login.classList.add('is-invalid');
-        setErrorFor(login, 'Minimum 6 characters long');
-    } else if (!validateUnique(login)) {
+        setErrorFor(errorId, 'Minimum 6 characters long');
+    } else if (!validateUnique(login, errorId)) {
     } else {
         login.classList.remove('is-invalid');
-        setSuccessFor(login);
+        setSuccessFor(errorId);
     }
 }
 
 function validatePassword(){
-    validatePasswords(password);
+    validatePasswords(password, '#passwordError');
 }
 
 function validateConfirmPassword(){
-    validatePasswords(confirmPassword);
+    validatePasswords(confirmPassword, '#confirmPasswordError');
 }
 
 
@@ -78,7 +81,6 @@ function setErrorFor(errorId, message) {
 function setSuccessFor(errorId) {
     let validationError = document.querySelector(errorId);
 
-    validationError.innerText = '';
     validationError.style.visibility = 'hidden';
 }
 
@@ -104,36 +106,36 @@ function dataRequired(element, errorId) {
         return false;
     } else {
         element.classList.remove('is-invalid');
-        setSuccessFor(element);
+        setSuccessFor(errorId);
         return true;
     }
 }
 
 
 
-function validatePasswords(element) {
-    if (!dataRequired(element)) {
+function validatePasswords(element, errorId) {
+    if (!dataRequired(element, errorId)) {
 
     } else if (!passPattern.test(element.value)) {
         element.classList.add('is-invalid');
-        setErrorFor(element, 'Minimum 8 characters, at least 1 letter and 1 number');
+        setErrorFor(errorId, 'Minimum 8 characters, at least 1 letter and 1 number');
         return false;
     } else if (password.value !== confirmPassword.value && password.value && confirmPassword.value) {
         confirmPassword.classList.add('is-invalid');
-        setErrorFor(confirmPassword, 'Passwords doesn\'t match');
+        setErrorFor('#confirmPasswordError', 'Passwords doesn\'t match');
         return false;
     } else if (password.value === confirmPassword.value) {
         confirmPassword.classList.remove('is-invalid');
-        setSuccessFor(confirmPassword);
+        setSuccessFor('#confirmPasswordError');
         return true;
     } else {
         element.classList.remove('is-invalid');
-        setSuccessFor(element);
+        setSuccessFor(errorId);
         return true;
     }
 }
 
-function validateUnique(element) {
+function validateUnique(element, errorId) {
     let validationText = '';
     let validateUrl = `/library/registration_validation/${element.value}`;
     let request = new XMLHttpRequest();
@@ -144,11 +146,11 @@ function validateUnique(element) {
     }
     if (validationText) {
         element.classList.add('is-invalid');
-        setErrorFor(element, validationText);
+        setErrorFor(errorId, validationText);
         return false;
     } else {
         element.classList.remove('is-invalid');
-        setSuccessFor(element);
+        setSuccessFor(errorId);
         return true;
     }
 }
