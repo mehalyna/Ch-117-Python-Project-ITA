@@ -8,7 +8,6 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
     <!--    Slider-->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.css" />
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
@@ -28,11 +27,13 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
+
 <nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top">
-    <a class="navbar-brand ml-5" href="#">Library</a>
+    <a class="navbar-brand ml-5" href="{% url 'library-home' %}">Library</a>
 
     {% block nav_header %}
     {% endblock %}
+{#  SEARCH FIELD #}
     {#        <ul class="navbar-nav mx-auto">#}
     {#            <li class="nav-item">#}
     {#                <div class="input-group">#}
@@ -46,6 +47,7 @@
     {#                </div>#}
     {#            </li>#}
     {#        </ul>#}
+{#  USER ICON #}
     {#        {% if user.is_authenticated %}#}
     {#            <ul class="navbar-nav ml-auto">#}
     {#                <li class="nav-item dropdown mr-5">#}
@@ -71,12 +73,14 @@
     {#        {% endif %}#}
 
 </nav>
+
+<div class="body_div">
 {% block body %}
 {% endblock %}
-
+</div>
 
 <!-- Remove the container if you want to extend the Footer to full width. -->
-<div class="mt-4">
+<div class="mt-5">
     <!-- Footer -->
     <footer
             class="text-center text-lg-start text-white bg-secondary"

@@ -7,4 +7,7 @@ urlpatterns = [
     path('base/', views.base),
     path('registration/', views.registration, name='library-registation'),
     path('book_details/<str:book_id>', views.book_details, name='book-details'),
+    path('profile_details/', views.profile_details, name='profile_details'),
+    path('profile_edit/', views.profile_edit, name='profile_edit'),
+    path('change_password/', views.change_password, name='change_password')
 ]
