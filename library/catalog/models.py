@@ -66,3 +66,13 @@ class Book(Document):
     status = StringField(default=Status.ACTIVE, max_length=100)
     store_links = ListField(default=[])
     statistic = EmbeddedDocumentField(BookStatistic.__name__, default=BookStatistic())
+
+class Review(Document):
+    user_id = ReferenceField(User.__name__, required=True)
+    book_id = ReferenceField(Book.__name__, required=True)
+    firstname = StringField(default='', max_length=50)
+    lastname = StringField(default='', max_length=50)
+    status = StringField(default=Status.ACTIVE, max_length=100)
+    comment = StringField(default='', max_length=5000)
+    rating = IntField(default=0, min_value=0.0, max_value=5)
+    date = DateTimeField(default=datetime.now)
