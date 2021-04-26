@@ -12,67 +12,84 @@ let password = form.elements.namedItem('password');
 let confirmPassword = form.elements.namedItem('confirm_password');
 let submitButton = form.elements.namedItem('submitButton');
 
-firstname.addEventListener('input', validate);
-lastname.addEventListener('input', validate);
-email.addEventListener('input', validate);
-password.addEventListener('input', validate);
-confirmPassword.addEventListener('input', validate);
-login.addEventListener('input', validate);
+firstname.addEventListener('input', validateFirstname);
+firstname.addEventListener('input', checkFormValid);
+lastname.addEventListener('input', validateLastname);
+lastname.addEventListener('input', checkFormValid);
+email.addEventListener('input', validateEmail);
+email.addEventListener('input', checkFormValid);
+login.addEventListener('input', validateLogin);
+login.addEventListener('input', checkFormValid);
+password.addEventListener('input', validatePassword);
+password.addEventListener('input', checkFormValid);
+confirmPassword.addEventListener('input', validateConfirmPassword);
+confirmPassword.addEventListener('input', checkFormValid);
 
 
-function validate(event) {
-    let target = event.target;
-    if (!dataRequired(target)) {
-    } else if (target.name === 'email') {
-        if (!emailPattern.test(target.value)) {
-            target.classList.add('is-invalid');
-            setErrorFor(target, 'Invalid email');
-        } else if (!validateUnique(target)) {
-        } else {
-            target.classList.remove('is-invalid');
-            setSuccessFor(target);
-        }
+function validateFirstname() {
+    dataRequired(firstname);
+}
 
-    } else if (target.name === 'login') {
-        if (target.value.length < 6) {
-            target.classList.add('is-invalid');
-            setErrorFor(target, 'Minimum 6 characters long');
-        } else if (!validateUnique(target)) {
-        } else {
-            target.classList.remove('is-invalid');
-            setSuccessFor(target);
-        }
-    } else if (target.name === 'password' || target.name === 'confirm_password') {
-        validatePasswords(target);
+function validateLastname() {
+    dataRequired(lastname);
+}
+
+function validateEmail() {
+    if (!dataRequired(email)) {
+    } else if (!emailPattern.test(email.value)) {
+        email.classList.add('is-invalid');
+        setErrorFor(email, 'Invalid email');
+    } else if (!validateUnique(email)) {
+    } else {
+        email.classList.remove('is-invalid');
+        setSuccessFor(email);
     }
+}
 
-    checkFormValid(inputsList);
+function validateLogin() {
+    if (!dataRequired(login)) {
+    } else if (login.value.length < 6) {
+        login.classList.add('is-invalid');
+        setErrorFor(login, 'Minimum 6 characters long');
+    } else if (!validateUnique(login)) {
+    } else {
+        login.classList.remove('is-invalid');
+        setSuccessFor(login);
+    }
+}
+
+function validatePassword(){
+    validatePasswords(password);
+}
+
+function validateConfirmPassword(){
+    validatePasswords(confirmPassword);
 }
 
 
-function setErrorFor(input, message) {
-    let formControl = input.parentElement.parentElement;
-    let small = formControl.querySelector('small');
+function setErrorFor(errorId, message) {
+    let validationError = document.querySelector(errorId);
 
-    small.innerText = message;
-    small.style.visibility = 'visible';
+    validationError.innerText = message;
+    validationError.style.visibility = 'visible';
     submitButton.disabled = true;
 }
 
-function setSuccessFor(input) {
-    let formControl = input.parentElement.parentElement;
-    let small = formControl.querySelector('small');
+function setSuccessFor(errorId) {
+    let validationError = document.querySelector(errorId);
 
-    small.style.visibility = 'hidden';
+    validationError.innerText = '';
+    validationError.style.visibility = 'hidden';
 }
 
-function checkFormValid(inputsList) {
+function checkFormValid() {
     let valueInputsList = [];
     let classInputsList = [];
-    for (let input of inputsList) {
+
+    inputsList.forEach(input => {
         classInputsList = classInputsList.concat(input.classList.value.split(' '));
         valueInputsList.push(input.value);
-    }
+    })
     if (valueInputsList.includes('')) {
         submitButton.disabled = true;
     } else if (!classInputsList.includes('is-invalid')) {
@@ -80,10 +97,10 @@ function checkFormValid(inputsList) {
     }
 }
 
-function dataRequired(element) {
+function dataRequired(element, errorId) {
     if (element.value === '') {
         element.classList.add('is-invalid');
-        setErrorFor(element, 'This field is required');
+        setErrorFor(errorId, 'This field is required');
         return false;
     } else {
         element.classList.remove('is-invalid');
@@ -92,14 +109,23 @@ function dataRequired(element) {
     }
 }
 
+
+
 function validatePasswords(element) {
-    if (!passPattern.test(element.value)) {
+    if (!dataRequired(element)) {
+
+    } else if (!passPattern.test(element.value)) {
         element.classList.add('is-invalid');
         setErrorFor(element, 'Minimum 8 characters, at least 1 letter and 1 number');
         return false;
     } else if (password.value !== confirmPassword.value && password.value && confirmPassword.value) {
         confirmPassword.classList.add('is-invalid');
         setErrorFor(confirmPassword, 'Passwords doesn\'t match');
+        return false;
+    } else if (password.value === confirmPassword.value) {
+        confirmPassword.classList.remove('is-invalid');
+        setSuccessFor(confirmPassword);
+        return true;
     } else {
         element.classList.remove('is-invalid');
         setSuccessFor(element);
@@ -111,9 +137,9 @@ function validateUnique(element) {
     let validationText = '';
     let validateUrl = `/library/registration_validation/${element.value}`;
     let request = new XMLHttpRequest();
-    request.open("GET", validateUrl, false); // true for asynchronous
+    request.open("GET", validateUrl, false);
     request.send(null);
-        if (request.readyState === 4 && request.status === 200) {
+    if (request.readyState === 4 && request.status === 200) {
         validationText = request.responseText;
     }
     if (validationText) {
