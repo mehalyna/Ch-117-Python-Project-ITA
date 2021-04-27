@@ -1,40 +1,43 @@
 const emailPattern = /^(\w|\.|_|-)+[@](\w|_|-|\.)+[.]\w{2,3}$/;
 const passPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+const timeToLive = 600000;
 
 let form = document.querySelector('.needs-validation');
 let inputsList = document.querySelectorAll('input.form-control');
 
 let firstname = form.elements.namedItem('firstname');
+firstname.value = getWithExpiry(firstname.id);
 let lastname = form.elements.namedItem('lastname');
+lastname.value = getWithExpiry(lastname.id);
 let email = form.elements.namedItem('email');
+email.value = getWithExpiry(email.id);
 let login = form.elements.namedItem('login');
+login.value = getWithExpiry(login.id);
 let password = form.elements.namedItem('password');
 let confirmPassword = form.elements.namedItem('confirm_password');
 let submitButton = form.elements.namedItem('submitButton');
 
 firstname.addEventListener('input', validateFirstname);
-firstname.addEventListener('input', checkFormValid);
 lastname.addEventListener('input', validateLastname);
-lastname.addEventListener('input', checkFormValid);
 email.addEventListener('input', validateEmail);
-email.addEventListener('input', checkFormValid);
 login.addEventListener('input', validateLogin);
-login.addEventListener('input', checkFormValid);
 password.addEventListener('input', validatePassword);
-password.addEventListener('input', checkFormValid);
 confirmPassword.addEventListener('input', validateConfirmPassword);
-confirmPassword.addEventListener('input', checkFormValid);
-
 
 function validateFirstname() {
+    setWithExpiry(firstname.id, firstname.value, timeToLive);
     dataRequired(firstname, '#firstnameError');
+    checkFormValid();
 }
 
 function validateLastname() {
+    setWithExpiry(lastname.id, lastname.value, timeToLive);
     dataRequired(lastname, '#lastnameError');
+    checkFormValid();
 }
 
 function validateEmail() {
+    setWithExpiry(email.id, email.value, timeToLive);
     let errorId = '#emailError';
 
     if (!dataRequired(email, errorId)) {
@@ -46,10 +49,13 @@ function validateEmail() {
         email.classList.remove('is-invalid');
         setSuccessFor(errorId);
     }
+    checkFormValid();
 }
 
 function validateLogin() {
+    setWithExpiry(login.id, login.value, timeToLive);
     let errorId = '#loginError'
+
     if (!dataRequired(login, errorId)) {
     } else if (login.value.length < 6) {
         login.classList.add('is-invalid');
@@ -59,14 +65,17 @@ function validateLogin() {
         login.classList.remove('is-invalid');
         setSuccessFor(errorId);
     }
+    checkFormValid();
 }
 
 function validatePassword(){
     validatePasswords(password, '#passwordError');
+    checkFormValid();
 }
 
 function validateConfirmPassword(){
     validatePasswords(confirmPassword, '#confirmPasswordError');
+    checkFormValid();
 }
 
 
@@ -153,4 +162,34 @@ function validateUnique(element, errorId) {
         setSuccessFor(errorId);
         return true;
     }
+}
+
+function setWithExpiry(key, value, ttl) {
+	let now = new Date()
+
+	// `item` is an object which contains the original value
+	// as well as the time when it's supposed to expire
+	let item = {
+		value: value,
+		expiry: now.getTime() + ttl,
+	}
+	localStorage.setItem(key, JSON.stringify(item))
+}
+
+function getWithExpiry(key) {
+	const itemStr = localStorage.getItem(key)
+	// if the item doesn't exist, return null
+	if (!itemStr) {
+		return null
+	}
+	let item = JSON.parse(itemStr)
+	let now = new Date()
+	// compare the expiry time of the item with the current time
+	if (now.getTime() > item.expiry) {
+		// If the item is expired, delete the item from storage
+		// and return null
+		localStorage.removeItem(key)
+		return null
+	}
+	return item.value
 }
