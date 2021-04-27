@@ -4,7 +4,7 @@ from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
 from .forms import RegistrationForm
-from .models import Book, User
+from .models import Book, Review, User
 
 
 def profile_details(request):
@@ -22,7 +22,8 @@ def change_password(request):
 def book_details(request, book_id):
     # book_id = '60610c2952cd4157727d8ee3'
     book = Book.objects(id=book_id).first()
-    return render(request, 'book-details.html', {'book': book})
+    reviews = Review.objects(book_id=book_id)
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
 
 
 def home(request):
