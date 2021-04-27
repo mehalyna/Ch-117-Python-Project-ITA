@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from .forms import RegistrationForm
+from .models import Book, User
 from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
@@ -27,7 +29,9 @@ def book_details(request, book_id):
 
 
 def home(request):
-    return render(request, 'home.html')
+    top_books = Book.objects.filter(statistic__rating__gte=4.5)[:5]
+    new_books = Book.objects.order_by('-id')[:10]
+    return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books})
   
 
 def base(request):

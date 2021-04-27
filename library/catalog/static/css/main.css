@@ -78,10 +78,82 @@
 }
 
 .h2-home-page{
-    margin-top: 90px;
+    margin-top: 30px;
     margin-bottom: 20px;
 }
 
+
+.category-wrapper{
+    height: 300px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 45px;
+}
+
+.category-box{
+    height: 300px;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: flex-start;
+}
+
+.category-box a{
+    text-decoration: none;
+    color: #323232;
+    font-size: 18px;
+}
+
+.category-box a:hover{
+    border-bottom: 2px solid #323232;
+}
+
+.footer{
+    height: 240px;
+    background: #eeecec;
+}
+
+.footer-wrapper{
+    height: 240px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.footer-box{
+    height: 240px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.footer-box a{
+    text-decoration: none;
+    color: #323232;
+    font-size: 14px;
+}
+
+.navbar{
+    height: 70px;
+    background: #eeecec;
+}
+
+.navbar-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo{
+    text-decoration: none;
+    color: #000000;
+}
+
+.logo:hover{
+    text-decoration: none;
+    color: black;
 /*
 =====
 DEPENDENCES
@@ -209,10 +281,6 @@ body{
         margin-left: 3.5rem;
         margin-right: 3.5rem;
     }
-}
-
-.body_div{
-    margin-top: 100px;
 }
 
 .profile_table tr th{
