@@ -143,7 +143,14 @@ CORE STYLES
     stroke-width: var(--ratingStrokeWidth, 1px);
 }
 
-
+.rating:hover,
+.rating__control:nth-of-type(1):checked ~ .rating__item:nth-of-type(1),
+.rating__control:nth-of-type(2):checked ~ .rating__item:nth-of-type(-n+2),
+.rating__control:nth-of-type(3):checked ~ .rating__item:nth-of-type(-n+3),
+.rating__control:nth-of-type(4):checked ~ .rating__item:nth-of-type(-n+4),
+.rating__control:nth-of-type(5):checked ~ .rating__item:nth-of-type(-n+5){
+    color: var(--uiRatingColorActive);
+}
 
 .rating__item:hover ~ .rating__item{
     color: var(--uiRatingColor);
