@@ -5,6 +5,18 @@ from .models import Book, Review, User
 from werkzeug.security import generate_password_hash
 
 
+def profile_details(request):
+    return render(request, 'profile_details.html')
+
+
+def profile_edit(request):
+    return render(request, 'profile_edit.html')
+
+
+def change_password(request):
+    return render(request, 'change_password.html')
+
+
 def book_details(request, book_id):
     # book_id = '60610c2952cd4157727d8ee3'
     book = Book.objects(id=book_id).first()

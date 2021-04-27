@@ -214,3 +214,13 @@ body{
     }
 }
 
+.body_div{
+    margin-top: 100px;
+}
+
+.profile_table tr th{
+    width: 50%;
+
+}.profile_table ul{
+    padding-left: 15px;
+}
