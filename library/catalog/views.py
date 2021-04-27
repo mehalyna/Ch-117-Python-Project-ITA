@@ -1,7 +1,5 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from .forms import RegistrationForm
-from .models import Book, User
 from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
