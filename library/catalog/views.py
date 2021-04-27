@@ -1,20 +1,49 @@
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from .forms import RegistrationForm
-from .models import Book
+from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
+from .models import Book, User
 from werkzeug.security import generate_password_hash
 
 
 def profile_details(request):
-    return render(request, 'profile_details.html')
+    user = User.objects(id='606ecd74e5fd490b3c6d0657').first()
+    return render(request, 'profile_details.html', {'user': user})
 
 
 def profile_edit(request):
-    return render(request, 'profile_edit.html')
+    _id = '606ecd74e5fd490b3c6d0657'
+    user = User.objects(id=_id).first()
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST)
+        if form.is_valid():
+            firstname = form.cleaned_data.get('firstname')
+            lastname = form.cleaned_data.get('lastname')
+            email = form.cleaned_data.get('email')
+            login = form.cleaned_data.get('login')
+            user.update(
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                login=login
+            )
+            return redirect(profile_details)
+    else:
+        form = EditProfileForm()
+    return render(request, 'profile_edit.html', {'user': user, 'form': form})
 
 
 def change_password(request):
-    return render(request, 'change_password.html')
+    _id = '606ecd74e5fd490b3c6d0657'
+    user = User.objects(id=_id).first()
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            old_password = form.cleaned_data.get('old_password')
+            new_password = form.cleaned_data.get('new_password')
+            confirm_password = form.cleaned_data.get('confirm_password')
+            return redirect(profile_details)
+    else:
+        form = ChangePasswordForm()
+    return render(request, 'change_password.html', {'user': user, 'form': form})
 
 
 def book_details(request, book_id):
@@ -25,7 +54,7 @@ def book_details(request, book_id):
 
 def home(request):
     return render(request, 'home.html')
-  
+
 
 def base(request):
     return render(request, 'base.html')
@@ -41,7 +70,7 @@ def registration(request):
             user.login = form.cleaned_data.get('login')
             user.password_hash = generate_password_hash(form.cleaned_data.get('password'))
             user.save()
-
+            print(user.user_id)
             return redirect(home)
     else:
         form = RegistrationForm()

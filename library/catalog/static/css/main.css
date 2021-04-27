@@ -11,6 +11,10 @@
     box-shadow: 12px 12px 3px #37598c;
 }
 
+.profile-edit-border {
+    box-shadow: 12px 12px 3px #70747c;
+}
+
 .sign-up-button {
     width: 110px !important;
     border-radius: 20px !important;
@@ -27,64 +31,78 @@
     width: auto;
 }
 
-.form-control::placeholder{
+.form-control::placeholder {
     opacity: 45%;
 }
 
-.custom input,.custom a, .custom button{
+.custom input, .custom a, .custom button {
     width: 90px;
 }
 
-#cover_image{
+#cover_image {
     max-width: 225px;
     max-height: 250px;
 }
 
-.book_details_text{
+.book_details_text {
     margin-left: 10px;
-    max-width: 650px!important;
+    max-width: 650px !important;
 }
 
-.book_details_img{
+.book_details_img {
     max-width: 225px;
 }
 
-.book_details_frame{
+.book_details_frame {
     background: #EEFCFC;
-    max-width: 925px!important;
+    max-width: 925px !important;
 }
 
 .swiper-container {
     height: 420px;
 }
 
-.swiper-slide img{
+.swiper-slide img {
     height: 70%;
     width: 100%;
     margin-bottom: 10px;
 }
 
-.swiper-slide p{
+.swiper-slide p {
     text-align: center;
 }
 
-.swiper-button-prev::after, .swiper-button-next::after{
+.swiper-button-prev::after, .swiper-button-next::after {
     color: #323232;
     font-size: 75px !important;
 }
 
-.h2-home-page{
+.h2-home-page {
     margin-top: 90px;
     margin-bottom: 20px;
 }
 
-.body_div{
+.body_div {
     margin-top: 100px;
 }
 
-.profile_table tr th{
+.profile_table tr th {
     width: 50%;
 
-}.profile_table ul{
+}
+
+.profile_table ul {
     padding-left: 15px;
+}
+
+@media (min-width: 768px) {
+    .col-md-3 {
+        -ms-flex: 0 0 25%;
+        flex: 0 0 25%;
+        max-width: 50% !important;
+    }
+}
+
+.error-message {
+    visibility: hidden;
 }
