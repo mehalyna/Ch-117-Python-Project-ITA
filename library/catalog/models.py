@@ -1,8 +1,10 @@
 from datetime import datetime
 from django_mongoengine import Document
-from django.db import models
 from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
+from werkzeug.security import check_password_hash, generate_password_hash
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
 
 class Status:
@@ -24,7 +26,7 @@ class Preference(EmbeddedDocument):
     years = ListField(default=(), max_length=2)
 
 
-class User(Document):
+class MongoUser(Document):
     firstname = StringField(max_length=100, min_length=1, required=True)
     lastname = StringField(max_length=100, min_length=1, required=True)
     email = EmailField(required=True, unique=True)
@@ -37,7 +39,42 @@ class User(Document):
     recommended_books = ListField(default=[])
     wishlist = ListField(default=[])
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
-    
+
+    def set_password(self, password):
+        self.django_password = make_password(password)
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def save(self):
+        mongo_user = super().save()
+        django_user = User(username=self.login, email=self.email, password=self.django_password)
+        django_user.save()
+        return mongo_user
+
+    def update(self, **kwargs):
+        mongo_user = super().update(**kwargs)
+        User.objects.filter(username=self.login).update(**kwargs)
+        return mongo_user
+
+# class CustomManager(UserManager):
+#     def _create_user(self, username, email, password, **extra_fields):
+#         return super()._create_user(username, email, password, **extra_fields)
+
+
+# class DjangoUser(AbstractUser):
+#     def get_mongo_user(self):
+#         pass
+#
+#     def save(self, *args, **kwargs):
+#         super().save(*args, **kwargs)
+#         mu = MongoUser(username=self.username, email=self.email)
+#         mu.set_password(self.password)
+#         mu.save()
+
+    # objects = CustomManager()
+
 
 class BookStatistic(EmbeddedDocument):
     rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)

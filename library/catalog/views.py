@@ -1,16 +1,16 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from .forms import RegistrationForm
-from .models import Book
+from .models import Book, MongoUser
 from werkzeug.security import generate_password_hash
+from django_mongoengine.mongo_auth import backends
+from django_mongoengine.mongo_auth.backends import MongoEngineBackend
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 
 
-def profile_details(request):
-    return render(request, 'profile_details.html')
 
-
-def profile_edit(request):
-    return render(request, 'profile_edit.html')
 
 
 def change_password(request):
@@ -35,7 +35,7 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = User(email=form.cleaned_data.get('email'))
+            user = MongoUser(email=form.cleaned_data.get('email'))
             user.firstname = form.cleaned_data.get('firstname')
             user.lastname = form.cleaned_data.get('lastname')
             user.login = form.cleaned_data.get('login')
@@ -47,3 +47,28 @@ def registration(request):
         form = RegistrationForm()
 
     return render(request, 'registration.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request=request, username=username, password=password)
+        if user:
+            login(request, user)
+        print(user.is_authenticated)
+    return redirect(home)
+
+
+def logout_view(request):
+    logout(request)
+    return redirect(home)
+
+@login_required
+def profile_details(request):
+    return render(request, 'profile_details.html')
+
+
+@login_required
+def profile_edit(request):
+    return render(request, 'profile_edit.html')

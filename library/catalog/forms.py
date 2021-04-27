@@ -3,7 +3,7 @@ from django.core.validators import RegexValidator
 from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
 from mongoengine.queryset.visitor import Q
 
-from .models import User
+from .models import MongoUser
 
 PASSWORD_PATTERN = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'
 PASSWORD_MESSAGE = 'Minimum 8 characters, at least 1 letter and 1 number'
@@ -11,7 +11,7 @@ PASSWORD_MESSAGE = 'Minimum 8 characters, at least 1 letter and 1 number'
 
 def unique_check(value):
     message = f'Is already taken'
-    user = User.objects(Q(login=value) | Q(email=value))
+    user = MongoUser.objects(Q(login=value) | Q(email=value))
     if user:
         raise ValidationError(message)
 
