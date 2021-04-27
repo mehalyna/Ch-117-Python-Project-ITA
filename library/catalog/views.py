@@ -15,6 +15,12 @@ def profile_details(request):
 
 def profile_edit(request):
     user = User.objects(id=_id).first()
+    data = {
+        'firstname': user.firstname,
+        'lastname': user.lastname,
+        'email': user.email,
+        'login': user.login,
+    }
     if request.method == 'POST':
         form = EditProfileForm(request.POST)
         if form.is_valid():
@@ -30,7 +36,7 @@ def profile_edit(request):
             )
             return redirect(profile_details)
     else:
-        form = EditProfileForm()
+        form = EditProfileForm(initial=data)
     return render(request, 'profile_edit.html', {'user': user, 'form': form})
 
 

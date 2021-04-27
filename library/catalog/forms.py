@@ -45,13 +45,13 @@ class EditProfileForm(Form):
     user = User.objects(id='606ecd74e5fd490b3c6d0657').first()  # for autofill data session user
     user_id = CharField(required=False, widget=TextInput(attrs={'value': user.id}))
     firstname = CharField(label='Firstname', max_length=100,
-                          widget=TextInput(attrs={'class': 'form-control', 'value': user.firstname}))
+                          widget=TextInput(attrs={'class': 'form-control'}))
     lastname = CharField(label='Lastname', max_length=100,
-                         widget=TextInput(attrs={'class': 'form-control', 'value': user.lastname}))
+                         widget=TextInput(attrs={'class': 'form-control'}))
     email = EmailField(label='Email', max_length=100,
-                       widget=TextInput(attrs={'class': 'form-control', 'value': user.email}))
+                       widget=TextInput(attrs={'class': 'form-control'}))
     login = CharField(label='Login', min_length=6, max_length=100,
-                      widget=TextInput(attrs={'class': 'form-control', 'value': user.login}))
+                      widget=TextInput(attrs={'class': 'form-control'}))
 
 
 class ChangePasswordForm(Form):
