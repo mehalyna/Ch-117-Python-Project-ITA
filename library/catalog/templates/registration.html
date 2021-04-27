@@ -1,11 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}
-    Registration
-{% endblock %}
+{% block title %}Registration{% endblock %}
+
 {% block body %}
-    <div class="d-flex align-items-center flex-column mt-5 mb-5">
-        <form action="" method="post" class="border registration-border col-md-3 mt-2" novalidate>
     <br>
     <div class="d-flex align-items-center flex-column mb-5">
         <form action="" method="post" class="needs-validation border registration-border col-md-3 mt-2" novalidate>
@@ -110,5 +107,6 @@
             </div>
         </form>
     </div>
-    <script src="{% static 'js/registrationForm.js' %}"></script>
+
+<script src="{% static 'js/registrationForm.js' %}"></script>
 {% endblock %}
