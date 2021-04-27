@@ -1,6 +1,8 @@
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
-from .models import Book, User
+from .forms import RegistrationForm, EditProfileForm, ChangePasswordForm
+from .models import Book, Review, User
+from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
 _id = '606ecd74e5fd490b3c6d0657'
@@ -49,11 +51,14 @@ def change_password(request):
 def book_details(request, book_id):
     # book_id = '60610c2952cd4157727d8ee3'
     book = Book.objects(id=book_id).first()
-    return render(request, 'book-details.html', {'book': book})
+    reviews = Review.objects(book_id=book_id)
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
 
 
 def home(request):
-    return render(request, 'home.html')
+    top_books = Book.objects.filter(statistic__rating__gte=4.5)[:5]
+    new_books = Book.objects.order_by('-id')[:10]
+    return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books})
 
 
 def base(request):
@@ -70,9 +75,16 @@ def registration(request):
             user.login = form.cleaned_data.get('login')
             user.password_hash = generate_password_hash(form.cleaned_data.get('password'))
             user.save()
-            print(user.user_id)
+
             return redirect(home)
     else:
         form = RegistrationForm()
 
     return render(request, 'registration.html', {'form': form})
+
+
+def unique_registration_check(request, field_value):
+    user = User.objects(Q(login=field_value) | Q(email=field_value))
+    if user:
+        return HttpResponse('Already taken', content_type="text/plain")
+    return HttpResponse('', content_type="text/plain")

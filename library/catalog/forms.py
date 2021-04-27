@@ -59,8 +59,8 @@ class ChangePasswordForm(Form):
                              validators=[RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)],
                              widget=PasswordInput(attrs={'class': 'form-control'}))
     new_password = CharField(label='New password', max_length=100,
-                         validators=[RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)],
-                         widget=PasswordInput(attrs={'class': 'form-control'}))
+                             validators=[RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)],
+                             widget=PasswordInput(attrs={'class': 'form-control'}))
     confirm_password = CharField(label='Confirm password', max_length=100,
                                  validators=[RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)],
                                  widget=PasswordInput(attrs={'class': 'form-control'}))

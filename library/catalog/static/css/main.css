@@ -31,67 +31,267 @@
     width: auto;
 }
 
-.form-control::placeholder {
+.form-control::placeholder{
     opacity: 45%;
 }
 
-.custom input, .custom a, .custom button {
+.error-message{
+    visibility: hidden;
+}
+
+.custom input,.custom a, .custom button{
     width: 90px;
 }
 
-#cover_image {
+#cover_image{
     max-width: 225px;
     max-height: 250px;
 }
 
-.book_details_text {
+.book_details_text{
     margin-left: 10px;
-    max-width: 650px !important;
+    max-width: 650px!important;
 }
 
-.book_details_img {
+.book_details_img{
     max-width: 225px;
 }
 
-.book_details_frame {
+.book_details_frame{
     background: #EEFCFC;
-    max-width: 925px !important;
+    max-width: 925px!important;
 }
 
 .swiper-container {
     height: 420px;
 }
 
-.swiper-slide img {
+.swiper-slide img{
     height: 70%;
     width: 100%;
     margin-bottom: 10px;
 }
 
-.swiper-slide p {
+.swiper-slide p{
     text-align: center;
 }
 
-.swiper-button-prev::after, .swiper-button-next::after {
+.swiper-button-prev::after, .swiper-button-next::after{
     color: #323232;
     font-size: 75px !important;
 }
 
-.h2-home-page {
-    margin-top: 90px;
+.h2-home-page{
+    margin-top: 30px;
     margin-bottom: 20px;
 }
 
-.body_div {
-    margin-top: 100px;
+
+.category-wrapper{
+    height: 300px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 45px;
+}
+
+.category-box{
+    height: 300px;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: flex-start;
+}
+
+.category-box a{
+    text-decoration: none;
+    color: #323232;
+    font-size: 18px;
+}
+
+.category-box a:hover{
+    border-bottom: 2px solid #323232;
+}
+
+.footer{
+    height: 240px;
+    background: #eeecec;
+}
+
+.footer-wrapper{
+    height: 240px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.footer-box{
+    height: 240px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.footer-box a{
+    text-decoration: none;
+    color: #323232;
+    font-size: 14px;
+}
+
+.navbar{
+    height: 70px;
+    background: #eeecec;
+}
+
+.navbar-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo{
+    text-decoration: none;
+    color: #000000;
+}
+
+.logo:hover {
+    text-decoration: none;
+    color: black;
+}
+/*
+=====
+DEPENDENCES
+=====
+*/
+
+.screen-reader{
+    width: var(--screenReaderWidth, 1px);
+    height: var(--screenReaderHeight, 1px);
+    padding: var(--screenReaderPadding, 0);
+    border: var(--screenReaderBorder, none);
+
+    position: var(--screenReaderPosition, absolute);
+    clip: var(--screenReaderClip, rect(1px, 1px, 1px, 1px));
+    overflow: var(--screenReaderOverflow, hidden);
+}
+
+/*
+=====
+CORE STYLES
+=====
+*/
+
+.rating{
+    --uiRatingColor: var(--ratingColor, #eee);
+    --uiRatingColorActive: var(--ratingColorActive, #ffcc00);
+
+    display: var(--ratingDisplay, flex);
+    font-size: var(--ratingSize, 1rem);
+    color: var(--uiRatingColor);
+}
+
+
+.rating__control:nth-of-type(n):focus ~ .rating__item:nth-of-type(n)::before{
+    content: "";
+    box-shadow: 0 0 0 var(--ratingOutlineWidth, 4px) var(--uiRatingColorActive);
+
+    position: absolute;
+    top: -.15em;
+    right: 0;
+    bottom: -.15em;
+    left: 0;
+    z-index: -1;
+}
+
+.rating__item{
+    cursor: pointer;
+    position: relative;
+}
+
+.rating__item{
+    padding-left: .25em;
+    padding-right: .25em;
+}
+
+.rating__star{
+    display: block;
+    width: 1em;
+    height: 1em;
+
+    fill: currentColor;
+    stroke: var(--ratingStroke, #222);
+    stroke-width: var(--ratingStrokeWidth, 1px);
+}
+
+
+
+.rating__item:hover ~ .rating__item{
+    color: var(--uiRatingColor);
+}
+
+/*
+=====
+SETTINGS
+=====
+*/
+
+.rating{
+    --ratingSize: 2rem;
+    --ratingColor: #eee;
+    --ratingColorActive: #ffcc00;
+}
+
+/*
+=====
+DEMO
+=====
+*/
+
+body{
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Open Sans, Ubuntu, Fira Sans, Helvetica Neue, sans-serif;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.page{
+    min-height: 100vh;
+    display: flex;
+}
+
+.page__demo{
+    margin: auto;
+}
+
+.page__group{
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.page__hint{
+    display: block;
+    font-weight: 700;
+    margin-top: 1rem;
+}
+
+@media (min-width: 641px){
+    .page__demo{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .page__group{
+        margin-left: 3.5rem;
+        margin-right: 3.5rem;
+    }
 }
 
 .profile_table tr th {
     width: 50%;
 
-}
-
-.profile_table ul {
+}.profile_table ul{
     padding-left: 15px;
 }
 
