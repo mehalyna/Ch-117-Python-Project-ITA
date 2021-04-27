@@ -1,6 +1,6 @@
 const emailPattern = /^(\w|\.|_|-)+[@](\w|_|-|\.)+[.]\w{2,3}$/;
 const passPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-const timeToLive = 600000;
+const timeToLiveMin = 10;
 const storageKeyPrefix = 'registration_'
 
 let form = document.querySelector('.needs-validation');
@@ -8,14 +8,10 @@ let inputsList = document.querySelectorAll('input.form-control');
 
 let firstname = form.elements.namedItem('firstname');
 firstname.value = getWithExpiry(storageKeyPrefix + firstname.id);
-
-
 let lastname = form.elements.namedItem('lastname');
 lastname.value = getWithExpiry(storageKeyPrefix + lastname.id);
-
 let email = form.elements.namedItem('email');
 email.value = getWithExpiry(storageKeyPrefix + email.id);
-
 let login = form.elements.namedItem('login');
 login.value = getWithExpiry(storageKeyPrefix + login.id);
 
@@ -45,25 +41,25 @@ password.addEventListener('input', validationFuncsPassword);
 confirmPassword.addEventListener('input', validationFuncsConfirmPassword);
 
 function validationFuncsFirstname() {
-    setWithExpiry(storageKeyPrefix + firstname.id, firstname.value, timeToLive);
+    setWithExpiry(storageKeyPrefix + firstname.id, firstname.value, timeToLiveMin);
     validateFirstname();
     checkFormValid();
 }
 
 function validationFuncsLastname() {
-    setWithExpiry(storageKeyPrefix + lastname.id, lastname.value, timeToLive);
+    setWithExpiry(storageKeyPrefix + lastname.id, lastname.value, timeToLiveMin);
     validateLastname();
     checkFormValid();
 }
 
 function validationFuncsEmail() {
-    setWithExpiry(storageKeyPrefix + email.id, email.value, timeToLive);
+    setWithExpiry(storageKeyPrefix + email.id, email.value, timeToLiveMin);
     validateEmail();
     checkFormValid();
 }
 
 function validationFuncsLogin() {
-    setWithExpiry(storageKeyPrefix + login.id, login.value, timeToLive);
+    setWithExpiry(storageKeyPrefix + login.id, login.value, timeToLiveMin);
     validateLogin();
     checkFormValid();
 }
@@ -214,7 +210,7 @@ function setWithExpiry(key, value, ttl) {
     // as well as the time when it's supposed to expire
     let item = {
         value: value,
-        expiry: now.getTime() + ttl,
+        expiry: now.getTime() + ttl * 60000,
     }
     localStorage.setItem(key, JSON.stringify(item))
 }
