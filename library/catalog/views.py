@@ -3,14 +3,15 @@ from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Book, User
 from werkzeug.security import generate_password_hash
 
+_id = '606ecd74e5fd490b3c6d0657'
+
 
 def profile_details(request):
-    user = User.objects(id='606ecd74e5fd490b3c6d0657').first()
+    user = User.objects(id=_id).first()
     return render(request, 'profile_details.html', {'user': user})
 
 
 def profile_edit(request):
-    _id = '606ecd74e5fd490b3c6d0657'
     user = User.objects(id=_id).first()
     if request.method == 'POST':
         form = EditProfileForm(request.POST)
@@ -32,7 +33,6 @@ def profile_edit(request):
 
 
 def change_password(request):
-    _id = '606ecd74e5fd490b3c6d0657'
     user = User.objects(id=_id).first()
     if request.method == 'POST':
         form = ChangePasswordForm(request.POST)
