@@ -1,4 +1,3 @@
-from bson import ObjectId
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
@@ -74,8 +73,8 @@ class ChangePasswordForm(Form):
                                  widget=PasswordInput(attrs={'class': 'form-control'}))
 
     def clean(self):
-        password = self.cleaned_data.get('password')
+        new_password = self.cleaned_data.get('new_password')
         confirm_password = self.cleaned_data.get('confirm_password')
 
-        if password != confirm_password:
+        if new_password != confirm_password:
             raise ValidationError('Password and confirm password doesn\'t match')

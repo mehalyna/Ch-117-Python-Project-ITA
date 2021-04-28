@@ -1,12 +1,14 @@
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
-from .forms import RegistrationForm
+from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Book, Review, User
 
 _id = '606ecd74e5fd490b3c6d0657'
+
 
 def profile_details(request):
     user = User.objects(id=_id).first()
@@ -46,9 +48,13 @@ def change_password(request):
         form = ChangePasswordForm(request.POST)
         if form.is_valid():
             old_password = form.cleaned_data.get('old_password')
-            new_password = form.cleaned_data.get('new_password')
-            confirm_password = form.cleaned_data.get('confirm_password')
-            return redirect(profile_details)
+            if user and user.check_password(old_password):
+                new_password = generate_password_hash(form.cleaned_data.get('new_password'))
+                user.update(password_hash=new_password)
+                messages.success(request, 'Password successfully updated.')
+                return redirect(profile_details)
+            else:
+                messages.success(request, 'Wrong old password.')
     else:
         form = ChangePasswordForm()
     return render(request, 'change_password.html', {'user': user, 'form': form})
@@ -65,6 +71,7 @@ def home(request):
     top_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
     new_books = Book.objects.order_by('-id')[:10]
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books})
+
 
 def category_search(request, genre):
     books = Book.objects.filter(genres=genre)

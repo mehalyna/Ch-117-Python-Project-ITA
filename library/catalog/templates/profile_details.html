@@ -2,34 +2,16 @@
 {% load static %}
 {% block details_link_class %}active{% endblock %}
 {% block profile_content %}
+    <div class="alert alert-success d-none" id="messages" role="alert">
+    {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </ul>
+    {% endif %}
+    </div>
+
     <h1 class="text-center">Profile details</h1>
-    {#    <table class="table profile_table">#}
-    {#        <tr>#}
-    {#            <th>First name</th>#}
-    {#            <td id="userFirstname">{{ user.firstname }}</td>#}
-    {#        </tr>#}
-    {#        <tr>#}
-    {#            <th>Last name</th>#}
-    {#            <td>{{ user.lastname }}</td>#}
-    {#        </tr>#}
-    {#        <tr>#}
-    {#            <th>Login</th>#}
-    {#            <td>{{ user.login }}</td>#}
-    {#        </tr>#}
-    {#        <tr>#}
-    {#            <th>Email</th>#}
-    {#            <td>{{ user.email }}</td>#}
-    {#        </tr>#}
-    {#        <tr>#}
-    {#            <th>Favorite books</th>#}
-    {#            <td>#}
-    {#                <ul>#}
-    {#                    <li>The Man Who Lived Underground, by Richard Wright</li>#}
-    {#                    <li>Last Call, by Elon Green</li>#}
-    {#                </ul>#}
-    {#            </td>#}
-    {#        </tr>#}
-    {#    </table>#}
     <div class="d-flex align-items-center flex-column mt-5 mb-5">
         <form action="" method="post" class="needs-validation border profile-edit-border col-md-3" novalidate>
             {% csrf_token %}
