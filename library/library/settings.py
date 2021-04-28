@@ -14,6 +14,7 @@ import os
 
 from dotenv import load_dotenv
 from pathlib import Path
+import mongoengine
 
 load_dotenv()
 
@@ -27,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -76,15 +77,23 @@ WSGI_APPLICATION = 'library.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-MONGODB_DATABASES = {
+
+DB_NAME = os.getenv('DJANGO_DB_NAME')
+HOST = os.getenv('MONGO_URL')
+PORT = int(os.getenv('PORT'))
+
+MONGO_DATABASE_HOST = f'{HOST}:{PORT}'
+
+DATABASES = {
     'default': {
-        'name': os.getenv('DB_NAME'),
-        'host': os.getenv('MONGO_URL'),
-        'port': int(os.getenv('PORT')),
+        'ENGINE': 'djongo',
+        'NAME': DB_NAME,
     }
 }
 
-INSTALLED_APPS += ["django_mongoengine"]
+mongoengine.connect(DB_NAME, host=MONGO_DATABASE_HOST)
+
+AUTH_USER_MODEL = 'catalog.DjangoUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

@@ -1,18 +1,12 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from mongoengine.queryset.visitor import Q
-from werkzeug.security import generate_password_hash
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 
 from .forms import RegistrationForm
-from .models import Book, Review, User
-
-
-def profile_details(request):
-    return render(request, 'profile_details.html')
-
-
-def profile_edit(request):
-    return render(request, 'profile_edit.html')
+from .models import Book, Review, MongoUser
 
 
 def change_password(request):
@@ -31,6 +25,7 @@ def home(request):
     new_books = Book.objects.order_by('-id')[:10]
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books})
 
+
 def category_search(request, genre):
     books = Book.objects.filter(genres=genre)
     return render(request, 'books.html', {'books': books})
@@ -44,11 +39,11 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = User(email=form.cleaned_data.get('email'))
-            user.firstname = form.cleaned_data.get('firstname')
-            user.lastname = form.cleaned_data.get('lastname')
-            user.login = form.cleaned_data.get('login')
-            user.password_hash = generate_password_hash(form.cleaned_data.get('password'))
+            user = MongoUser(email=form.cleaned_data.get('email'))
+            user.first_name = form.cleaned_data.get('firstname')
+            user.last_name = form.cleaned_data.get('lastname')
+            user.username = form.cleaned_data.get('login')
+            user.set_password(form.cleaned_data.get('password'))
             user.save()
 
             return redirect(home)
@@ -63,3 +58,29 @@ def unique_registration_check(request, field_value):
     if user:
         return HttpResponse('Already taken', content_type="text/plain")
     return HttpResponse('', content_type="text/plain")
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request=request, username=username, password=password)
+        if user:
+            login(request, user)
+        print(user.is_authenticated)
+    return redirect(home)
+
+
+def logout_view(request):
+    logout(request)
+    return redirect(home)
+
+
+@login_required
+def profile_details(request):
+    return render(request, 'profile_details.html')
+
+
+@login_required
+def profile_edit(request):
+    return render(request, 'profile_edit.html')
