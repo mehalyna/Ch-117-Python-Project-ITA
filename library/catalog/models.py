@@ -1,9 +1,11 @@
 from datetime import datetime
+
+from django.contrib.auth import get_user_model
 from django_mongoengine import Document
 from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password
 
 
@@ -27,10 +29,10 @@ class Preference(EmbeddedDocument):
 
 
 class MongoUser(Document):
-    firstname = StringField(max_length=100, min_length=1, required=True)
-    lastname = StringField(max_length=100, min_length=1, required=True)
+    first_name = StringField(max_length=100, min_length=1, required=True)
+    last_name = StringField(max_length=100, min_length=1, required=True)
     email = EmailField(required=True, unique=True)
-    login = StringField(required=True, unique=True)
+    username = StringField(required=True, unique=True)
     password_hash = StringField(required=True, min_length=8)
     role = StringField(default=Role.USER)
     status = StringField(default=Status.ACTIVE)
@@ -49,13 +51,15 @@ class MongoUser(Document):
 
     def save(self):
         mongo_user = super().save()
-        django_user = User(username=self.login, email=self.email, password=self.django_password)
+        User = get_user_model()
+        django_user = User(username=self.username, email=self.email, password=self.django_password)
         django_user.save()
         return mongo_user
 
     def update(self, **kwargs):
         mongo_user = super().update(**kwargs)
-        User.objects.filter(username=self.login).update(**kwargs)
+        User = get_user_model()
+        User.objects.filter(username=self.username).update(**kwargs)
         return mongo_user
 
 # class CustomManager(UserManager):
@@ -63,15 +67,10 @@ class MongoUser(Document):
 #         return super()._create_user(username, email, password, **extra_fields)
 
 
-# class DjangoUser(AbstractUser):
-#     def get_mongo_user(self):
-#         pass
-#
-#     def save(self, *args, **kwargs):
-#         super().save(*args, **kwargs)
-#         mu = MongoUser(username=self.username, email=self.email)
-#         mu.set_password(self.password)
-#         mu.save()
+class DjangoUser(AbstractUser):
+    @property
+    def mongo_user(self):
+        return MongoUser.objects(username=self.username).first()
 
     # objects = CustomManager()
 

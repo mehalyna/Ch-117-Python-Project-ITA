@@ -11,7 +11,7 @@ PASSWORD_MESSAGE = 'Minimum 8 characters, at least 1 letter and 1 number'
 
 def unique_check(value):
     message = f'Is already taken'
-    user = MongoUser.objects(Q(login=value) | Q(email=value))
+    user = MongoUser.objects(Q(username=value) | Q(email=value))
     if user:
         raise ValidationError(message)
 

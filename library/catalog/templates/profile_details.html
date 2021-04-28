@@ -6,26 +6,27 @@
     <table class="table profile_table">
         <tr>
             <th>First name</th>
-            <td>Ivan</td>
+            <td>{{ user.mongo_user.first_name }}</td>
         </tr>
         <tr>
             <th>Last name</th>
-            <td>Ivanov</td>
+            <td>{{ user.mongo_user.last_name }}</td>
         </tr>
         <tr>
-            <th>Login</th>
-            <td>johan</td>
+            <th>Username</th>
+            <td>{{ user.mongo_user.username }}</td>
         </tr>
         <tr>
             <th>Email</th>
-            <td>ivan@gmail.com</td>
+            <td>{{ user.mongo_user.email }}</td>
         </tr>
         <tr>
             <th>Favorite books</th>
             <td>
                 <ul>
-                    <li>The Man Who Lived Underground, by Richard Wright</li>
-                    <li>Last Call, by Elon Green</li>
+                    {% for book in user.mongo_user.wishlist %}
+                        <li>{{ book }}</li>
+                    {% endfor %}
                 </ul>
             </td>
         </tr>
