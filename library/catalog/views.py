@@ -31,6 +31,7 @@ def home(request):
     new_books = Book.objects.order_by('-id')[:10]
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books})
 
+
 def category_search(request, genre):
     books = Book.objects.filter(genres=genre)
     return render(request, 'books.html', {'books': books})
@@ -44,10 +45,10 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = User(email=form.cleaned_data.get('email'))
-            user.firstname = form.cleaned_data.get('firstname')
-            user.lastname = form.cleaned_data.get('lastname')
-            user.login = form.cleaned_data.get('login')
+            user = User(email=form.cleaned_data.get('email').strip())
+            user.firstname = form.cleaned_data.get('firstname'.strip())
+            user.lastname = form.cleaned_data.get('lastname'.strip())
+            user.login = form.cleaned_data.get('login'.strip())
             user.password_hash = generate_password_hash(form.cleaned_data.get('password'))
             user.save()
 
