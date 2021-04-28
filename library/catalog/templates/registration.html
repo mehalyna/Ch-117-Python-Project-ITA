@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Registration{% endblock %}
-
+{% block title %}
+    Registration
+{% endblock %}
 {% block body %}
-    <br>
-    <div class="d-flex align-items-center flex-column mb-5">
+    <div class="d-flex align-items-center flex-column mt-5 mb-5">
         <form action="" method="post" class="needs-validation border registration-border col-md-3 mt-2" novalidate>
             {% csrf_token %}
             <div class="text-center mt-3 mb-4">
@@ -107,6 +107,5 @@
             </div>
         </form>
     </div>
-
-<script src="{% static 'js/registrationForm.js' %}"></script>
+    <script src="{% static 'js/registrationForm.js' %}"></script>
 {% endblock %}
