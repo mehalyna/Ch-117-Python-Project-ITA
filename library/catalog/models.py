@@ -2,11 +2,11 @@ from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from django_mongoengine import Document, EmbeddedDocument
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.hashers import make_password
 from mongoengine import DateTimeField, EmailField, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.hashers import make_password
 
 
 class Status:

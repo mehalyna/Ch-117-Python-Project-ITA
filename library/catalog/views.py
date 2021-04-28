@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from mongoengine.queryset.visitor import Q
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.decorators import login_required
 
 from .forms import RegistrationForm
 from .models import Book, Review, MongoUser
