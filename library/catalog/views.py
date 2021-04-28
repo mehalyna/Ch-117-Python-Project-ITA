@@ -11,6 +11,11 @@ def profile_details(request):
     return render(request, 'profile_details.html')
 
 
+def profile_bookshelf(request):
+    rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
+    return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
+
+
 def profile_edit(request):
     return render(request, 'profile_edit.html')
 

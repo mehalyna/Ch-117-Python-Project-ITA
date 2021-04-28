@@ -58,6 +58,24 @@
     max-width: 925px!important;
 }
 
+.user_menu {
+    padding: 5% 2% 9%;
+    background-color: #eeecec;
+    border: 1px solid #bad8e3;
+    box-shadow: 0 10px 10px;
+    border-radius: 10px 100px / 120px;
+}
+.user_menu_buttons li a{
+    color:black;
+}
+.row img{
+    width: 100%;
+    height: 60%;
+}
+.row p{
+    text-align: center;
+}
+
 .swiper-container {
     height: 460px;
 }
@@ -77,6 +95,12 @@
     color: #323232;
     font-size: 75px !important;
     background: #eeecec;
+}
+.swiper-container .swiper-button-prev::after{
+    opacity: 0.5;
+}
+.swiper-container .swiper-button-next::after{
+    opacity: 0.5;
 }
 
 .h2-home-page{
@@ -168,9 +192,10 @@
     font-family: 'Krona One', sans-serif;
 }
 
-.logo:hover{
+.logo:hover {
     text-decoration: none;
     color: black;
+}
 /*
 =====
 DEPENDENCES
