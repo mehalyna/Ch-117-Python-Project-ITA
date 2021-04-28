@@ -34,10 +34,10 @@ class RegistrationForm(Form):
     login = CharField(label='Login', min_length=6, max_length=100, validators=[profanity_check, unique_check],
                       widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'johny_1234'}))
     password = CharField(label='Password', max_length=100, validators=[
-        profanity_check, RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)
+        RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)
     ], widget=PasswordInput(attrs={'class': 'form-control'}))
     confirm_password = CharField(label='Confirm password', max_length=100, validators=[
-        profanity_check, RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)
+        RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)
     ], widget=PasswordInput(attrs={'class': 'form-control'}))
 
     def clean(self):
