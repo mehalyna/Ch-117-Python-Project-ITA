@@ -158,7 +158,7 @@ function checkFormValid() {
 }
 
 function dataRequired(element, errorId) {
-    if (element.value === '') {
+    if (element.value.trim() === '') {
         element.classList.add('is-invalid');
         setErrorFor(errorId, 'This field is required');
         return false;
