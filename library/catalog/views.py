@@ -1,13 +1,14 @@
+import json
+
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from .forms import RegistrationForm
-from .models import Book, MongoUser
-from werkzeug.security import generate_password_hash
-from django_mongoengine.mongo_auth import backends
-from django_mongoengine.mongo_auth.backends import MongoEngineBackend
+from mongoengine.queryset.visitor import Q
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+
+from .forms import RegistrationForm
+from .models import Book, MongoUser, Review
 
 
 
@@ -63,6 +64,21 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect(home)
+
+
+def func_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        remember_me = request.POST.get('remember_me')
+        user = authenticate(request=request, username=username, password=password)
+        print(user.firstname)
+        if user:
+            login(request, user)
+            print(user.is_authenticated)
+        return HttpResponse(json.dumps({"message": "Success"}), content_type="application/json")
+    return HttpResponse(json.dumps({"message": "Denied"}), content_type="application/json")
+
 
 @login_required
 def profile_details(request):
