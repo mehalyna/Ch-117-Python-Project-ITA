@@ -2,14 +2,15 @@
 {% load static %}
 {% block details_link_class %}active{% endblock %}
 {% block profile_content %}
-    <div class="alert alert-success d-none" id="messages" role="alert">
     {% if messages %}
-            {% for message in messages %}
+         {% for message in messages %}
+            <div class="alert alert-success m-2" id="msg" role="alert">
                 {{ message }}
-            {% endfor %}
-        </ul>
+            </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-info m-2 error-msg" role="alert">Error</div>
     {% endif %}
-    </div>
 
     <h1 class="text-center">Profile details</h1>
     <div class="d-flex align-items-center flex-column mt-5 mb-5">

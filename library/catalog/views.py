@@ -59,7 +59,7 @@ def change_password(request):
                 messages.success(request, 'Password successfully updated.')
                 return redirect(profile_details)
             else:
-                messages.success(request, 'Wrong old password.')
+                messages.error(request, 'Wrong old password.')
     else:
         form = ChangePasswordForm()
     return render(request, 'change_password.html', {'user': user, 'form': form})
