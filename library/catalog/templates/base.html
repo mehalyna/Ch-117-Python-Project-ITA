@@ -23,15 +23,27 @@
 <body>
 
 
-
 <!--Header-->
 <div class="navbar">
     <div class="navbar-wrapper container">
         <h1><a href="{% url 'library-home' %}" class="logo">Library</a></h1>
-        <a href="#" class="btn btn-dark">Sign In</a>
+       <div class="d-flex"> <a href="#" class="btn btn-dark">Sign In</a>
+
+
+        <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+                <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url 'profile_details' %}">Profile details</a>
+                <div class="dropdown-divider"></div>
+            </div>
+        </div>
+
     </div>
 </div>
-
+</div>
 {% block body %}
 {% endblock %}
 

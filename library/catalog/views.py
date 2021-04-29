@@ -1,24 +1,68 @@
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from .forms import RegistrationForm
-from .models import Book, User
 from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
-from .forms import RegistrationForm
+from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Book, Review, User
+
+_id = '606ecd74e5fd490b3c6d0657'
 
 
 def profile_details(request):
-    return render(request, 'profile_details.html')
+    user = User.objects(id=_id).first()
+    return render(request, 'profile_details.html', {'user': user})
+
+
+def profile_bookshelf(request):
+    rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
+    return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
 
 
 def profile_edit(request):
-    return render(request, 'profile_edit.html')
+    user = User.objects(id=_id).first()
+    data = {
+        'firstname': user.firstname,
+        'lastname': user.lastname,
+        'email': user.email,
+        'login': user.login,
+    }
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST)
+        if form.is_valid():
+            firstname = form.cleaned_data.get('firstname')
+            lastname = form.cleaned_data.get('lastname')
+            email = form.cleaned_data.get('email')
+            login = form.cleaned_data.get('login')
+            user.update(
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                login=login
+            )
+            return redirect(profile_details)
+    else:
+        form = EditProfileForm(initial=data)
+    return render(request, 'profile_edit.html', {'user': user, 'form': form})
 
 
 def change_password(request):
-    return render(request, 'change_password.html')
+    user = User.objects(id=_id).first()
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            old_password = form.cleaned_data.get('old_password')
+            if user and user.check_password(old_password):
+                new_password = generate_password_hash(form.cleaned_data.get('new_password'))
+                user.update(password_hash=new_password)
+                messages.success(request, 'Password successfully updated.')
+                return redirect(profile_details)
+            else:
+                messages.success(request, 'Wrong old password.')
+    else:
+        form = ChangePasswordForm()
+    return render(request, 'change_password.html', {'user': user, 'form': form})
 
 
 def book_details(request, book_id):
@@ -33,10 +77,11 @@ def home(request):
     new_books = Book.objects.order_by('-id')[:10]
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books})
 
+
 def category_search(request, genre):
     books = Book.objects.filter(genres=genre)
     return render(request, 'books.html', {'books': books})
-  
+
 
 def base(request):
     return render(request, 'base.html')
@@ -46,10 +91,10 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = User(email=form.cleaned_data.get('email'))
-            user.firstname = form.cleaned_data.get('firstname')
-            user.lastname = form.cleaned_data.get('lastname')
-            user.login = form.cleaned_data.get('login')
+            user = User(email=form.cleaned_data.get('email').strip())
+            user.firstname = form.cleaned_data.get('firstname'.strip())
+            user.lastname = form.cleaned_data.get('lastname'.strip())
+            user.login = form.cleaned_data.get('login'.strip())
             user.password_hash = generate_password_hash(form.cleaned_data.get('password'))
             user.save()
 
