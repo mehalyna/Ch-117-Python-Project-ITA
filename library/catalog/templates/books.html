@@ -4,10 +4,19 @@
 {% block title %}Library page{% endblock %}
 
 {% block body %}
-<div class="container">
+<div style="background: #e1e5e7;margin-bottom: 50px;margin-top: 50px" class="container">
     <h1>Library page</h1>
-    {% for book in books %}
-    <h3>{{ book.title }}</h3>
-    {% endfor %}
+    <div class="row">
+        {% for book in books %}
+            <div class="col-3">
+                <div class="zoom">
+                    <a  href={% url 'book-details' book.id %}>
+                        <img style="padding: 10px 10px 10px 10px;max-height: 270px; width: 90%" src={{ book.link_img }}>
+                        <p style="margin-left: 10px">{{ book.title }}</p>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

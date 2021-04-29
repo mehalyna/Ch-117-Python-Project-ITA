@@ -343,6 +343,17 @@ body{
     padding-left: 15px;
 }
 
+.zoom {
+    transition: transform .2s; /* Animation */
+    border-radius: 10%;
+}
+
+.zoom:hover {
+    border-radius: 10%;
+    opacity: 70%;
+    font-size: medium;
+    transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+
 @media (min-width: 768px) {
     .col-md-3 {
         -ms-flex: 0 0 25%;
