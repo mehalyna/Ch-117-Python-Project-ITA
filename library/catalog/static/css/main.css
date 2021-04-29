@@ -168,9 +168,10 @@
     font-family: 'Krona One', sans-serif;
 }
 
-.logo:hover{
+.logo:hover {
     text-decoration: none;
     color: black;
+}
 /*
 =====
 DEPENDENCES
@@ -312,4 +313,16 @@ body{
 
 }.profile_table ul{
     padding-left: 15px;
+}
+
+.zoom {
+    transition: transform .2s; /* Animation */
+    border-radius: 10%;
+}
+
+.zoom:hover {
+    border-radius: 10%;
+    opacity: 70%;
+    font-size: medium;
+    transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
