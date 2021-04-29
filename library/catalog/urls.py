@@ -13,5 +13,3 @@ urlpatterns = [
     path('books/<str:genre>/', views.category_search, name='library-books'),
     path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf')
 ]
-
-

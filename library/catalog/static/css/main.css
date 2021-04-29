@@ -11,6 +11,10 @@
     box-shadow: 12px 12px 3px #37598c;
 }
 
+.profile-edit-border {
+    box-shadow: 12px 12px 3px #70747c;
+}
+
 .sign-up-button {
     width: 110px !important;
     border-radius: 20px !important;
@@ -332,9 +336,21 @@ body{
     }
 }
 
-.profile_table tr th{
+.profile_table tr th {
     width: 50%;
 
 }.profile_table ul{
     padding-left: 15px;
+}
+
+@media (min-width: 768px) {
+    .col-md-3 {
+        -ms-flex: 0 0 25%;
+        flex: 0 0 25%;
+        max-width: 50% !important;
+    }
+}
+
+.error-message {
+    visibility: hidden;
 }
