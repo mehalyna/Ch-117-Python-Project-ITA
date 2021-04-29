@@ -43,6 +43,7 @@ class MongoUser(Document):
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
 
     def set_password(self, password):
+
         self.django_password = make_password(password)
         self.password_hash = generate_password_hash(password)
 
@@ -62,17 +63,11 @@ class MongoUser(Document):
         User.objects.filter(username=self.username).update(**kwargs)
         return mongo_user
 
-# class CustomManager(UserManager):
-#     def _create_user(self, username, email, password, **extra_fields):
-#         return super()._create_user(username, email, password, **extra_fields)
-
 
 class DjangoUser(AbstractUser):
     @property
     def mongo_user(self):
         return MongoUser.objects(username=self.username).first()
-
-    # objects = CustomManager()
 
 
 class BookStatistic(EmbeddedDocument):

@@ -1,7 +1,8 @@
+const profanityRegexp = /(\w?\d?)(ass|bastard|bitch|bollocks|boobs|bottom|bugger|clunge|cock|cunt|damn|dick|fuck|gash|knob|minge|motherfucker|piss off|prick|punani|pussy|shit|snatch|suck|tits|twat|wanker)(\w?\d?)/gi;
 const emailPattern = /^(\w|\.|_|-)+[@](\w|_|-|\.)+[.]\w{2,3}$/;
 const passPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 const timeToLiveMin = 10;
-const storageKeyPrefix = 'registration_'
+const storageKeyPrefix = 'registration_';
 
 let form = document.querySelector('.needs-validation');
 let inputsList = document.querySelectorAll('input.form-control');
@@ -75,11 +76,17 @@ function validationFuncsConfirmPassword() {
 }
 
 function validateFirstname() {
-    dataRequired(firstname, '#firstnameError');
+    let errorId = '#firstnameError';
+    if (!dataRequired(firstname, errorId)) {
+    } else if (!validateProfanity(firstname, errorId)) {
+    }
 }
 
 function validateLastname() {
-    dataRequired(lastname, '#lastnameError');
+    let errorId = '#lastnameError';
+    if (!dataRequired(lastname, errorId)) {
+    } else if (!validateProfanity(lastname, errorId)) {
+    }
 }
 
 function validateEmail() {
@@ -89,6 +96,7 @@ function validateEmail() {
     } else if (!emailPattern.test(email.value)) {
         email.classList.add('is-invalid');
         setErrorFor(errorId, 'Invalid email');
+    } else if (!validateProfanity(email, errorId)) {
     } else if (!validateUnique(email, errorId)) {
     } else {
         email.classList.remove('is-invalid');
@@ -103,6 +111,7 @@ function validateLogin() {
     } else if (login.value.length < 6) {
         login.classList.add('is-invalid');
         setErrorFor(errorId, 'Minimum 6 characters long');
+    } else if (!validateProfanity(login, errorId)) {
     } else if (!validateUnique(login, errorId)) {
     } else {
         login.classList.remove('is-invalid');
@@ -149,7 +158,7 @@ function checkFormValid() {
 }
 
 function dataRequired(element, errorId) {
-    if (element.value === '') {
+    if (element.value.trim() === '') {
         element.classList.add('is-invalid');
         setErrorFor(errorId, 'This field is required');
         return false;
@@ -231,4 +240,16 @@ function getWithExpiry(key) {
         return null
     }
     return item.value
+}
+
+function validateProfanity(element, errorId) {
+    if (!element.value.search(profanityRegexp)) {
+        element.classList.add('is-invalid');
+        setErrorFor(errorId, 'This field contains profanity');
+        return false;
+    } else {
+        element.classList.remove('is-invalid');
+        setSuccessFor(errorId);
+        return true;
+    }
 }
