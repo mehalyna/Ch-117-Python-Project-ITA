@@ -1,5 +1,9 @@
 from datetime import datetime
+
+from django.contrib.auth import get_user_model
 from django_mongoengine import Document, EmbeddedDocument
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.hashers import make_password
 from mongoengine import DateTimeField, EmailField, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -24,11 +28,11 @@ class Preference(EmbeddedDocument):
     years = ListField(default=(), max_length=2)
 
 
-class User(Document):
-    firstname = StringField(max_length=100, min_length=1, required=True)
-    lastname = StringField(max_length=100, min_length=1, required=True)
+class MongoUser(Document):
+    first_name = StringField(max_length=100, min_length=1, required=True)
+    last_name = StringField(max_length=100, min_length=1, required=True)
     email = EmailField(required=True, unique=True)
-    login = StringField(required=True, unique=True)
+    username = StringField(required=True, unique=True)
     password_hash = StringField(required=True, min_length=8)
     role = StringField(default=Role.USER)
     status = StringField(default=Status.ACTIVE)
@@ -39,11 +43,32 @@ class User(Document):
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
 
     def set_password(self, password):
+
+        self.django_password = make_password(password)
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
+    def save(self):
+        mongo_user = super().save()
+        User = get_user_model()
+        django_user = User(username=self.username, email=self.email, password=self.django_password)
+        django_user.save()
+        return mongo_user
+
+    def update(self, **kwargs):
+        mongo_user = super().update(**kwargs)
+        User = get_user_model()
+        User.objects.filter(username=self.username).update(**kwargs)
+        return mongo_user
+
+
+class DjangoUser(AbstractUser):
+    @property
+    def mongo_user(self):
+        return MongoUser.objects(username=self.username).first()
+
 
 class BookStatistic(EmbeddedDocument):
     rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
@@ -74,7 +99,7 @@ class Book(Document):
     statistic = EmbeddedDocumentField(BookStatistic.__name__, default=BookStatistic())
 
 class Review(Document):
-    user_id = ReferenceField(User.__name__, required=True)
+    user_id = ReferenceField(MongoUser.__name__, required=True)
     book_id = ReferenceField(Book.__name__, required=True)
     firstname = StringField(default='', max_length=50)
     lastname = StringField(default='', max_length=50)

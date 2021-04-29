@@ -4,7 +4,7 @@ from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
 from mongoengine.queryset.visitor import Q
 from profanityfilter import ProfanityFilter
 
-from .models import User
+from .models import MongoUser
 
 PASSWORD_MESSAGE = 'Minimum 8 characters, at least 1 letter and 1 number'
 PASSWORD_PATTERN = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'
@@ -12,8 +12,8 @@ pf = ProfanityFilter(no_word_boundaries=True)
 
 
 def unique_check(value):
-    message = 'Is already taken'
-    user = User.objects(Q(login=value) | Q(email=value))
+    message = f'Is already taken'
+    user = MongoUser.objects(Q(username=value) | Q(email=value))
     if user:
         raise ValidationError(message)
 

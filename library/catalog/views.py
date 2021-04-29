@@ -1,8 +1,11 @@
+from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from mongoengine.queryset.visitor import Q
-from werkzeug.security import generate_password_hash
+
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Book, Review, User
@@ -91,11 +94,11 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = User(email=form.cleaned_data.get('email').strip())
-            user.firstname = form.cleaned_data.get('firstname'.strip())
-            user.lastname = form.cleaned_data.get('lastname'.strip())
-            user.login = form.cleaned_data.get('login'.strip())
-            user.password_hash = generate_password_hash(form.cleaned_data.get('password'))
+            user = MongoUser(email=form.cleaned_data.get('email'))
+            user.first_name = form.cleaned_data.get('firstname')
+            user.last_name = form.cleaned_data.get('lastname')
+            user.username = form.cleaned_data.get('login')
+            user.set_password(form.cleaned_data.get('password'))
             user.save()
 
             return redirect(home)
@@ -110,3 +113,29 @@ def unique_registration_check(request, field_value):
     if user:
         return HttpResponse('Already taken', content_type="text/plain")
     return HttpResponse('', content_type="text/plain")
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request=request, username=username, password=password)
+        if user:
+            login(request, user)
+        print(user.is_authenticated)
+    return redirect(home)
+
+
+def logout_view(request):
+    logout(request)
+    return redirect(home)
+
+
+@login_required
+def profile_details(request):
+    return render(request, 'profile_details.html')
+
+
+@login_required
+def profile_edit(request):
+    return render(request, 'profile_edit.html')
