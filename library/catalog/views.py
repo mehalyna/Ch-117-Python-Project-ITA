@@ -15,6 +15,11 @@ def profile_details(request):
     return render(request, 'profile_details.html', {'user': user})
 
 
+def profile_bookshelf(request):
+    rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
+    return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
+
+
 def profile_edit(request):
     user = User.objects(id=_id).first()
     data = {
@@ -86,10 +91,10 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = User(email=form.cleaned_data.get('email'))
-            user.firstname = form.cleaned_data.get('firstname')
-            user.lastname = form.cleaned_data.get('lastname')
-            user.login = form.cleaned_data.get('login')
+            user = User(email=form.cleaned_data.get('email').strip())
+            user.firstname = form.cleaned_data.get('firstname'.strip())
+            user.lastname = form.cleaned_data.get('lastname'.strip())
+            user.login = form.cleaned_data.get('login'.strip())
             user.password_hash = generate_password_hash(form.cleaned_data.get('password'))
             user.save()
 
