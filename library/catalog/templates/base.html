@@ -22,16 +22,34 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-
+{% csrf_token %}
 
 <!--Header-->
 <div class="navbar">
     <div class="navbar-wrapper container">
         <h1><a href="{% url 'library-home' %}" class="logo">Library</a></h1>
+        {% if user.is_authenticated%}
+         <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+                <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url 'profile_details' %}">Profile details</a>
+                {#<a class="dropdown-item" href="{% url '#enter your code here' %}">Bookcase</a>#}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+            </div>
+        </div>
+        {% else %}
         <button data-toggle="modal" data-target="#myModal" data-toggle="modal" type="submit" class="btn btn-dark">Sign
             In
         </button>
+        {% endif %}
+
     </div>
+
+
     <div id="myModal" class="modal fade loginM" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-dialog" role="document">
@@ -48,7 +66,7 @@
                             <label for="exampleInputUsername">Username</label>
                             <input type="email" class="form-control" id="exampleInputUsername"
                                    aria-describedby="emailHelp" placeholder="Username">
-                            <small id="emailHelp" class="form-text text-muted">Enter your registered Username</small>
+                            <small id="emailHelp" class="form-text text-muted">Enter your username</small>
                         </div>
 
                         <div class="form-group">
@@ -65,11 +83,9 @@
                         </div>
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary btn-lg btn-block login-btn"
-                                    style="max-width:500px" onclick="login()">Sign In
+                                    style="max-width:500px" onclick="login_user()">Sign In
                             </button>
                         </div>
-                        <input type="hidden" name="csrfmiddlewaretoken"
-                               value="2ok2hQ0kJFQGM2GYFta6jv1SmoMCthktSJoj4mxkVdOQdzk4EQKhuvjILJpoo9S7">
                     </div>
                 </div>
             </div>
@@ -112,7 +128,7 @@
 
 <!-- Custom scripts -->
 <script type="text/javascript">
-    function login(){
+    function login_user(){
         email = document.getElementById("exampleInputUsername").value;
         password = document.getElementById("exampleInputPassword").value;
         remember_me = document.getElementById("remember_me").value;

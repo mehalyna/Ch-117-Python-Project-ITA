@@ -82,8 +82,9 @@ DB_NAME = os.getenv('DJANGO_DB_NAME')
 HOST = os.getenv('MONGO_URL')
 PORT = int(os.getenv('PORT'))
 
-
 MONGO_DATABASE_HOST = f'{HOST}:{PORT}'
+
+LOGIN_URL = 'func_login'
 
 DATABASES = {
     'default': {
@@ -94,7 +95,7 @@ DATABASES = {
 
 mongoengine.connect(DB_NAME, host=MONGO_DATABASE_HOST)
 
-# AUTH_USER_MODEL = 'catalog.DjangoUser'
+AUTH_USER_MODEL = 'catalog.DjangoUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

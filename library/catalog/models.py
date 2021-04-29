@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
-from django_mongoengine import Document, EmbeddedDocument
-from mongoengine import DateTimeField, EmailField, EmbeddedDocumentField, FloatField, \
+from django_mongoengine import Document
+from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
 from django.contrib.auth.models import AbstractUser

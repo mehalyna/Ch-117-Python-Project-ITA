@@ -8,87 +8,73 @@
 <div class="container">
     <h2 class="h2-home-page">Popular books of the week</h2>
     <!-- Slider main container -->
-    <div class="swiper-container">
+    <div class="swiper-container first-container">
       <!-- Additional required wrapper -->
       <div class="swiper-wrapper">
         <!-- Slides -->
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
+          {% for book in top_books %}
+            <div class="swiper-slide">
+                <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                <p><b>{{ book.title }}</b></p>
+                <p>{{ book.author_id.name }}</p>
+            </div>
+          {% endfor %}
       </div>
-      <div class="swiper-button-prev"></div>
-      <div class="swiper-button-next"></div>
     </div>
 
+    <div class="swiper-button-prev first-prev" style="left: 330px; top: 35%;"></div>
+    <div class="swiper-button-next first-next" style="right: 330px; top: 35%"></div>
+
+<!--    New books swiper-->
     <h2 class="h2-home-page">New books on a website</h2>
-    <div class="swiper-container">
+    <div class="swiper-container second-container">
       <!-- Additional required wrapper -->
-      <div class="swiper-wrapper">
+      <div class="swiper-wrapper second-wrapper">
         <!-- Slides -->
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
-        <div class="swiper-slide">
-            <img src="{% static 'images/cover.jpg' %}" alt="Cover">
-            <p>Family Claims: A Pinnacle Peak Mystery (Pinnacle Peak Mysteries)</p>
-            <p>Author</p>
-        </div>
+          {% for book in new_books %}
+          <div class="swiper-slide">
+              <img src="{{ book.link_img }}" alt="{{ book.title }}">
+              <p><b>{{ book.title }}</b></p>
+              <p>{{ book.author_id.name }}</p>
+          </div>
+          {% endfor %}
       </div>
-      <div class="swiper-button-prev"></div>
-      <div class="swiper-button-next"></div>
     </div>
 
-    <h2 class="h2-home-page">Search by the category tree</h2>
+    <div class="swiper-button-prev second-prev" style="left: 330px; top: 90%;"></div>
+    <div class="swiper-button-next second-next" style="right: 330px; top: 90%"></div>
 
-
+<!--    Search by category section-->
+    <h2 class="h2-home-page">Search your favourite book</h2>
+    <div class="search">
+        <input type="text" class="form-control" placeholder="Title/ Author/ Year" style="width: 85%">
+        <input type="submit" class="btn btn-info" value="Search" style="width: 10%">
+    </div>
+    <div class="category-wrapper">
+        <div class="category-box">
+            <a href="{% url 'library-books' 'Calendars' %}">Calendars</a>
+            <a href="{% url 'library-books' 'Science Fiction & Fantasy' %}">Science Fiction & Fantasy</a>
+            <a href="{% url 'library-books' 'Literature & Fiction' %}">Literature & Fiction</a>
+            <a href="{% url 'library-books' 'Crafts, Hobbies & Home' %}">Crafts, Hobbies & Home</a>
+        </div>
+        <div class="category-box">
+            <a href="{% url 'library-books' 'Engineering & Transporting' %}">Engineering & Transport</a>
+            <a href="{% url 'library-books' 'Arts & Photography' %}">Arts & Photography</a>
+            <a href="{% url 'library-books' 'Medical Books' %}">Medical Books</a>
+            <a href="{% url 'library-books' 'Health, Fitness & Dieting' %}">Health, Fitness & Dieting</a>
+        </div>
+        <div class="category-box">
+            <a href="{% url 'library-books' 'Science & Math' %}">Science & Math</a>
+            <a href="{% url 'library-books' 'Business & Money' %}">Business & Money</a>
+            <a href="{% url 'library-books' 'Law' %}">Law</a>
+            <a href="{% url 'library-books' 'Biographies & Memoirs' %}">Biographies & Memoirs</a>
+        </div>
+        <div class="category-box">
+            <a href="{% url 'library-books' 'Religion & Spirituality' %}">Religion & Spirituality</a>
+            <a href="{% url 'library-books' 'History' %}">History</a>
+            <a href="{% url 'library-books' 'Reference' %}">Reference</a>
+            <a href="{% url 'library-books' 'Travel' %}">Travel</a>
+        </div>
+    </div>
 </div>
 {% endblock %}

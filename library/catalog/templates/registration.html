@@ -4,86 +4,108 @@
     Registration
 {% endblock %}
 {% block body %}
-    <br>
     <div class="d-flex align-items-center flex-column mt-5 mb-5">
-        <form action="" method="post" class="border registration-border col-md-3 mt-2" novalidate>
+        <form action="" method="post" class="needs-validation border registration-border col-md-3 mt-2" novalidate>
             {% csrf_token %}
             <div class="text-center mt-3 mb-4">
-            <span class="h1 text-ultramarine">
-                <img class="image_h1 pb-2" src="{% static 'images/user-plus.png' %}" alt="user icon">
-                Registration
-            </span>
-            </div>
-            <span class="text-ultramarine">{{ form.firstname.label }}*</span>
-            <div class="mb-3 input-group">
-                <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">
-                    <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+                <span class="h1 text-ultramarine">
+                    <img class="image_h1 pb-2" src="{% static 'images/user-plus.png' %}" alt="user icon">
+                    Registration
                 </span>
-                </div>
-                {{ form.firstname }}
             </div>
-            <span class="text-ultramarine">{{ form.lastname.label }}*</span>
-            <div class="mb-3 input-group">
-                <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">
-                    <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
-                </span>
+            <div class="mb-2">
+                <span class="text-ultramarine">{{ form.firstname.label }}*</span>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+                        </span>
+                    </div>
+                    {{ form.firstname }}
                 </div>
-                {{ form.lastname }}
+                <small class="error-message text-danger" id="firstnameError">Error message</small>
             </div>
-            <span class="text-ultramarine">{{ form.email.label }}*</span>
-            <div class="mb-3 input-group">
-                <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">
-                    <img class="input-icon" src="{% static 'images/envelope-square-solid.svg' %}" alt="email icon">
-                </span>
+            <div class="mb-2">
+                <span class="text-ultramarine">{{ form.lastname.label }}*</span>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+                        </span>
+                    </div>
+                    {{ form.lastname }}
                 </div>
-                {{ form.email }}
+                <small class="error-message text-danger" id="lastnameError">Error message</small>
             </div>
-            <span class="text-ultramarine">{{ form.login.label }}*</span>
-            <div class="mb-3 input-group">
-                <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">
-                    <img class="input-icon" src="{% static 'images/sign-in-alt-solid.svg' %}" alt="login icon">
-                </span>
+            <div class="mb-2">
+                <span class="text-ultramarine">{{ form.email.label }}*</span>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <img class="input-icon" src="{% static 'images/envelope-square-solid.svg' %}"
+                                 alt="email icon">
+                        </span>
+                    </div>
+                    {{ form.email }}
                 </div>
-                {{ form.login }}
+                <small class="error-message text-danger" id="emailError">Error message</small>
             </div>
-            <span class="text-ultramarine">{{ form.password.label }}*</span>
-            <div class="mb-3 input-group">
-                <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">
-                    <img class="input-icon" src="{% static 'images/key-solid.svg' %}" alt="key icon">
-                </span>
+            <div class="mb-2">
+                <span class="text-ultramarine">{{ form.login.label }}*</span>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">
+                                <img class="input-icon" src="{% static 'images/sign-in-alt-solid.svg' %}"
+                                     alt="login icon">
+                            </span>
+                    </div>
+                    {{ form.login }}
                 </div>
-                {{ form.password }}
+                <small class="error-message text-danger" id="loginError">Error message</small>
             </div>
-            <span class="text-ultramarine">{{ form.confirm_password.label }}*</span>
-            <div class="mb-4 input-group">
-                <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">
-                    <img class="input-icon" src="{% static 'images/key-solid.svg' %}" alt="key icon">
-                </span>
+            <div class="mb-2">
+                <span class="text-ultramarine">{{ form.password.label }}*</span>
+                <div class="mb-2 input-group">
+                    <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">
+                                <img class="input-icon" src="{% static 'images/key-solid.svg' %}" alt="key icon">
+                            </span>
+                    </div>
+                    {{ form.password }}
                 </div>
-                {{ form.confirm_password }}
+                <small class="error-message text-danger" id="passwordError">Error message</small>
             </div>
-            {% if form.errors %}
-                <ul class="mb-4">
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li class="text-danger">{{ field.label }} - {{ error|escape }}</li>
+            <div class="mb-4">
+                <span class="text-ultramarine">{{ form.confirm_password.label }}*</span>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <img class="input-icon" src="{% static 'images/key-solid.svg' %}" alt="key icon">
+                        </span>
+                    </div>
+                    {{ form.confirm_password }}
+                </div>
+                <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
+            </div>
+            <div>
+                {% if form.errors %}
+                    <ul class="mb-4">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li class="text-danger">{{ field.label }} - {{ error|escape }}</li>
+                            {% endfor %}
                         {% endfor %}
-                    {% endfor %}
-                    {% for error in form.non_field_errors %}
-                        <li class="text-danger">{{ error|escape }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+                        {% for error in form.non_field_errors %}
+                            <li class="text-danger">{{ error|escape }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <input type="submit" class="btn btn-info sign-up-button" value="Sign up">
+                <input type="submit" class="btn btn-info sign-up-button" name="submitButton" value="Sign up" disabled>
                 <a href="{% url 'library-home' %}" class="text-ultramarine">Already have an account?</a>
             </div>
         </form>
     </div>
+    <script src="{% static 'js/registrationForm.js' %}"></script>
 {% endblock %}
