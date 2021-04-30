@@ -77,7 +77,12 @@ def book_details(request, book_id):
 def home(request):
     top_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
     new_books = Book.objects.order_by('-id')[:10]
-    return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books})
+    genres = []
+    for genres_lst in Book.objects.values_list('genres'):
+        for genre in genres_lst:
+            if not genre in genres:
+                genres.append(genre)
+    return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': genres})
 
 
 def category_search(request, genre):
