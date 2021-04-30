@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+import mongoengine
 
 from dotenv import load_dotenv
 from pathlib import Path
-import mongoengine
 
 load_dotenv()
 
@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBAG')
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -84,7 +84,7 @@ PORT = int(os.getenv('PORT'))
 
 MONGO_DATABASE_HOST = f'{HOST}:{PORT}'
 
-LOGIN_URL = 'func_login'
+LOGIN_URL = 'login_redirect_page'
 
 DATABASES = {
     'default': {
@@ -123,7 +123,6 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
-
 USE_L10N = True
 
 USE_TZ = True

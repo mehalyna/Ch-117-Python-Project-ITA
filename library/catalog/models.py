@@ -43,6 +43,7 @@ class MongoUser(Document):
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
 
     def set_password(self, password):
+
         self.django_password = make_password(password)
         self.password_hash = generate_password_hash(password)
 

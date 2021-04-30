@@ -1,10 +1,110 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Login Error</title>
 </head>
 <body>
+{% csrf_token %}
+
+<button data-toggle="modal" data-target="#myModal" data-toggle="modal" type="submit" class="btn btn-primary">Sign in
+</button>
+
+
+<div id="myModal" class="modal fade loginM" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AuthModalLabel">Sign In</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="login-form"></form>
+                    <div class="form-group">
+                        <label for="exampleInputUsername">Username</label>
+                        <input type="email" class="form-control" id="exampleInputUsername"
+                               aria-describedby="emailHelp" placeholder="Username">
+                        <small id="emailHelp" class="form-text text-muted">Enter your username</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleInputPassword">Password</label>
+                        <input type="password" name="password" class="form-control" id="exampleInputPassword"
+                               placeholder="Password">
+                        <div id="errorlogin" style="color:red"></div>
+                    </div>
+                    <p><input name="remember_me" type="checkbox" id="remember_me" checked=""> Remember me</p>
+                </div>
+                <div class="modal-footer">
+                    <div class="mb-3">
+                        <a href="{% url 'library-registration' %}" class="btn btn-link">Sign Up</a>
+                    </div>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-primary btn-lg btn-block login-btn"
+                                style="max-width:500px" onclick="login_user()">Sign In
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Custom scripts -->
+<script type="text/javascript">
+    function login_user(){
+        email = document.getElementById("exampleInputUsername").value;
+        password = document.getElementById("exampleInputPassword").value;
+        remember_me = document.getElementById("remember_me").value;
+        csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+        $("#errorlogin").html("");
+        $.ajax({
+            type:"POST",
+            url:'{% url 'func_login' %}',
+            data:{
+                'csrfmiddlewaretoken': csrfmiddlewaretoken,
+                'email':email,
+                'password':password,
+                'remember_me':remember_me,
+            },
+            success : function(data){
+                console.log(data);
+                if(data['message'] == "Success"){
+                    location.reload();
+                }
+                else if(data['message'] == "inactive"){
+                    $("#errorlogin").html("Please verify this E-mail address.");
+                }
+                else{
+                    $("#errorlogin").html("The E-mail and Password do not match.");
+                }
+            }
+        });
+    }
+
+</script>
+<!-- MDB -->
+<!--<script type="text/javascript" src="js/mdb.min.js">-->
+<!-- fdsfsd -->
+
+<script src="{% static 'js/main.js' %}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 </body>
 </html>

@@ -1,4 +1,3 @@
-from django.conf.urls import url
 from django.urls import path
 from . import views
 
@@ -15,5 +14,6 @@ urlpatterns = [
     path('books/<str:genre>/', views.category_search, name='library-books'),
     path('login/', views.login_view, name="my_login"),
     path('logout/', views.logout_view, name='logout'),
-    path('func_login', views.func_login, name='func_login')
+    path('func_login', views.func_login, name='func_login'),
+    path('login_redirect_page/', views.login_redirect_page, name='login_redirect_page')
 ]
