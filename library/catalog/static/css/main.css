@@ -67,7 +67,8 @@
     background-color: #eeecec;
     border: 1px solid #bad8e3;
     box-shadow: 0 10px 10px;
-    border-radius: 10px 100px / 120px;
+    border-radius: 10px 100px / 30px;
+    max-height: 500px;
 }
 .user_menu_buttons li a{
     color:black;
@@ -342,6 +343,17 @@ body{
 }.profile_table ul{
     padding-left: 15px;
 }
+
+.zoom {
+    transition: transform .2s; /* Animation */
+    border-radius: 10%;
+}
+
+.zoom:hover {
+    border-radius: 10%;
+    opacity: 70%;
+    font-size: medium;
+    transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 
 @media (min-width: 768px) {
     .col-md-4 {

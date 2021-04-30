@@ -113,3 +113,4 @@ class Review(Document):
     status = StringField(default=Status.ACTIVE, max_length=100)
     comment = StringField(default='', max_length=5000)
     date = DateTimeField(default=datetime.now)
+

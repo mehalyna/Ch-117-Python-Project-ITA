@@ -11,5 +11,8 @@ urlpatterns = [
     path('profile_edit/', views.profile_edit, name='profile_edit'),
     path('change_password/', views.change_password, name='change_password'),
     path('books/<str:genre>/', views.category_search, name='library-books'),
+    path('login/', views.login_view, name="my_login"),
+    path('logout/', views.logout_view, name='my_logout'),
     path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf')
+
 ]
