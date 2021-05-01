@@ -55,29 +55,12 @@
         <input type="submit" class="btn btn-info" value="Search" style="width: 10%">
     </div>
     <div class="category-wrapper">
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Calendars' %}">Calendars</a>
-            <a href="{% url 'library-books' 'Science Fiction & Fantasy' %}">Science Fiction & Fantasy</a>
-            <a href="{% url 'library-books' 'Literature & Fiction' %}">Literature & Fiction</a>
-            <a href="{% url 'library-books' 'Crafts, Hobbies & Home' %}">Crafts, Hobbies & Home</a>
-        </div>
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Engineering & Transporting' %}">Engineering & Transport</a>
-            <a href="{% url 'library-books' 'Arts & Photography' %}">Arts & Photography</a>
-            <a href="{% url 'library-books' 'Medical Books' %}">Medical Books</a>
-            <a href="{% url 'library-books' 'Health, Fitness & Dieting' %}">Health, Fitness & Dieting</a>
-        </div>
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Science & Math' %}">Science & Math</a>
-            <a href="{% url 'library-books' 'Business & Money' %}">Business & Money</a>
-            <a href="{% url 'library-books' 'Law' %}">Law</a>
-            <a href="{% url 'library-books' 'Biographies & Memoirs' %}">Biographies & Memoirs</a>
-        </div>
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Religion & Spirituality' %}">Religion & Spirituality</a>
-            <a href="{% url 'library-books' 'History' %}">History</a>
-            <a href="{% url 'library-books' 'Reference' %}">Reference</a>
-            <a href="{% url 'library-books' 'Travel' %}">Travel</a>
+        <div class="row">
+            {% for genre in genres %}
+                <div class="col-3">
+                    <a style="color: #323232;" href={% url 'library-books' genre %}>{{ genre }}</a>
+                </div>
+            {% endfor %}
         </div>
     </div>
 </div>
