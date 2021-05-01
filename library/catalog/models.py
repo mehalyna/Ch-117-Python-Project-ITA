@@ -53,16 +53,17 @@ class MongoUser(Document):
         if self.password:
             self.password, django_password = self.generate_passwords(self.password)
         mongo_user = super().save()
-        get_user_model().objects.create_user(username=self.username,
-                                             email=self.email,
-                                             password=django_password)
+        django_user_model = get_user_model()
+        django_user_model.objects.create_user(username=self.username,
+                                              email=self.email,
+                                              password=django_password)
         return mongo_user
 
     def update(self, **kwargs):
         mongo_kwargs = copy(kwargs)
         django_kwargs = copy(kwargs)
         if 'password' in kwargs:
-            mongo_kwargs['password'], django_kwargs['password'] =\
+            mongo_kwargs['password'], django_kwargs['password'] = \
                 self.generate_passwords(kwargs['password'])
         mongo_user = super().update(**mongo_kwargs)
 
@@ -71,7 +72,8 @@ class MongoUser(Document):
             if field not in need_to_update_in_django:
                 django_kwargs.pop(field)
 
-        get_user_model().objects.filter(username=self.username).update(**django_kwargs)
+        django_user_model = get_user_model()
+        django_user_model.objects.filter(username=self.username).update(**django_kwargs)
         return mongo_user
 
 
@@ -108,6 +110,7 @@ class Book(Document):
     status = StringField(default=Status.ACTIVE, max_length=100)
     store_links = ListField(default=[])
     statistic = EmbeddedDocumentField(BookStatistic.__name__, default=BookStatistic())
+
 
 class Review(Document):
     user_id = ReferenceField(MongoUser.__name__, required=True)
