@@ -1,13 +1,30 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Library page{% endblock %}
+{% block title %}Search {{ q }}{% endblock %}
 
 {% block body %}
 <div class="container">
-    <h1>Library page</h1>
-    {% for book in books %}
-    <h3>{{ book.title }}</h3>
+
+    <form class="search" action="{% url 'form-books' %}" style="margin-top: 25px;">
+            <input type="text" class="form-control" placeholder="Title/ Author/ Year" style="width: 85%;" name="searchbar" value="{{ q }}">
+            <input type="submit" class="btn btn-info" value="Search" style="width: 10%">
+        </form>
+
+    <h3>Books</h3>
+    {% for book in books  %}
+        <h5>{{ book.title }}</h5>
     {% endfor %}
+
 </div>
+
 {% endblock %}
+
+
+{% for book in books %}
+<div class="card-book">
+    <img src="{{ book.limk_img }}" alt="">
+    <p>{}}</p>
+    <p></p>
+</div>
+{% endfor %}

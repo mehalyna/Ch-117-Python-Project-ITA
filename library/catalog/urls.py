@@ -10,6 +10,8 @@ urlpatterns = [
     path('profile_details/', views.profile_details, name='profile_details'),
     path('profile_edit/', views.profile_edit, name='profile_edit'),
     path('change_password/', views.change_password, name='change_password'),
-    path('books/<str:genre>/', views.category_search, name='library-books'),
+    path('genre/<str:genre>/', views.category_search, name='library-books'),
+    path('search/', views.form_search, name='form-books'),
+
     path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf')
 ]
