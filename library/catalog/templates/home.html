@@ -14,9 +14,11 @@
         <!-- Slides -->
           {% for book in top_books %}
             <div class="swiper-slide">
-                <a href="{% url 'book-details' book.pk %}"><img src="{{ book.link_img }}" alt="{{ book.title }}"></a>
-                <a href="{% url 'book-details' book.pk %}" style="text-decoration: none; color: black"><p><b>{{ book.title }}</b></p></a>
-                <a href="{% url 'book-details' book.pk %}" style="text-decoration: none; color: black"><p>{{ book.author_id.name }}</p></a>
+                <a href="{% url 'book-details' book.id %}">
+                    <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                    <p style="color: #323232"><b>{{ book.title }}</b></p>
+                    <p style="color: #323232">{{ book.author_id.name }}</p>
+                </a>
             </div>
           {% endfor %}
       </div>
@@ -35,9 +37,11 @@
         <!-- Slides -->
           {% for book in new_books %}
           <div class="swiper-slide">
-              <a href="{% url 'book-details' book.pk %}"><img src="{{ book.link_img }}" alt="{{ book.title }}"></a>
-              <a href="{% url 'book-details' book.pk %}" style="text-decoration: none; color: black"><p><b>{{ book.title }}</b></p></a>
-              <a href="{% url 'book-details' book.pk %}" style="text-decoration: none; color: black"><p>{{ book.author_id.name }}</p></a>
+              <a href={% url 'book-details' book.id %}>
+                  <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                  <p style="color: #323232; text-decoration: none"><b>{{ book.title }}</b></p>
+                  <p style="color: #323232">{{ book.author_id.name }}</p>
+              </a>
           </div>
           {% endfor %}
       </div>
@@ -45,6 +49,7 @@
     <div class="swiper-button-next second-next" style="position: relative; top: -278px; left: 1150px"></div>
     <div class="swiper-button-prev second-prev" style="position: relative; top: -300px; left: -65px;"></div>
 </div>
+
 
 
 <div class="container">
@@ -55,30 +60,12 @@
             <input type="submit" class="btn btn-info" value="Search" style="width: 10%">
         </form>
     <div class="category-wrapper">
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Biographies & Memoirs' %}">Biographies & Memoirs</a>
-            <a href="{% url 'library-books' 'Science Fiction & Fantasy' %}">Science Fiction & Fantasy</a>
-            <a href="{% url 'library-books' 'Literature & Fiction' %}">Literature & Fiction</a>
-            <a href="{% url 'library-books' 'Crafts, Hobbies & Home' %}">Crafts, Hobbies & Home</a>
-        </div>
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Engineering & Transporting' %}">Engineering & Transport</a>
-            <a href="{% url 'library-books' 'Arts & Photography' %}">Arts & Photography</a>
-            <a href="{% url 'library-books' 'Medical Books' %}">Medical Books</a>
-            <a href="{% url 'library-books' 'Health, Fitness & Dieting' %}">Health, Fitness & Dieting</a>
-        </div>
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Science & Math' %}">Science & Math</a>
-            <a href="{% url 'library-books' 'Business & Money' %}">Business & Money</a>
-            <a href="{% url 'library-books' 'Law' %}">Law</a>
-            <a href="{% url 'library-books' 'History' %}">History</a>
-        </div>
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Religion & Spirituality' %}">Religion & Spirituality</a>
-            <a href="{% url 'library-books' 'Calendars' %}">Calendars</a>
-            <a href="{% url 'library-books' 'Reference' %}">Reference</a>
-            <a href="{% url 'library-books' 'Travel' %}">Travel</a>
-
+        <div class="row">
+            {% for genre in genres %}
+                <div class="col-3">
+                    <a style="color: #323232;" href={% url 'library-books' genre %}>{{ genre }}</a>
+                </div>
+            {% endfor %}
         </div>
     </div>
 

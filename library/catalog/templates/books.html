@@ -4,27 +4,19 @@
 {% block title %}Search {{ q }}{% endblock %}
 
 {% block body %}
-<div class="container">
-
-    <form class="search" action="{% url 'form-books' %}" style="margin-top: 25px;">
-            <input type="text" class="form-control" placeholder="Title/ Author/ Year" style="width: 85%;" name="searchbar" value="{{ q }}">
-            <input type="submit" class="btn btn-info" value="Search" style="width: 10%">
-        </form>
-
-    <h3>Books</h3>
-    {% for book in books  %}
-        <h5>{{ book.title }}</h5>
-    {% endfor %}
-
+<div style="background: #e1e5e7;margin-bottom: 50px;margin-top: 50px" class="container">
+    <h1>Library page</h1>
+    <div class="row">
+        {% for book in books %}
+            <div class="col-3">
+                <div class="zoom">
+                    <a href={% url 'book-details' book.id %}>
+                        <img style="padding: 10px 10px 10px 10px;max-height: 270px; width: 90%" src={{ book.link_img }}>
+                        <p style="margin-left: 10px; color: #323232">{{ book.title }}</p>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 </div>
-
 {% endblock %}
-
-
-{% for book in books %}
-<div class="card-book">
-    <img src="{{ book.limk_img }}" alt="">
-    <p>{}}</p>
-    <p></p>
-</div>
-{% endfor %}

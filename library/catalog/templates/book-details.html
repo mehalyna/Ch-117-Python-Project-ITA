@@ -33,7 +33,9 @@
                         {% endfor %}
                     </div>
                 </div>
-                <button style="background-color: #4CAF50;margin-top: 10px;padding: 6px 18px;" class="btn btn-primary">Add to wishlist</button>
+                {% if user and user.is_authenticated %}
+                    <button style="margin-top: 10px;padding: 6px 18px;" class="btn btn-success">Add to wishlist</button>
+                {% endif %}
             </div>
             <div class="book_details_text">
                 <div class="d-flex">
@@ -41,14 +43,14 @@
                         <span class="h3">{{ book.title }}</span>
                     </div>
                     <div class="custom ml-1">
-                        <a class="btn btn-secondary" onclick="back_to_list()">Back</a>
+                        <a class="btn btn-secondary" onclick="window.history.back();">Back</a>
                     </div>
                 </div>
-                <p>by <a href=""><b>{{ book.author_id.name }}</b></a></p>
+                <p>by <a href={% url 'library-books-author' book.author_id.name %}><b>{{ book.author_id.name }}</b></a></p>
                 <p>
                     Genres:
                     {% for genre in book.genres %}
-                        <b><a style="padding-left: 10px" href="">{{ genre }}</a></b>
+                        <b><a style="padding-left: 10px" href={% url 'library-books' genre %}>{{ genre }}</a></b>
                     {% endfor %}
                 </p>
                 <span data-toggle="tooltip" data-placement="top" title="Total read {{ book.statistic.total_read }}">
@@ -66,71 +68,75 @@
         </div>
         <h2 style="margin-left: 400px">Reviews</h2>
 
-        <form style="margin-bottom: 80px;">
-            <div class="form-group">
-                <div style="margin-top: -280px;margin-bottom: -340px" class="page">
-                    <div class="page__demo">
-                        <div class="page__group">
-                            <div class="rating">
-                                <input type="radio" name="rating-star" class="rating__control screen-reader" id="rc1">
-                                <input type="radio" name="rating-star" class="rating__control screen-reader" id="rc2">
-                                <input type="radio" name="rating-star" class="rating__control screen-reader" id="rc3">
-                                <input type="radio" name="rating-star" class="rating__control screen-reader" id="rc4">
-                                <input type="radio" name="rating-star" class="rating__control screen-reader" id="rc5">
-                                <label for="rc1" class="rating__item">
-                                    <svg class="rating__star">
-                                        <use xlink:href="#star"></use>
-                                    </svg>
-                                    <span class="screen-reader">1</span>
-                                </label>
-                                <label for="rc2" class="rating__item">
-                                    <svg class="rating__star">
-                                        <use xlink:href="#star"></use>
-                                    </svg>
-                                    <span class="screen-reader">2</span>
-                                </label>
-                                <label for="rc3" class="rating__item">
-                                    <svg class="rating__star">
-                                        <use xlink:href="#star"></use>
-                                    </svg>
-                                    <span class="screen-reader">3</span>
-                                </label>
-                                <label for="rc4" class="rating__item">
-                                    <svg class="rating__star">
-                                        <use xlink:href="#star"></use>
-                                    </svg>
-                                    <span class="screen-reader">4</span>
-                                </label>
-                                <label for="rc5" class="rating__item">
-                                    <svg class="rating__star">
-                                        <use xlink:href="#star"></use>
-                                    </svg>
-                                    <span class="screen-reader">5</span>
-                                </label>
+        {% if user and user.is_authenticated and user.status == 'active' %}
+            <form style="margin-bottom: 80px;">
+                <div class="form-group">
+                    <div style="margin-top: -280px;margin-bottom: -340px" class="page">
+                        <div class="page__demo">
+                            <div class="page__group">
+                                <div class="rating">
+                                    <input type="radio" name="rating-star" class="rating__control screen-reader" id="rc1">
+                                    <input type="radio" name="rating-star" class="rating__control screen-reader" id="rc2">
+                                    <input type="radio" name="rating-star" class="rating__control screen-reader" id="rc3">
+                                    <input type="radio" name="rating-star" class="rating__control screen-reader" id="rc4">
+                                    <input type="radio" name="rating-star" class="rating__control screen-reader" id="rc5">
+                                    <label for="rc1" class="rating__item">
+                                        <svg class="rating__star">
+                                            <use xlink:href="#star"></use>
+                                        </svg>
+                                        <span class="screen-reader">1</span>
+                                    </label>
+                                    <label for="rc2" class="rating__item">
+                                        <svg class="rating__star">
+                                            <use xlink:href="#star"></use>
+                                        </svg>
+                                        <span class="screen-reader">2</span>
+                                    </label>
+                                    <label for="rc3" class="rating__item">
+                                        <svg class="rating__star">
+                                            <use xlink:href="#star"></use>
+                                        </svg>
+                                        <span class="screen-reader">3</span>
+                                    </label>
+                                    <label for="rc4" class="rating__item">
+                                        <svg class="rating__star">
+                                            <use xlink:href="#star"></use>
+                                        </svg>
+                                        <span class="screen-reader">4</span>
+                                    </label>
+                                    <label for="rc5" class="rating__item">
+                                        <svg class="rating__star">
+                                            <use xlink:href="#star"></use>
+                                        </svg>
+                                        <span class="screen-reader">5</span>
+                                    </label>
+                                </div>
+                                <span class="page__hint">Rating</span>
                             </div>
-                            <span class="page__hint">Rating</span>
                         </div>
                     </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+                        <symbol id="star" viewBox="0 0 26 28">
+                            <path d="M26 10.109c0 .281-.203.547-.406.75l-5.672 5.531 1.344 7.812c.016.109.016.203.016.313 0 .406-.187.781-.641.781a1.27 1.27 0 0 1-.625-.187L13 21.422l-7.016 3.687c-.203.109-.406.187-.625.187-.453 0-.656-.375-.656-.781 0-.109.016-.203.031-.313l1.344-7.812L.39 10.859c-.187-.203-.391-.469-.391-.75 0-.469.484-.656.875-.719l7.844-1.141 3.516-7.109c.141-.297.406-.641.766-.641s.625.344.766.641l3.516 7.109 7.844 1.141c.375.063.875.25.875.719z"/>
+                        </symbol>
+                    </svg>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-                    <symbol id="star" viewBox="0 0 26 28">
-                        <path d="M26 10.109c0 .281-.203.547-.406.75l-5.672 5.531 1.344 7.812c.016.109.016.203.016.313 0 .406-.187.781-.641.781a1.27 1.27 0 0 1-.625-.187L13 21.422l-7.016 3.687c-.203.109-.406.187-.625.187-.453 0-.656-.375-.656-.781 0-.109.016-.203.031-.313l1.344-7.812L.39 10.859c-.187-.203-.391-.469-.391-.75 0-.469.484-.656.875-.719l7.844-1.141 3.516-7.109c.141-.297.406-.641.766-.641s.625.344.766.641l3.516 7.109 7.844 1.141c.375.063.875.25.875.719z"/>
-                    </symbol>
-                </svg>
-            </div>
-            <div class="form-group">
-                <h4 for="exampleFormControlTextarea1">Review</h4>
-                <textarea class="form-control" placeholder="Your comment..." id="exampleFormControlTextarea1" rows="3"></textarea>
-            </div>
-            <button type="submit" style="float: right;" class="btn btn-success">Add comment</button>
-        </form>
+                <div class="form-group">
+                    <h4 for="exampleFormControlTextarea1">Review</h4>
+                    <textarea class="form-control" placeholder="Your comment..." id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div>
+                <a style="float: right;" href="{% url 'add-review' user.id book.id 'comment text' 4 %}" class="btn btn-success">Add comment</a>
+            </form>
+        {% endif %}
 
         {% for review in reviews %}
             {% if review.status == 'active' %}
                 <div style="margin-top: 5px" class="card">
                     <div style="font-size: large;font-weight: bolder" class="card-header">
                         {{ review.firstname }} {{ review.lastname }}
-                        <a style="float: right;width: 80px;" href="#" class="btn btn-danger">Delete</a>
+                        {% if user and user.is_authenticated and user.id == review.user_id or user.role == 'admin' or user.role == 'moderator' %}
+                            <a style="float: right;width: 80px;" href="{% url 'change-review-status' book.id user.id review.id 'inactive' %}" class="btn btn-danger">Delete</a>
+                        {% endif %}
                     </div>
                     <div class="card-body">
                         <blockquote class="blockquote mb-0">
@@ -139,11 +145,11 @@
                         </blockquote>
                     </div>
                 </div>
-            {% elif review.status == 'inactive' %}
+            {% elif review.status == 'inactive' and user and user.is_authenticated and user.role == 'admin' or user.role == 'moderator' %}
                 <div style="margin-top: 5px" class="card">
                     <div style="font-size: large;font-weight: bolder" class="card-header">
                         Deleted
-                        <a style="float: right;width: 80px;" href="#" class="btn btn-primary">Restore</a>
+                        <a style="float: right;width: 80px;" href="{% url 'change-review-status' book.id user.id review.id 'active' %}" class="btn btn-primary">Restore</a>
                     </div>
                     <div style="opacity: 0.5;font-size: large;font-weight: bolder" class="card-header">
                         {{ review.firstname }} {{ review.lastname }}

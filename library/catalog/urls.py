@@ -10,8 +10,12 @@ urlpatterns = [
     path('profile_details/', views.profile_details, name='profile_details'),
     path('profile_edit/', views.profile_edit, name='profile_edit'),
     path('change_password/', views.change_password, name='change_password'),
-    path('genre/<str:genre>/', views.category_search, name='library-books'),
     path('search/', views.form_search, name='form-books'),
-
+    path('books/<str:genre>/', views.category_search, name='library-books'),
+    path('author_books/<str:author_name>/', views.search_by_author, name='library-books-author'),
+    path('add_review/', views.add_review, name='add-review'),
+    path('change_review_status/', views.change_review_status, name='change-review-status'),
+    path('login/', views.login_view, name="my_login"),
+    path('logout/', views.logout_view, name='my_logout'),
     path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf')
 ]
