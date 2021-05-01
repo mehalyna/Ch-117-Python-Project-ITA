@@ -97,7 +97,7 @@ def registration(request):
             user.first_name = form.cleaned_data.get('firstname')
             user.last_name = form.cleaned_data.get('lastname')
             user.username = form.cleaned_data.get('login')
-            user.set_password(form.cleaned_data.get('password'))
+            user.password = form.cleaned_data.get('password')
             user.save()
 
             return redirect(home)
