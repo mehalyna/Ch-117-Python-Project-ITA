@@ -3,11 +3,11 @@ from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from django_mongoengine import Document
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.hashers import make_password
 from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.hashers import make_password
 
 
 class Status:
@@ -76,17 +76,11 @@ class MongoUser(Document):
         django_user_model.objects.filter(username=self.username).update(**django_kwargs)
         return mongo_user
 
-# class CustomManager(UserManager):
-#     def _create_user(self, username, email, password, **extra_fields):
-#         return super()._create_user(username, email, password, **extra_fields)
-
 
 class DjangoUser(AbstractUser):
     @property
     def mongo_user(self):
         return MongoUser.objects(username=self.username).first()
-
-    # objects = CustomManager()
 
 
 class BookStatistic(EmbeddedDocument):
