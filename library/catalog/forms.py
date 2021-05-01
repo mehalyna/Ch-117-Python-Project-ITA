@@ -49,8 +49,8 @@ class RegistrationForm(Form):
 
 
 class EditProfileForm(Form):
-    user = MongoUser.objects(id='606ecd74e5fd490b3c6d0657').first()  # for autofill data session user
-    user_id = CharField(required=False, widget=TextInput(attrs={'value': user.id}))
+    #user = MongoUser.objects(id='606ecd74e5fd490b3c6d0657').first()  # for autofill data session user
+#    user_id = CharField(required=False, widget=TextInput(attrs={'value': user.id}))
     firstname = CharField(label='Firstname', max_length=100,
                           widget=TextInput(attrs={'class': 'form-control'}))
     lastname = CharField(label='Lastname', max_length=100,
