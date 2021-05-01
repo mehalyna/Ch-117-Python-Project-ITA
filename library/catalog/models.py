@@ -1,3 +1,4 @@
+from copy import copy
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
@@ -33,7 +34,7 @@ class MongoUser(Document):
     last_name = StringField(max_length=100, min_length=1, required=True)
     email = EmailField(required=True, unique=True)
     username = StringField(required=True, unique=True)
-    password_hash = StringField(required=True, min_length=8)
+    password = StringField(required=True, min_length=8)
     role = StringField(default=Role.USER)
     status = StringField(default=Status.ACTIVE)
     last_login = DateTimeField(default=datetime.now)
@@ -42,25 +43,37 @@ class MongoUser(Document):
     wishlist = ListField(default=[])
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
 
-    def set_password(self, password):
-
-        self.django_password = make_password(password)
-        self.password_hash = generate_password_hash(password)
+    def generate_passwords(self, password):
+        return generate_password_hash(password), make_password(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password, password)
 
     def save(self):
+        if self.password:
+            self.password, django_password = self.generate_passwords(self.password)
         mongo_user = super().save()
-        User = get_user_model()
-        django_user = User(username=self.username, email=self.email, password=self.django_password)
-        django_user.save()
+        django_user_model = get_user_model()
+        django_user_model.objects.create_user(username=self.username,
+                                              email=self.email,
+                                              password=django_password)
         return mongo_user
 
     def update(self, **kwargs):
-        mongo_user = super().update(**kwargs)
-        User = get_user_model()
-        User.objects.filter(username=self.username).update(**kwargs)
+        mongo_kwargs = copy(kwargs)
+        django_kwargs = copy(kwargs)
+        if 'password' in kwargs:
+            mongo_kwargs['password'], django_kwargs['password'] = \
+                self.generate_passwords(kwargs['password'])
+        mongo_user = super().update(**mongo_kwargs)
+
+        need_to_update_in_django = ['username', 'password', 'email']
+        for field in list(django_kwargs):
+            if field not in need_to_update_in_django:
+                django_kwargs.pop(field)
+
+        django_user_model = get_user_model()
+        django_user_model.objects.filter(username=self.username).update(**django_kwargs)
         return mongo_user
 
 # class CustomManager(UserManager):

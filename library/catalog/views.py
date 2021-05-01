@@ -9,7 +9,7 @@ from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
-from .models import Book, Review, MongoUser
+from .models import Author, Book, Review, MongoUser
 
 _id = '606ecd74e5fd490b3c6d0657'
 
@@ -72,13 +72,43 @@ def change_password(request):
 def book_details(request, book_id):
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': None})
+
+
+def add_review(request, user_id, book_id, text, rating):
+    user = MongoUser.objects(id=user_id).first()
+    book = Book.objects(id=book_id).first()
+    review = Review(user_id=user.pk, book_id=book.pk, firstname=user.firstname, lastname=user.lastname, comment=text,
+                    rating=rating)
+    review.save()
+    reviews = Review.objects(book_id=book_id)
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
+
+def change_review_status(request, book_id, user_id, review_id, new_status):
+    review = Review.objects(id=review_id).first()
+    user = MongoUser.objects(id=user_id).first()
+    book = Book.objects(id=book_id).first()
+    reviews = Review.objects(book_id=book_id)
+    if review:
+        review.update(status=new_status)
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
 
 
 def home(request):
     top_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
     new_books = Book.objects.order_by('-id')[:10]
-    return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books})
+    genres = []
+    for genres_lst in Book.objects.values_list('genres'):
+        for genre in genres_lst:
+            if not genre in genres:
+                genres.append(genre)
+    return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': genres})
+
+
+def search_by_author(request, author_name):
+    author = Author.objects(name=author_name)[0]
+    books = [Book.objects(id=book_id)[0] for book_id in author.books]
+    return render(request, 'books.html', {'books': books})
 
 
 def category_search(request, genre):
@@ -94,7 +124,7 @@ def registration(request):
             user.first_name = form.cleaned_data.get('firstname')
             user.last_name = form.cleaned_data.get('lastname')
             user.username = form.cleaned_data.get('login')
-            user.set_password(form.cleaned_data.get('password'))
+            user.password = form.cleaned_data.get('password')
             user.save()
 
             return redirect(home)

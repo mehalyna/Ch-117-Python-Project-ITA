@@ -10,7 +10,7 @@
         {% for book in books %}
             <div class="col-3">
                 <div class="zoom">
-                    <a  href={% url 'book-details' book.id %}>
+                    <a href={% url 'book-details' book.id %}>
                         <img style="padding: 10px 10px 10px 10px;max-height: 270px; width: 90%" src={{ book.link_img }}>
                         <p style="margin-left: 10px">{{ book.title }}</p>
                     </a>

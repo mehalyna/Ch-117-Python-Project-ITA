@@ -13,6 +13,9 @@ urlpatterns = [
     path('func_login', views.func_login, name='func_login'),
     path('login_redirect_page/', views.login_redirect_page, name='login_redirect_page'),
     path('logout/', views.logout_view, name='logout'),
+    path('author_books/<str:author_name>/', views.search_by_author, name='library-books-author'),
+    path('add_review/', views.add_review, name='add-review'),
+    path('change_review_status/', views.change_review_status, name='change-review-status'),
     path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf')
 
 ]
