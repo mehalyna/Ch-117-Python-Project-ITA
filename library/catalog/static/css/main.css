@@ -67,7 +67,8 @@
     background-color: #eeecec;
     border: 1px solid #bad8e3;
     box-shadow: 0 10px 10px;
-    border-radius: 10px 100px / 120px;
+    border-radius: 10px 100px / 30px;
+    max-height: 500px;
 }
 .user_menu_buttons li a{
     color:black;

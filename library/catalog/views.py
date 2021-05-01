@@ -1,6 +1,5 @@
 import json
 
-from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -10,14 +9,13 @@ from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
-from .models import Book, MongoUser, Review, DjangoUser
-
+from .models import Book, Review, MongoUser
 
 _id = '606ecd74e5fd490b3c6d0657'
 
 
 def profile_details(request):
-    user = User.objects(id=_id).first()
+    user = MongoUser.objects(id=_id).first()
     return render(request, 'profile_details.html', {'user': user})
 
 
@@ -27,12 +25,12 @@ def profile_bookshelf(request):
 
 
 def profile_edit(request):
-    user = User.objects(id=_id).first()
+    user = MongoUser.objects(id=_id).first()
     data = {
-        'firstname': user.firstname,
-        'lastname': user.lastname,
+        'firstname': user.first_name,
+        'lastname': user.last_name,
         'email': user.email,
-        'login': user.login,
+        'login': user.username,
     }
     if request.method == 'POST':
         form = EditProfileForm(request.POST)
@@ -42,8 +40,8 @@ def profile_edit(request):
             email = form.cleaned_data.get('email')
             login = form.cleaned_data.get('login')
             user.update(
-                firstname=firstname,
-                lastname=lastname,
+                first_name=firstname,
+                last_name=lastname,
                 email=email,
                 username=login
             )
@@ -54,7 +52,7 @@ def profile_edit(request):
 
 
 def change_password(request):
-    user = User.objects(id=_id).first()
+    user = MongoUser.objects(id=_id).first()
     if request.method == 'POST':
         form = ChangePasswordForm(request.POST)
         if form.is_valid():
@@ -72,7 +70,6 @@ def change_password(request):
 
 
 def book_details(request, book_id):
-    # book_id = '60610c2952cd4157727d8ee3'
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
@@ -87,10 +84,6 @@ def home(request):
 def category_search(request, genre):
     books = Book.objects.filter(genres=genre)
     return render(request, 'books.html', {'books': books})
-
-
-def base(request):
-    return render(request, 'base.html')
 
 
 def registration(request):
@@ -136,7 +129,7 @@ def logout_view(request):
 
 def func_login(request):
     if request.method == 'POST':
-        username = request.POST.get('email')
+        username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request=request, username=username, password=password)
         if user:

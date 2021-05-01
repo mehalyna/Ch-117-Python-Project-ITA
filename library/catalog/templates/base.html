@@ -36,13 +36,13 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{% url 'profile_details' %}">Profile details</a>
-                {#<a class="dropdown-item" href="{% url '#enter your code here' %}">Bookcase</a>#}
+                <a class="dropdown-item" href="{% url 'profile_bookshelf' %}">Bookshelf</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
             </div>
         </div>
         {% else %}
-        <button data-toggle="modal" data-target="#myModal" data-toggle="modal" type="submit" class="btn btn-dark">Sign
+        <button data-toggle="modal" data-target="#ModalAuth" data-toggle="modal" type="submit" class="btn btn-dark">Sign
             In
         </button>
         {% endif %}
@@ -50,7 +50,7 @@
     </div>
 
 
-    <div id="myModal" class="modal fade loginM" role="dialog">
+    <div id="ModalAuth" class="modal fade loginM" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -75,7 +75,6 @@
                                    placeholder="Password">
                             <div id="errorlogin" style="color:red"></div>
                         </div>
-                        <p><input name="remember_me" type="checkbox" id="remember_me" checked=""> Remember me</p>
                     </div>
                     <div class="modal-footer">
                         <div class="mb-3">
@@ -131,7 +130,6 @@
     function login_user(){
         email = document.getElementById("exampleInputUsername").value;
         password = document.getElementById("exampleInputPassword").value;
-        remember_me = document.getElementById("remember_me").value;
         csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
         $("#errorlogin").html("");
         $.ajax({
@@ -139,9 +137,8 @@
             url:'{% url 'func_login' %}',
             data:{
                 'csrfmiddlewaretoken': csrfmiddlewaretoken,
-                'email':email,
+                'username':email,
                 'password':password,
-                'remember_me':remember_me,
             },
             success : function(data){
                 console.log(data);
