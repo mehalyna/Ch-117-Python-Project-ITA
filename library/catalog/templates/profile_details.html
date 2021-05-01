@@ -24,7 +24,7 @@
                     <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
                 </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.firstname }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.first_name }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
@@ -36,7 +36,7 @@
                                 <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.lastname }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.last_name }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
@@ -62,7 +62,7 @@
                                      alt="login icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.login }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.username }}" disabled>
                 </div>
             </div>
             <a class="btn btn-dark mt-4 mb-4" href="{% url 'profile_edit' %}" id="editProfileBtn">
