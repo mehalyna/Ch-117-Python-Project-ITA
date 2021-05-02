@@ -1,3 +1,4 @@
+import math
 from copy import copy
 from datetime import datetime
 
@@ -87,6 +88,7 @@ class BookStatistic(EmbeddedDocument):
     rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
     total_read = IntField(default=0, min_value=0)
     reading_now = IntField(default=0, min_value=0)
+    stars = ListField(default=(0, 0, 0, 0, 0))
 
 
 class Author(Document):
@@ -110,6 +112,28 @@ class Book(Document):
     status = StringField(default=Status.ACTIVE, max_length=100)
     store_links = ListField(default=[])
     statistic = EmbeddedDocumentField(BookStatistic.__name__, default=BookStatistic())
+
+    def calculate_rating(self):
+        """
+        The expression is the lower bound of a normal approximation to a Bayesian credible interval
+        for the average rating
+        http://www.evanmiller.org/ranking-items-with-star-ratings.html
+
+        """
+        N = sum(self.statistic.stars)
+        K = len(self.statistic.stars)
+        s = list(range(K, 0, -1))
+        s2 = [sk ** 2 for sk in s]
+        z = 1.65
+
+        def f(s, stars):
+            N = sum(stars)
+            K = len(stars)
+            return sum(sk * (nk + 1) for sk, nk in zip(s, stars)) / (N + K)
+
+        fsns = f(s, self.statistic.stars)
+        rating = fsns - z * math.sqrt((f(s2, self.statistic.stars) - fsns ** 2) / (N + K + 1))
+        super(Book, self).update(statistic__rating=rating)
 
 
 class Review(Document):
