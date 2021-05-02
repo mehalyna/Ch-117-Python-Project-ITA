@@ -1,3 +1,5 @@
+import random
+
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -73,14 +75,29 @@ def book_details(request, book_id):
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': None})
 
 
-def add_review(request, user_id, book_id, text, rating):
+def add_review(request, user_id, book_id, text):
     user = MongoUser.objects(id=user_id).first()
     book = Book.objects(id=book_id).first()
-    review = Review(user_id=user.pk, book_id=book.pk, firstname=user.firstname, lastname=user.lastname, comment=text,
-                    rating=rating)
+    review = Review(user_id=user.pk, book_id=book.pk, firstname=user.firstname, lastname=user.lastname, comment=text)
     review.save()
     reviews = Review.objects(book_id=book_id)
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
+
+def add_rating(request, user_id, book_id, rating):
+    if rating and 1 <= rating <= 5:
+        user = MongoUser.objects(id=user_id).first()
+        book = Book.objects(id=book_id).first()
+        if str(book_id) in user.rated_books.keys():
+            book.statistic.stars[user.rated_books[str(book_id)]] -= 1
+
+        book.statistic.stars[rating] += 1
+        user.rated_books[str(book_id)] = rating
+        user.save()
+        book.save()
+        book.calculate_rating()
+        reviews = Review.objects(book_id=book_id)
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
+
 
 def change_review_status(request, book_id, user_id, review_id, new_status):
     review = Review.objects(id=review_id).first()
@@ -92,8 +109,8 @@ def change_review_status(request, book_id, user_id, review_id, new_status):
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
 
 def home(request):
-    top_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
-    new_books = Book.objects.order_by('-id')[:10]
+    top_books = sorted(Book.objects(),key=lambda book: book.statistic.rating, reverse=True)[:20]
+    new_books = Book.objects.order_by('-id')[:20]
     genres = []
     for genres_lst in Book.objects.values_list('genres'):
         for genre in genres_lst:

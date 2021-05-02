@@ -121,11 +121,14 @@
                         </symbol>
                     </svg>
                 </div>
+                <a  style="float: right;" href="{% url 'add-rating' user.id book.id 4 %}" class="btn btn-success">Add rating</a>
+            </form>
+            <form>
                 <div class="form-group">
                     <h4 for="exampleFormControlTextarea1">Review</h4>
                     <textarea class="form-control" placeholder="Your comment..." id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
-                <a style="float: right;" href="{% url 'add-review' user.id book.id 'comment text' 4 %}" class="btn btn-success">Add comment</a>
+                <a type="submit" style="float: right;" href="{% url 'add-review' user.id book.id 'comment text' %}" class="btn btn-success">Add comment</a>
             </form>
         {% endif %}
 

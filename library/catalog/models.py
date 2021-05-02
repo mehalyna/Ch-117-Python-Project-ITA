@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django_mongoengine import Document, EmbeddedDocument
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password
-from mongoengine import DateTimeField, EmailField, EmbeddedDocumentField, FloatField, \
+from mongoengine import DateTimeField, DictField, EmailField, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -42,6 +42,7 @@ class MongoUser(Document):
     reviews = ListField(default=[])
     recommended_books = ListField(default=[])
     wishlist = ListField(default=[])
+    rated_books = DictField(default={})
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
 
     def generate_passwords(self, password):
@@ -88,7 +89,7 @@ class BookStatistic(EmbeddedDocument):
     rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
     total_read = IntField(default=0, min_value=0)
     reading_now = IntField(default=0, min_value=0)
-    stars = ListField(default=(0, 0, 0, 0, 0))
+    stars = ListField(default=[0, 0, 0, 0, 0])
 
 
 class Author(Document):
@@ -133,7 +134,7 @@ class Book(Document):
 
         fsns = f(s, self.statistic.stars)
         rating = fsns - z * math.sqrt((f(s2, self.statistic.stars) - fsns ** 2) / (N + K + 1))
-        super(Book, self).update(statistic__rating=rating)
+        super(Book, self).update(statistic__rating=round(rating,2))
 
 
 class Review(Document):
@@ -143,5 +144,4 @@ class Review(Document):
     lastname = StringField(default='', max_length=50)
     status = StringField(default=Status.ACTIVE, max_length=100)
     comment = StringField(default='', max_length=5000)
-    rating = IntField(default=0, min_value=0.0, max_value=5)
     date = DateTimeField(default=datetime.now)
