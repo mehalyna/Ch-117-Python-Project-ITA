@@ -1,6 +1,5 @@
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from mongoengine.queryset.visitor import Q
@@ -110,7 +109,20 @@ def search_by_author(request, author_name):
 
 def category_search(request, genre):
     books = Book.objects.filter(genres=genre)
-    return render(request, 'books.html', {'books': books})
+    return render(request, 'books.html', {'books': books, 'genre': genre})
+
+def form_search(request):
+    q = request.GET.get('searchbar', '')
+    if q:
+        authors = Author.objects(name__icontains=q)
+        books_id = []
+        for author in authors:
+            for book_id in author.books:
+                books_id.append(book_id)
+        books = Book.objects.filter(Q(title__icontains=q) | Q(year__icontains=q) | Q(id__in=books_id))
+    else:
+        return render(request, 'books.html')
+    return render(request, 'books.html', {'books': books, 'q': q})
 
 
 def base(request):
