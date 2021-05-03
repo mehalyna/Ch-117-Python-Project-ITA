@@ -97,7 +97,13 @@
 }
 
 .swiper-slide a:hover{
+    text-decoration: underline;
+    color: #323232;
+}
+
+.swiper-slide a{
     text-decoration: none;
+    color: #323232;
 }
 
 .zoom a:hover{
@@ -147,6 +153,14 @@
 .category-box a:hover{
     text-decoration: underline;
     color: #323232;
+}
+
+.search-category-input{
+    width: 85% !important;
+}
+
+.search-category-button{
+    width: 10% !important;
 }
 
 .footer{

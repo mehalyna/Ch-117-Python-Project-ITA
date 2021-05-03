@@ -16,8 +16,8 @@
             <div class="swiper-slide">
                 <a href="{% url 'book-details' book.id %}">
                     <img src="{{ book.link_img }}" alt="{{ book.title }}">
-                    <p style="color: #323232"><b>{{ book.title }}</b></p>
-                    <p style="color: #323232">{{ book.author_id.name }}</p>
+                    <p><b>{{ book.title }}</b></p>
+                    <p>{{ book.author_id.name }}</p>
                 </a>
             </div>
           {% endfor %}
@@ -37,10 +37,10 @@
         <!-- Slides -->
           {% for book in new_books %}
           <div class="swiper-slide">
-              <a href={% url 'book-details' book.id %}>
+              <a href="{% url 'book-details' book.id %}">
                   <img src="{{ book.link_img }}" alt="{{ book.title }}">
-                  <p style="color: #323232; text-decoration: none"><b>{{ book.title }}</b></p>
-                  <p style="color: #323232">{{ book.author_id.name }}</p>
+                  <p><b>{{ book.title }}</b></p>
+                  <p>{{ book.author_id.name }}</p>
               </a>
           </div>
           {% endfor %}
@@ -56,14 +56,14 @@
     <!--    Search by category section-->
     <h2 class="h2-home-page">Search your favourite book</h2>
         <form class="search" action="{% url 'form-books' %}">
-            <input type="text" class="form-control" placeholder="Title/ Author/ Year" style="width: 85%" name="searchbar">
-            <input type="submit" class="btn btn-info" value="Search" style="width: 10%">
+            <input type="text" class="form-control search-category-input" placeholder="Title/ Author/ Year" name="searchbar">
+            <input type="submit" class="btn btn-info search-category-button" value="Search">
         </form>
     <div class="category-wrapper">
         <div class="row">
             {% for genre in genres %}
                 <div class="col-3">
-                    <a style="color: #323232;" href={% url 'library-books' genre %}>{{ genre }}</a>
+                    <a style="color: #323232;" href="{% url 'library-books' genre %}">{{ genre }}</a>
                 </div>
             {% endfor %}
         </div>
