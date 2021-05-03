@@ -121,20 +121,26 @@ class Book(Document):
         http://www.evanmiller.org/ranking-items-with-star-ratings.html
 
         """
-        N = sum(self.statistic.stars)
-        K = len(self.statistic.stars)
-        s = list(range(K, 0, -1))
-        s2 = [sk ** 2 for sk in s]
-        z = 1.65
+        number_of_vote = sum(self.statistic.stars)
+        number_of_stars = len(self.statistic.stars)
+        stars_by_value = list(range(number_of_stars, 0, -1))
+        price_stars = [star_value ** 2 for star_value in stars_by_value]
 
-        def f(s, stars):
-            N = sum(stars)
-            K = len(stars)
-            return sum(sk * (nk + 1) for sk, nk in zip(s, stars)) / (N + K)
+        # Z is the 1−α/2 (α=0.1) quantile of a normal distribution, constant in that case
+        Z = 1.65
 
-        fsns = f(s, self.statistic.stars)
-        rating = fsns - z * math.sqrt((f(s2, self.statistic.stars) - fsns ** 2) / (N + K + 1))
-        super(Book, self).update(statistic__rating=round(rating,2))
+        def get_sum_from_expression(stars_by_value, stars):
+            number_of_vote = sum(stars)
+            number_of_stars = len(stars)
+            return sum(star_value * (number_of_vote_for_every_star + 1) for star_value, number_of_vote_for_every_star in
+                       zip(stars_by_value, stars)) / (number_of_vote + number_of_stars)
+
+        result_sum = get_sum_from_expression(stars_by_value, self.statistic.stars)
+        rating = result_sum - Z * math.sqrt(
+            (get_sum_from_expression(price_stars, self.statistic.stars) - result_sum ** 2) / (
+                        number_of_vote + number_of_stars + 1))
+
+        super(Book, self).update(statistic__rating=round(rating, 2))
 
 
 class Review(Document):
