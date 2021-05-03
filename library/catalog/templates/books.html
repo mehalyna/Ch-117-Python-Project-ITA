@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Library page{% endblock %}
+{% block title %}Search {{ q }}{% endblock %}
 
 {% block body %}
 <div style="background: #e1e5e7;margin-bottom: 50px;margin-top: 50px" class="container">
@@ -10,9 +10,9 @@
         {% for book in books %}
             <div class="col-3">
                 <div class="zoom">
-                    <a href={% url 'book-details' book.id %}>
+                    <a href="{% url 'book-details' book.id %}">
                         <img style="padding: 10px 10px 10px 10px;max-height: 270px; width: 90%" src={{ book.link_img }}>
-                        <p style="margin-left: 10px">{{ book.title }}</p>
+                        <p style="margin-left: 10px; color: #323232">{{ book.title }}</p>
                     </a>
                 </div>
             </div>
