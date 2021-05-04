@@ -13,7 +13,7 @@ from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
 
 from admin.forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
-from admin.models import Author, Book, Role, Statistics, Status, User
+from admin.models import Author, Book, Role, Statistics, Status, MongoUser
 import admin.utils as utils
 
 
@@ -63,11 +63,11 @@ def create_app():
     @app.route('/')
     @login_required
     def start_page():
-        num_users = User.objects.count()
+        num_users = MongoUser.objects.count()
         num_books = Book.objects.count()
-        num_active_users = User.objects(status=Status.ACTIVE).count()
-        num_inactive_users = User.objects(status=Status.INACTIVE).count()
-        num_muted_users = User.objects(status=Status.MUTED).count()
+        num_active_users = MongoUser.objects(status=Status.ACTIVE).count()
+        num_inactive_users = MongoUser.objects(status=Status.INACTIVE).count()
+        num_muted_users = MongoUser.objects(status=Status.MUTED).count()
         num_active_books = Book.objects(status=Status.ACTIVE).count()
         num_inactive_books = Book.objects(status=Status.INACTIVE).count()
 
@@ -79,19 +79,19 @@ def create_app():
     @app.route('/users_list')
     @login_required
     def get_users_list():
-        users = utils.search_and_pagination(collection=User, order_field='email')
+        users = utils.search_and_pagination(collection=MongoUser, order_field='email')
         return render_template('users_list.html', users=users)
 
     @app.route('/active_users_list')
     @login_required
     def get_active_users_list():
-        users = utils.search_and_pagination(collection=User, order_field='email', status=Status.ACTIVE)
+        users = utils.search_and_pagination(collection=MongoUser, order_field='email', status=Status.ACTIVE)
         return render_template('users_list.html', users=users)
 
     @app.route('/inactive_users_list')
     @login_required
     def get_inactive_users_list():
-        users = utils.search_and_pagination(collection=User, order_field='email', status=Status.INACTIVE)
+        users = utils.search_and_pagination(collection=MongoUser, order_field='email', status=Status.INACTIVE)
         return render_template('users_list.html', users=users)
 
     @app.route('/create_user', methods=['GET', 'POST'])
@@ -100,10 +100,10 @@ def create_app():
         form = AddUserForm(request.form)
         if request.method == 'POST' and form.validate_on_submit():
             try:
-                user = User(email=form.email.data)
-                user.firstname = form.firstname.data
-                user.lastname = form.lastname.data
-                user.login = form.login.data
+                user = MongoUser(email=form.email.data)
+                user.first_name = form.firstname.data
+                user.last_name = form.lastname.data
+                user.username = form.login.data
                 user.set_password(form.password.data)
                 user.role = form.role.data
                 user.save()
@@ -119,10 +119,10 @@ def create_app():
     @login_required
     def update_user(_id: str):
         try:
-            user = User.objects.get(id=ObjectId(_id))
+            user = MongoUser.objects.get(id=ObjectId(_id))
             form = UpdateUserForm(
-                request.form, firstname=user.firstname, lastname=user.lastname,
-                email=user.email, login=user.login, role=user.role, status=user.status)
+                request.form, firstname=user.first_name, lastname=user.last_name,
+                email=user.email, login=user.username, role=user.role, status=user.status)
             form.user_id.data = user.id
             if request.method == 'POST' and form.validate_on_submit():
                 firstname = form.firstname.data
@@ -135,8 +135,8 @@ def create_app():
                 if _id == session.get('_user_id') and (status != Status.ACTIVE or role != Role.ADMIN):
                     flash('The administrator cannot change the status or role for himself', 'warning')
                 else:
-                    user.update(firstname=firstname, lastname=lastname,
-                                email=email, login=login, password_hash=password_hash,
+                    user.update(first_name=firstname, last_name=lastname,
+                                email=email, username=login, password=password_hash,
                                 role=role, status=status)
                     flash('User successfully updated', 'success')
                 return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
@@ -150,7 +150,7 @@ def create_app():
     @login_required
     def delete_user(_id: str):
         try:
-            user = User.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
+            user = MongoUser.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
             if _id == session.get('_user_id'):
                 flash('The administrator cannot change the status or role for himself', 'warning')
             else:
@@ -166,7 +166,7 @@ def create_app():
     @login_required
     def restore_user(_id: str):
         try:
-            user = User.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
+            user = MongoUser.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
             user.update(status='active')
             flash('User successfully restored', 'success')
             return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
@@ -179,7 +179,7 @@ def create_app():
     def admin_login():
         form = LoginForm()
         if form.validate_on_submit():
-            admin = User.objects(login=form.admin.data).first()
+            admin = MongoUser.objects(username=form.admin.data).first()
             if admin is None or not admin.check_password(form.password.data) or admin.status != 'active':
                 flash('Invalid username or password')
                 return redirect('/admin_login')
@@ -199,7 +199,7 @@ def create_app():
 
     @login.user_loader
     def load_user(user_id):
-        return User.objects.get(id=user_id)
+        return MongoUser.objects.get(id=user_id)
 
     @app.route('/add-book', methods=['POST', 'GET'])
     @login_required
