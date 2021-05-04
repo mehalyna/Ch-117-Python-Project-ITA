@@ -32,4 +32,3 @@ const new_slider = new Swiper('.second-container', {
   spaceBetween: 20,
   speed: 600,
 });
-

@@ -3,7 +3,6 @@ from . import views
 
 urlpatterns = [
     path('home/', views.home, name='library-home'),
-    path('base/', views.base),
     path('registration/', views.registration, name='library-registration'),
     path('registration_validation/<str:field_value>', views.unique_registration_check, name='library-registration-validate'),
     path('book_details/<str:book_id>', views.book_details, name='book-details'),
@@ -12,11 +11,12 @@ urlpatterns = [
     path('change_password/', views.change_password, name='change_password'),
     path('search/', views.form_search, name='form-books'),
     path('books/<str:genre>/', views.category_search, name='library-books'),
+    path('func_login', views.func_login, name='func_login'),
+    path('login_redirect_page/', views.login_redirect_page, name='login_redirect_page'),
+    path('logout/', views.logout_view, name='logout'),
     path('author_books/<str:author_name>/', views.search_by_author, name='library-books-author'),
     path('add_review/<str:user_id>/<str:book_id>/<str:text>', views.add_review, name='add-review'),
     path('add_rating/<str:user_id>/<str:book_id>/<int:rating>', views.add_rating, name='add-rating'),
     path('change_review_status/', views.change_review_status, name='change-review-status'),
-    path('login/', views.login_view, name="my_login"),
-    path('logout/', views.logout_view, name='my_logout'),
     path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf')
 ]
