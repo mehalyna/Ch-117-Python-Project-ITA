@@ -13,72 +13,79 @@
 </head>
 <body>
 {% csrf_token %}
+<form class="form-signin">
+    <div class="text-center mb-4">
+        <h3>For get access to this page please sign in!</h3>
 
-<button data-toggle="modal" data-target="#authModal" data-toggle="modal" type="submit" class="btn btn-primary">Sign in
-</button>
-
-
-<div id="authModal" class="modal fade loginM" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="AuthModalLabel">Sign In</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
+        <button data-toggle="modal" data-target="#authModal" data-toggle="modal" type="submit" class="btn btn-primary">
+            Sign
+            in
+        </button>
+    </div>
 
 
-                <div class="modal-body">
-                    <form class="login-form">
-
-                    <div class="form-group">
-                        <label for="inputUsername">Username</label>
-                        <input type="email" class="form-control" id="inputUsername"
-                               aria-describedby="emailHelp" placeholder="Username">
-                        <small id="emailHelp" class="form-text text-muted">Enter your username</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="inputPassword">Password</label>
-                        <input type="password" name="password" class="form-control" id="inputPassword"
-                               placeholder="Password">
-                        <div id="errorlogin" style="color:red"></div>
-                    </div>
-
-                    </form>
-                </div>
-
-                <div class="modal-footer">
-
-                    <div class="mb-3">
-                        <a href="{% url 'library-registration' %}" class="btn btn-link">Sign Up</a>
-                    </div>
-
-                    {% if request.GET.next %}
-                    <input type="hidden" name="next" id="nextPage" value="{{request.GET.next}}">
-                    {% endif %}
-
-                    <div class="mb-3">
-                        <button type="button" class="btn btn-primary btn-lg btn-block login-btn"
-                                style="max-width:500px" onclick="login_user()">Sign In
+    <div id="authModal" class="modal fade loginM" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AuthModalLabel">Sign In</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
                         </button>
                     </div>
 
+
+                    <div class="modal-body">
+                        <form class="login-form">
+
+                            <div class="form-group">
+                                <label for="inputUsername">Username</label>
+                                <input type="email" class="form-control" id="inputUsername"
+                                       aria-describedby="emailHelp" placeholder="Username">
+                                <small id="emailHelp" class="form-text text-muted">Enter your username</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="inputPassword">Password</label>
+                                <input type="password" name="password" class="form-control" id="inputPassword"
+                                       placeholder="Password">
+                                <div id="errorlogin" style="color:red"></div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <div class="mb-3">
+                            <a href="{% url 'library-registration' %}" class="btn btn-link">Sign Up</a>
+                        </div>
+
+                        {% if request.GET.next %}
+                        <input type="hidden" name="next" id="nextPage" value="{{request.GET.next}}">
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary btn-lg btn-block login-btn"
+                                    style="max-width:500px" onclick="login_user_redirect()">Sign In
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% if request.GET.next %}
-<input type="hidden" name="next" value="{{request.GET.next}}">
-{% endif %}
+    {% if request.GET.next %}
+    <input type="hidden" name="next" value="{{request.GET.next}}">
+    {% endif %}
+</form>
 
 
 <!-- Custom scripts -->
 <script type="text/javascript">
-    function login_user(){
+    function login_user_redirect(){
         email = document.getElementById("inputUsername").value;
         password = document.getElementById("inputPassword").value;
         redirect_page = document.getElementById("nextPage").value;
@@ -105,6 +112,9 @@
             }
         });
     }
+
+
+
 
 </script>
 <!-- MDB -->

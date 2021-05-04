@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django_mongoengine import Document
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password
+from django_mongoengine.forms.fields import DictField
 from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -41,6 +42,7 @@ class MongoUser(Document):
     reviews = ListField(default=[])
     recommended_books = ListField(default=[])
     wishlist = ListField(default=[])
+    #rated_books = DictField(default={})
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
 
     def generate_passwords(self, password):
@@ -87,6 +89,7 @@ class BookStatistic(EmbeddedDocument):
     rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
     total_read = IntField(default=0, min_value=0)
     reading_now = IntField(default=0, min_value=0)
+    stars = ListField(default=[0, 0, 0, 0, 0])
 
 
 class Author(Document):
@@ -110,6 +113,34 @@ class Book(Document):
     status = StringField(default=Status.ACTIVE, max_length=100)
     store_links = ListField(default=[])
     statistic = EmbeddedDocumentField(BookStatistic.__name__, default=BookStatistic())
+
+    def calculate_rating(self):
+        """
+        The expression is the lower bound of a normal approximation to a Bayesian credible interval
+        for the average rating
+        http://www.evanmiller.org/ranking-items-with-star-ratings.html
+
+        """
+        number_of_vote = sum(self.statistic.stars)
+        number_of_stars = len(self.statistic.stars)
+        stars_by_value = list(range(number_of_stars, 0, -1))
+        price_stars = [star_value ** 2 for star_value in stars_by_value]
+
+        # Z is the 1−α/2 (α=0.1) quantile of a normal distribution, constant in that case
+        Z = 1.65
+
+        def get_sum_from_expression(stars_by_value, stars):
+            number_of_vote = sum(stars)
+            number_of_stars = len(stars)
+            return sum(star_value * (number_of_vote_for_every_star + 1) for star_value, number_of_vote_for_every_star in
+                       zip(stars_by_value, stars)) / (number_of_vote + number_of_stars)
+
+        result_sum = get_sum_from_expression(stars_by_value, self.statistic.stars)
+        rating = result_sum - Z * math.sqrt(
+            (get_sum_from_expression(price_stars, self.statistic.stars) - result_sum ** 2) / (
+                        number_of_vote + number_of_stars + 1))
+
+        super(Book, self).update(statistic__rating=round(rating, 2))
 
 
 class Review(Document):
