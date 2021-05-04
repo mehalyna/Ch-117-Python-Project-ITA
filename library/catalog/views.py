@@ -6,12 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from mongoengine.queryset.visitor import Q
-from werkzeug.security import generate_password_hash
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Author, Book, Review, MongoUser
 
-_id = '606ecd74e5fd490b3c6d0657'
+_id = '6091321854814286d59d9ed7'
 
 
 def profile_details(request):
@@ -58,7 +57,7 @@ def change_password(request):
         if form.is_valid():
             old_password = form.cleaned_data.get('old_password')
             if user and user.check_password(old_password):
-                new_password = generate_password_hash(form.cleaned_data.get('new_password'))
+                new_password = form.cleaned_data.get('new_password')
                 user.update(password=new_password)
                 messages.success(request, 'Password successfully updated.')
                 return redirect(profile_details)
@@ -82,6 +81,7 @@ def add_review(request, user_id, book_id, text):
     review.save()
     reviews = Review.objects(book_id=book_id)
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
+
 
 def add_rating(request, user_id, book_id, rating):
     if rating and 1 <= rating <= 5:
@@ -110,7 +110,7 @@ def change_review_status(request, book_id, user_id, review_id, new_status):
 
 
 def home(request):
-    top_books = sorted(Book.objects(),key=lambda book: book.statistic.rating, reverse=True)[:20]
+    top_books = sorted(Book.objects(), key=lambda book: book.statistic.rating, reverse=True)[:20]
     new_books = Book.objects.order_by('-id')[:20]
     genres = []
     for genres_lst in Book.objects.values_list('genres'):
@@ -129,6 +129,7 @@ def search_by_author(request, author_name):
 def category_search(request, genre):
     books = Book.objects.filter(genres=genre)
     return render(request, 'books.html', {'books': books, 'genre': genre})
+
 
 def form_search(request):
     q = request.GET.get('searchbar', '')
@@ -195,16 +196,6 @@ def func_login(request):
             return HttpResponse(json.dumps({"message": "Success"}), content_type="application/json")
         else:
             return HttpResponse(json.dumps({"message": "Denied"}), content_type="application/json")
-
-
-@login_required
-def profile_details(request):
-    return render(request, 'profile_details.html')
-
-
-@login_required
-def profile_edit(request):
-    return render(request, 'profile_edit.html')
 
 
 def login_redirect_page(request):
