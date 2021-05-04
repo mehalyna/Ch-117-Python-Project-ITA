@@ -5,7 +5,7 @@ const timeToLiveMin = 10;
 const storageKeyPrefix = 'registration_';
 
 let form = document.querySelector('.needs-validation');
-let inputsList = document.querySelectorAll('input.form-control');
+let inputsList = form.querySelectorAll('input.form-control');
 
 let firstname = form.elements.namedItem('firstname');
 firstname.value = getWithExpiry(storageKeyPrefix + firstname.id);
