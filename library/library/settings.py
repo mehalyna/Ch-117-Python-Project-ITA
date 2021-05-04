@@ -84,7 +84,7 @@ PORT = int(os.getenv('PORT'))
 
 MONGO_DATABASE_HOST = f'{HOST}:{PORT}'
 
-LOGIN_URL = 'func_login'
+LOGIN_URL = 'login_redirect_page'
 
 DATABASES = {
     'default': {
@@ -123,7 +123,6 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
-
 USE_L10N = True
 
 USE_TZ = True

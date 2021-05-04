@@ -1,12 +1,12 @@
-import math
 from copy import copy
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
-from django_mongoengine import Document, EmbeddedDocument
+from django_mongoengine import Document
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password
-from mongoengine import DateTimeField, DictField, EmailField, EmbeddedDocumentField, FloatField, \
+from django_mongoengine.forms.fields import DictField
+from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -42,7 +42,7 @@ class MongoUser(Document):
     reviews = ListField(default=[])
     recommended_books = ListField(default=[])
     wishlist = ListField(default=[])
-    rated_books = DictField(default={})
+    #rated_books = DictField(default={})
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
 
     def generate_passwords(self, password):
@@ -150,4 +150,5 @@ class Review(Document):
     lastname = StringField(default='', max_length=50)
     status = StringField(default=Status.ACTIVE, max_length=100)
     comment = StringField(default='', max_length=5000)
+    rating = IntField(default=0, min_value=0.0, max_value=5)
     date = DateTimeField(default=datetime.now)

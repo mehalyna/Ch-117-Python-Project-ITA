@@ -1,5 +1,8 @@
+import json
+
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from mongoengine.queryset.visitor import Q
@@ -105,6 +108,7 @@ def change_review_status(request, book_id, user_id, review_id, new_status):
         review.update(status=new_status)
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
 
+
 def home(request):
     top_books = sorted(Book.objects(),key=lambda book: book.statistic.rating, reverse=True)[:20]
     new_books = Book.objects.order_by('-id')[:20]
@@ -138,10 +142,6 @@ def form_search(request):
     else:
         return render(request, 'books.html')
     return render(request, 'books.html', {'books': books, 'q': q})
-
-
-def base(request):
-    return render(request, 'base.html')
 
 
 def registration(request):
@@ -183,3 +183,29 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect(home)
+
+
+def func_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request=request, username=username, password=password)
+        if user:
+            login(request, user)
+            return HttpResponse(json.dumps({"message": "Success"}), content_type="application/json")
+        else:
+            return HttpResponse(json.dumps({"message": "Denied"}), content_type="application/json")
+
+
+@login_required
+def profile_details(request):
+    return render(request, 'profile_details.html')
+
+
+@login_required
+def profile_edit(request):
+    return render(request, 'profile_edit.html')
+
+
+def login_redirect_page(request):
+    return render(request, 'login_redirect.html')
