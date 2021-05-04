@@ -56,7 +56,7 @@ def change_password(request):
             old_password = form.cleaned_data.get('old_password')
             if user and user.check_password(old_password):
                 new_password = generate_password_hash(form.cleaned_data.get('new_password'))
-                user.update(password_hash=new_password)
+                user.update(password=new_password)
                 messages.success(request, 'Password successfully updated.')
                 return redirect(profile_details)
             else:
