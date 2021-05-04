@@ -23,55 +23,62 @@
 <body>
 
 
+
 <!--Header-->
 <div class="navbar">
     <div class="navbar-wrapper container">
         <h1><a href="{% url 'library-home' %}" class="logo">Library</a></h1>
-       <div class="d-flex"> <a href="#" class="btn btn-dark">Sign In</a>
-
-
-        <div class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-               aria-haspopup="true" aria-expanded="false">
-                <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="{% url 'profile_details' %}">Profile details</a>
-                <a class="dropdown-item" href="{% url 'profile_bookshelf' %}">Bookshelf</a>
-                <div class="dropdown-divider"></div>
+        <form action="{% url 'form-books' %}" id="searchtool" style="display: none">
+            <div class="header-search" style="display: flex">
+                <input type="text" class="form-control header-search-input" placeholder="Title/ Author/ Year" name="searchbar">
+                <input type="submit" class="btn btn-info" value="Search">
             </div>
+        </form>
+        <div class="toggler-wrapper">
+            <img src="{% static 'images/search.png' %}" alt="Search icon" id="toggler">
+            <a href="#" class="btn btn-dark">Sign In</a>
         </div>
 
     </div>
 </div>
-</div>
+
 {% block body %}
 {% endblock %}
 
 <!--Footer-->
 <div class="footer">
-    <div class="footer-wrapper container-fluid ">
-        <div class="footer-box">
-            <h5>Sections of the site</h5>
-            <a href="#">News</a>
-            <a href="#">Search page</a>
-            <a href="#">Selections of books</a>
-            <a href="#">People</a>
+    <div class="footer-container">
+        <div class="footer-container-box">
+            <h5>Navigation</h5>
+            <div class="footer-links-box">
+                <a href="#">News</a>
+                <a href="{% url 'form-books' %}">Search page</a>
+                <a href="#">Selections of books</a>
+                <a href="#">People</a>
+            </div>
         </div>
-        <div class="footer-box">
+        <div class="footer-container-box">
             <h5>Information</h5>
-            <a href="#">About us</a>
-            <a href="#">Site rules</a>
-            <a href="#">Privacy</a>
-            <a href="#">Help</a>
+            <div class="footer-links-box">
+                <a href="#">About us</a>
+                <a href="#}">Site rules</a>
+                <a href="#">Privacy and policy</a>
+                <a href="#">Help</a>
+            </div>
         </div>
-        <div class="footer-box">
-            <h5>Our social media</h5>
-            <a href="#">Facebook</a>
-            <a href="#">Instagram</a>
-            <a href="#">Telegram</a>
-            <a href="#">Pinterest</a>
+        <div class="footer-container-box">
+            <h5>Stay connected</h5>
+            <a href="#"><img src="{% static 'images/instagram.svg' %}" alt="Instagram"></a>
+            <a href="#"><img src="{% static 'images/facebook.svg' %}" alt="Facebook"></a>
+            <a href="#"><img src="{% static 'images/twitter.svg' %}" alt="Twitter"></a>
+            <a href="#"><img src="{% static 'images/reddit.svg' %}" alt="Reddit"></a>
+            <a href="#"><img src="{% static 'images/tiktok.svg' %}" alt="TikTok"></a>
         </div>
+    </div>
+    <div class="footer-container-sm" style="width: 15%; height: 240px;">
+        <a href="#"><img src="{% static 'images/app-store.svg' %}" alt="App Store" style="margin-top: 20px;"></a>
+        <a href="#"><img src="{% static 'images/google-store.png' %}" alt="Google Store" style="margin-top: 20px;"></a>
+        <p style="margin-top: 10px;"><b>© Ch-117-Python-Project-ITA, 2021</b></p>
     </div>
 </div>
 
@@ -81,6 +88,13 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $('#toggler').click(function (){
+        $('#searchtool').toggle('slow');
+    });
+</script>
+
 
 </body>
 </html>

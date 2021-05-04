@@ -6,25 +6,29 @@
 {% block body %}
 
 <div class="container">
-    <h2 class="h2-home-page">Popular books of the week</h2>
-    <!-- Slider main container -->
+    <h2 class="h2-home-page" style="margin-top: 25px;">Popular books of the week</h2>
+        <!-- Slider main container -->
     <div class="swiper-container first-container">
       <!-- Additional required wrapper -->
       <div class="swiper-wrapper">
         <!-- Slides -->
           {% for book in top_books %}
             <div class="swiper-slide">
-                <img src="{{ book.link_img }}" alt="{{ book.title }}">
-                <p><b>{{ book.title }}</b></p>
-                <p>{{ book.author_id.name }}</p>
+                <a href="{% url 'book-details' book.id %}">
+                    <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                    <p><b>{{ book.title }}</b></p>
+                    <p>{{ book.author_id.name }}</p>
+                </a>
             </div>
           {% endfor %}
       </div>
     </div>
+    <div class="swiper-button-next first-next" style="position: relative; top: -278px; left: 1150px"></div>
+    <div class="swiper-button-prev first-prev" style="position: relative; top: -300px; left: -65px;"></div>
+</div>
 
-    <div class="swiper-button-prev first-prev" style="left: 330px; top: 35%;"></div>
-    <div class="swiper-button-next first-next" style="right: 330px; top: 35%"></div>
 
+<div class="container">
 <!--    New books swiper-->
     <h2 class="h2-home-page">New books on a website</h2>
     <div class="swiper-container second-container">
@@ -33,48 +37,38 @@
         <!-- Slides -->
           {% for book in new_books %}
           <div class="swiper-slide">
-              <img src="{{ book.link_img }}" alt="{{ book.title }}">
-              <p><b>{{ book.title }}</b></p>
-              <p>{{ book.author_id.name }}</p>
+              <a href="{% url 'book-details' book.id %}">
+                  <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                  <p><b>{{ book.title }}</b></p>
+                  <p>{{ book.author_id.name }}</p>
+              </a>
           </div>
           {% endfor %}
       </div>
     </div>
-
-    <div class="swiper-button-prev second-prev" style="left: 330px; top: 90%;"></div>
-    <div class="swiper-button-next second-next" style="right: 330px; top: 90%"></div>
-
-<!--    Search by category section-->
-    <h2 class="h2-home-page">Search your favourite book</h2>
-    <div class="search">
-        <input type="text" class="form-control" placeholder="Title/ Author/ Year" style="width: 85%">
-        <input type="submit" class="btn btn-info" value="Search" style="width: 10%">
-    </div>
-    <div class="category-wrapper">
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Calendars' %}">Calendars</a>
-            <a href="{% url 'library-books' 'Science Fiction & Fantasy' %}">Science Fiction & Fantasy</a>
-            <a href="{% url 'library-books' 'Literature & Fiction' %}">Literature & Fiction</a>
-            <a href="{% url 'library-books' 'Crafts, Hobbies & Home' %}">Crafts, Hobbies & Home</a>
-        </div>
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Engineering & Transporting' %}">Engineering & Transport</a>
-            <a href="{% url 'library-books' 'Arts & Photography' %}">Arts & Photography</a>
-            <a href="{% url 'library-books' 'Medical Books' %}">Medical Books</a>
-            <a href="{% url 'library-books' 'Health, Fitness & Dieting' %}">Health, Fitness & Dieting</a>
-        </div>
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Science & Math' %}">Science & Math</a>
-            <a href="{% url 'library-books' 'Business & Money' %}">Business & Money</a>
-            <a href="{% url 'library-books' 'Law' %}">Law</a>
-            <a href="{% url 'library-books' 'Biographies & Memoirs' %}">Biographies & Memoirs</a>
-        </div>
-        <div class="category-box">
-            <a href="{% url 'library-books' 'Religion & Spirituality' %}">Religion & Spirituality</a>
-            <a href="{% url 'library-books' 'History' %}">History</a>
-            <a href="{% url 'library-books' 'Reference' %}">Reference</a>
-            <a href="{% url 'library-books' 'Travel' %}">Travel</a>
-        </div>
-    </div>
+    <div class="swiper-button-next second-next" style="position: relative; top: -278px; left: 1150px"></div>
+    <div class="swiper-button-prev second-prev" style="position: relative; top: -300px; left: -65px;"></div>
 </div>
+
+
+
+<div class="container">
+    <!--    Search by category section-->
+    <h2 class="h2-home-page">Search your favourite book</h2>
+        <form class="search" action="{% url 'form-books' %}">
+            <input type="text" class="form-control search-category-input" placeholder="Title/ Author/ Year" name="searchbar">
+            <input type="submit" class="btn btn-info search-category-button" value="Search">
+        </form>
+    <div class="category-wrapper">
+        <div class="row">
+            {% for genre in genres %}
+                <div class="col-3">
+                    <a style="color: #323232;" href="{% url 'library-books' genre %}">{{ genre }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
 {% endblock %}
