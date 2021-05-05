@@ -72,41 +72,40 @@ def change_password(request):
 def book_details(request, book_id):
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': None})
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
 
 
-def add_review(request, user_id, book_id, text):
-    user = MongoUser.objects(id=user_id).first()
+def add_review(request, book_id):
+    text = request.GET.get('text-comment')
     book = Book.objects(id=book_id).first()
-    review = Review(user_id=user.pk, book_id=book.pk, firstname=user.firstname, lastname=user.lastname, comment=text)
+    review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name, lastname=request.user.mongo_user.last_name, comment=text)
     review.save()
+    reviews = list(Review.objects(book_id=book_id))[::-1]
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
+
+def add_rating(request, book_id, rating):
+    user = MongoUser.objects(id=request.user.mongo_user.id).first()
+    book = Book.objects(id=book_id).first()
+
+    if str(book_id) in user.rated_books.keys():
+        book.statistic.stars[user.rated_books[str(book_id)]] -= 1
+
+    book.statistic.stars[rating] += 1
+    user.rated_books[str(book_id)] = rating
+    user.save()
+    book.save()
+    book.calculate_rating()
     reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
-
-def add_rating(request, user_id, book_id, rating):
-    if rating and 1 <= rating <= 5:
-        user = MongoUser.objects(id=user_id).first()
-        book = Book.objects(id=book_id).first()
-        if str(book_id) in user.rated_books.keys():
-            book.statistic.stars[user.rated_books[str(book_id)]] -= 1
-
-        book.statistic.stars[rating] += 1
-        user.rated_books[str(book_id)] = rating
-        user.save()
-        book.save()
-        book.calculate_rating()
-        reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
 
 
-def change_review_status(request, book_id, user_id, review_id, new_status):
+def change_review_status(request, book_id, review_id, new_status):
     review = Review.objects(id=review_id).first()
-    user = MongoUser.objects(id=user_id).first()
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
     if review:
         review.update(status=new_status)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
 
 
 def home(request):
