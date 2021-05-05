@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
@@ -83,6 +84,7 @@ def add_review(request, user_id, book_id, text):
     reviews = Review.objects(book_id=book_id)
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
 
+
 def add_rating(request, user_id, book_id, rating):
     if rating and 1 <= rating <= 5:
         user = MongoUser.objects(id=user_id).first()
@@ -110,7 +112,7 @@ def change_review_status(request, book_id, user_id, review_id, new_status):
 
 
 def home(request):
-    top_books = sorted(Book.objects(),key=lambda book: book.statistic.rating, reverse=True)[:20]
+    top_books = sorted(Book.objects(), key=lambda book: book.statistic.rating, reverse=True)[:20]
     new_books = Book.objects.order_by('-id')[:20]
     genres = []
     for genres_lst in Book.objects.values_list('genres'):
@@ -129,6 +131,7 @@ def search_by_author(request, author_name):
 def category_search(request, genre):
     books = Book.objects.filter(genres=genre)
     return render(request, 'books.html', {'books': books, 'genre': genre})
+
 
 def form_search(request):
     q = request.GET.get('searchbar', '')
@@ -162,7 +165,12 @@ def registration(request):
             if user:
                 login(request, user)
 
-            return redirect(home)
+            script = f'''<script>
+                            window.location.href = "{reverse(home)}";
+                            localStorage.clear();
+                        </script>'''
+
+            return HttpResponse(script)
     else:
         form = RegistrationForm()
 
@@ -183,7 +191,6 @@ def login_view(request):
         user = authenticate(request=request, username=username, password=password)
         if user:
             login(request, user)
-        print(user.is_authenticated)
     return redirect(home)
 
 
