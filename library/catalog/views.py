@@ -16,7 +16,7 @@ _id = '606ecd74e5fd490b3c6d0657'
 
 def profile_details(request):
     user = MongoUser.objects(id=_id).first()
-    return render(request, 'profile_details.html', {'user': user})
+    return render(request, 'profile_details.html')
 
 
 def profile_bookshelf(request):
@@ -48,7 +48,7 @@ def profile_edit(request):
             return redirect(profile_details)
     else:
         form = EditProfileForm(initial=data)
-    return render(request, 'profile_edit.html', {'user': user, 'form': form})
+    return render(request, 'profile_edit.html', {'form': form})
 
 
 def change_password(request):
@@ -66,13 +66,13 @@ def change_password(request):
                 messages.success(request, 'Wrong old password.')
     else:
         form = ChangePasswordForm()
-    return render(request, 'change_password.html', {'user': user, 'form': form})
+    return render(request, 'change_password.html', {'form': form})
 
 
 def book_details(request, book_id):
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': None})
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
 
 
 def add_review(request, user_id, book_id, text):
