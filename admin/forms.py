@@ -3,7 +3,7 @@ from wtforms import IntegerField, PasswordField, SelectField, StringField, Submi
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Regexp, ValidationError
 
-from admin.models import Role, Status, User
+from admin.models import Role, Status, MongoUser
 
 EMAIL_PATTERN = r'^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
 
@@ -12,7 +12,7 @@ def unique_check(column: str, update: bool = False):
     message = f'{column.title()} is already taken'
 
     def _unique_check(form, field):
-        user = User.objects(__raw__={column: field.data}).first()
+        user = MongoUser.objects(__raw__={column: field.data}).first()
 
         if user and update and user.id != form.user_id.data:
             raise ValidationError(message)
@@ -62,7 +62,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
     def get_user(self):
-        return User.objects(admin=self.admin.data).first()
+        return MongoUser.objects(username=self.admin.data).first()
 
 
 class AddBookForm(FlaskForm):

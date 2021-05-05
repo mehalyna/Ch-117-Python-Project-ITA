@@ -1,0 +1,34 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+{% block bookshelf_link_class %}active{% endblock %}
+{% block profile_content %}
+    <div class="container">
+        <h2 class="my-5">Recommended for you</h2>
+        <div class="swiper-container first-container">
+            <div class="swiper-wrapper">
+                {% for book in rec_books %}
+                <div class="swiper-slide">
+                    <img src="{{ book.link_img }}" alt="Cover">
+                    <p><b>{{book.title}}</b></p>
+                    <p>{{ book.author_id.name}}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="swiper-button-prev first-prev"></div>
+            <div class="swiper-button-next first-next"></div>
+        </div>
+        <br>
+    </div>
+    <div class="container">
+        <h2 class="my-5">Wishlist</h2>
+        <div class="row">
+            {% for book in rec_books %}
+            <div class="col-3">
+                <img src="{{ book.link_img }}" alt="Cover">
+                <p><b>{{book.title}}</b></p>
+                <p>{{ book.author_id.name}}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

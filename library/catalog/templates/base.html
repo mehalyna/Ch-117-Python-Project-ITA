@@ -1,213 +1,211 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
 
     <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+    <!--    Slider-->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css"/>
+    <script src="https://unpkg.com/swiper/swiper-bundle.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <!-- Font Awesome -->
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-            rel="stylesheet"
-    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet"/>
     <!-- Google Fonts -->
-    <link
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-            rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <title>{% block title %}{% endblock %}</title>
-    {% load static %}
 </head>
 <body>
+{% csrf_token %}
 
-    <nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top">
-        <a class="navbar-brand ml-5" href="#">Library</a>
 
-        {% block nav_header %}
-        {% endblock %}
-{#        <ul class="navbar-nav mx-auto">#}
-{#            <li class="nav-item">#}
-{#                <div class="input-group">#}
-{#                    <input type="text" class="form-control" placeholder="Search">#}
-{#                    <div class="input-group-append">#}
-{#                        <button class="btn btn-outline-light">#}
-{#                            <img class="mb-1" src="{% static 'images/search.png' %}"#}
-{#                                 alt="search" width="15" height="15">#}
-{#                        </button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </li>#}
-{#        </ul>#}
-{#        {% if user.is_authenticated %}#}
-{#            <ul class="navbar-nav ml-auto">#}
-{#                <li class="nav-item dropdown mr-5">#}
-{#                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">#}
-{#                        <img src="{% static 'images/user-regular.svg' %}"#}
-{#                             width="40" height="40"#}
-{#                             alt="user">#}
-{#                    </a>#}
-{#                    <div class="dropdown-menu">#}
-{#                        <a class="dropdown-item" href="#">Profile</a>#}
-{#                        <a class="dropdown-item" href="#">Log out</a>#}
-{#                    </div>#}
-{#                </li>#}
-{#            </ul>#}
-{#        {% else %}#}
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item mr-5">
-                    <button class="btn btn-outline-light">
-                        Sign In
-                    </button>
-                </li>
-            </ul>
-{#        {% endif %}#}
+<!--Header-->
+<div class="navbar">
+    <div class="navbar-wrapper container">
+        <h1><a href="{% url 'library-home' %}" class="logo">Library</a></h1>
+        <form action="{% url 'form-books' %}" id="searchtool" style="display: none">
+            <div class="header-search" style="display: flex">
+                <input type="text" class="form-control header-search-input" placeholder="Title/ Author/ Year"
+                       name="searchbar">
+                <input type="submit" class="btn btn-info" value="Search">
+            </div>
+        </form>
+        <div class="toggler-wrapper">
+            <img src="{% static 'images/search.png' %}" alt="Search icon" id="toggler">
+        </div>
 
-    </nav>
+
+        {% if user.is_authenticated%}
+        <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+                <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url 'profile_details' %}">Profile details</a>
+                <a class="dropdown-item" href="{% url 'profile_bookshelf' %}">Bookshelf</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+            </div>
+        </div>
+        {% else %}
+        <button data-toggle="modal" data-target="#ModalAuth" data-toggle="modal" type="submit" class="btn btn-dark">Sign
+            In
+        </button>
+        {% endif %}
+
+    </div>
+
+
+    <div id="ModalAuth" class="modal fade loginM" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AuthModalLabel">Sign In</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="login-form"></form>
+                        <div class="form-group">
+                            <label for="exampleInputUsername">Username</label>
+                            <input type="email" class="form-control" id="exampleInputUsername"
+                                   aria-describedby="emailHelp" placeholder="Username">
+                            <small id="emailHelp" class="form-text text-muted">Enter your username</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="exampleInputPassword">Password</label>
+                            <input type="password" name="password" class="form-control" id="exampleInputPassword"
+                                   placeholder="Password">
+                            <div id="errorlogin" style="color:red"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="mb-3">
+                            <a href="{% url 'library-registration' %}" class="btn btn-link">Sign Up</a>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary btn-lg btn-block login-btn"
+                                    style="max-width:500px" onclick="login_user()">Sign In
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
 
 {% block body %}
 {% endblock %}
 
-
-<!-- Remove the container if you want to extend the Footer to full width. -->
-<div style="margin-top: 362px;">
-    <!-- Footer -->
-    <footer
-            class="text-center text-lg-start text-white bg-secondary"
-
-    >
-        <!-- Grid container -->
-        <div class="container p-4 pb-0">
-            <!-- Section: Links -->
-            <section class="">
-                <!--Grid row-->
-                <div class="row">
-                    <!-- Grid column -->
-                    <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                        <h6 class="text-uppercase mb-4 font-weight-bold">
-                            About us
-                        </h6>
-                        <p>
-                            Our site is one of the largest open libraries,
-                            here you can find many books by different authors
-                            and years of publication, as well as our service
-                            will help you follow the latest literature and
-                            find books to your preference
-                        </p>
-                    </div>
-                    <!-- Grid column -->
-
-                    <hr class="w-100 clearfix d-md-none" />
-                    <!-- Grid column -->
-
-                    <hr class="w-100 clearfix d-md-none" />
-
-                    <!-- Grid column -->
-                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
-                        <h6 class="text-uppercase mb-4 font-weight-bold">
-                            Useful links
-                        </h6>
-                        <p>
-                            <a class="text-white">Your Account</a>
-                        </p>
-                        <p>
-                            <a class="text-white">Sing in</a>
-                        </p>
-                        <p>
-                            <a class="text-white">Sing up</a>
-                        </p>
-                        <p>
-                            <a class="text-white">Help</a>
-                        </p>
-                    </div>
-
-                    <!-- Grid column -->
-                    <hr class="w-100 clearfix d-md-none" />
-
-                    <!-- Grid column -->
-                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
-                        <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
-                        <p><i class="fas fa-envelope mr-3"></i> info@gmail.com</p>
-                        <p><i class="fas fa-phone mr-3"></i> + 01 234 567 88</p>
-                        <p><i class="fas fa-print mr-3"></i> + 01 234 567 89</p>
-                    </div>
-                    <!-- Grid column -->
-                </div>
-                <!--Grid row-->
-            </section>
-            <!-- Section: Links -->
-
-            <hr class="my-3">
-
-            <!-- Section: Copyright -->
-            <section class="p-3 pt-0">
-                <div class="row d-flex align-items-center">
-                    <!-- Grid column -->
-                    <div class="col-md-7 col-lg-8 text-center text-md-start">
-                        <!-- Copyright -->
-                        <div class="p-3">
-                            © 2020 Copyright:
-                            <a class="text-white" href="https://mdbootstrap.com/"
-                            >MDBootstrap.com</a
-                            >
-                        </div>
-                        <!-- Copyright -->
-                    </div>
-                    <!-- Grid column -->
-
-                    <!-- Grid column -->
-                    <div class="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
-                        <!-- Facebook -->
-                        <a
-                                class="btn btn-outline-light btn-floating m-1"
-                                class="text-white"
-                                role="button"
-                        ><i class="fab fa-facebook-f"></i
-                        ></a>
-
-                        <!-- Twitter -->
-                        <a
-                                class="btn btn-outline-light btn-floating m-1"
-                                class="text-white"
-                                role="button"
-                        ><i class="fab fa-twitter"></i
-                        ></a>
-
-                        <!-- Google -->
-                        <a
-                                class="btn btn-outline-light btn-floating m-1"
-                                class="text-white"
-                                role="button"
-                        ><i class="fab fa-google"></i
-                        ></a>
-
-                        <!-- Instagram -->
-                        <a
-                                class="btn btn-outline-light btn-floating m-1"
-                                class="text-white"
-                                role="button"
-                        ><i class="fab fa-instagram"></i
-                        ></a>
-                    </div>
-                    <!-- Grid column -->
-                </div>
-            </section>
-            <!-- Section: Copyright -->
+<!--Footer-->
+<div class="footer">
+    <div class="footer-container">
+        <div class="footer-container-box">
+            <h5>Navigation</h5>
+            <div class="footer-links-box">
+                <a href="#">News</a>
+                <a href="{% url 'form-books' %}">Search page</a>
+                <a href="#">Selections of books</a>
+                <a href="#">People</a>
+            </div>
         </div>
-        <!-- Grid container -->
-    </footer>
-    <!-- Footer -->
+        <div class="footer-container-box">
+            <h5>Information</h5>
+            <div class="footer-links-box">
+                <a href="#">About us</a>
+                <a href="#}">Site rules</a>
+                <a href="#">Privacy and policy</a>
+                <a href="#">Help</a>
+            </div>
+        </div>
+        <div class="footer-container-box">
+            <h5>Stay connected</h5>
+            <a href="#"><img src="{% static 'images/instagram.svg' %}" alt="Instagram"></a>
+            <a href="#"><img src="{% static 'images/facebook.svg' %}" alt="Facebook"></a>
+            <a href="#"><img src="{% static 'images/twitter.svg' %}" alt="Twitter"></a>
+            <a href="#"><img src="{% static 'images/reddit.svg' %}" alt="Reddit"></a>
+            <a href="#"><img src="{% static 'images/tiktok.svg' %}" alt="TikTok"></a>
+        </div>
+    </div>
+    <div class="footer-container-sm" style="width: 15%; height: 240px;">
+        <a href="#"><img src="{% static 'images/app-store.svg' %}" alt="App Store" style="margin-top: 20px;"></a>
+        <a href="#"><img src="{% static 'images/google-store.png' %}" alt="Google Store" style="margin-top: 20px;"></a>
+        <p style="margin-top: 10px;"><b>© Ch-117-Python-Project-ITA, 2021</b></p>
+    </div>
 </div>
 
 
-<!-- MDB -->
-<script type="text/javascript" src="js/mdb.min.js"></script>
 <!-- Custom scripts -->
-<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript">
+    function login_user(){
+        email = document.getElementById("exampleInputUsername").value;
+        password = document.getElementById("exampleInputPassword").value;
+        csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+        $("#errorlogin").html("");
+        $.ajax({
+            type:"POST",
+            url:'{% url 'func_login' %}',
+            data:{
+                'csrfmiddlewaretoken': csrfmiddlewaretoken,
+                'username':email,
+                'password':password,
+            },
+            success : function(data){
+                if(data['message'] == "Success"){
+                    location.reload();
+                }
+                else if(data['message'] == "inactive"){
+                    $("#errorlogin").html("Please verify this E-mail address.");
+                }
+                else{
+                    $("#errorlogin").html("The E-mail and Password do not match.");
+                }
+            }
+        });
+    }
+
+
+
+
+
+
+
+</script>
+<!-- MDB -->
+<!--<script type="text/javascript" src="js/mdb.min.js">-->
+<!-- fdsfsd -->
+
+<script src="{% static 'js/main.js' %}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $('#toggler').click(function (){
+        $('#searchtool').toggle('slow');
+    });
+
+
+
+
+
+
+
+</script>
+
 
 </body>
 </html>

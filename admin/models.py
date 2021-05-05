@@ -37,12 +37,12 @@ class Preference(EmbeddedDocument):
     years = ListField(default=(), max_length=2)
 
 
-class User(UserMixin, Document):
-    firstname = StringField(max_length=100, min_length=1, required=True)
-    lastname = StringField(max_length=100, min_length=1, required=True)
+class MongoUser(UserMixin, Document):
+    first_name = StringField(max_length=100, min_length=1, required=True)
+    last_name = StringField(max_length=100, min_length=1, required=True)
     email = EmailField(required=True, unique=True)
-    login = StringField(required=True, unique=True)
-    password_hash = StringField(required=True, min_length=8)
+    username = StringField(required=True, unique=True)
+    password = StringField(required=True, min_length=8)
     role = StringField(default=Role.USER)
     status = StringField(default=Status.ACTIVE)
     last_login = DateTimeField(default=datetime.now)
@@ -52,13 +52,13 @@ class User(UserMixin, Document):
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
 
     def __repr__(self):
-        return '<Admin {}>'.format(self.login)
+        return '<Admin {}>'.format(self.username)
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password, password)
 
     def is_authenticated(self):
         return True
@@ -73,7 +73,7 @@ class User(UserMixin, Document):
         return str(self.id)
 
     def __unicode__(self):
-        return self.login
+        return self.username
 
 
 class BookStatistic(EmbeddedDocument):
@@ -106,10 +106,11 @@ class Book(Document):
 
 
 class Review(Document):
-    user_id = ReferenceField(User.__name__, required=True)
+    user_id = ReferenceField(MongoUser.__name__, required=True)
     book_id = ReferenceField(Book.__name__, required=True)
     firstname = StringField(default='', max_length=50)
     lastname = StringField(default='', max_length=50)
     status = StringField(default=Status.ACTIVE, max_length=100)
     comment = StringField(default='', max_length=5000)
     date = DateTimeField(default=datetime.now)
+

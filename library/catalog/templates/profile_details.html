@@ -1,0 +1,72 @@
+{% extends 'base_profile.html' %}
+{% load static %}
+{% block details_link_class %}active{% endblock %}
+{% block profile_content %}
+    <div class="alert alert-success d-none" id="messages" role="alert">
+    {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </ul>
+    {% endif %}
+    </div>
+<h1 class="text-center">Profile details</h1>
+    <div class="d-flex align-items-center flex-column mt-5 mb-5">
+        <form action="" method="post" class="needs-validation border profile-edit-border col-md-3" novalidate>
+            {% csrf_token %}
+            <div>
+                <span>Firstname</span>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+                </span>
+                    </div>
+                    <input class="form-control" type="text" value="{{ user.firstname }}" disabled>
+                </div>
+                <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
+            </div>
+            <div>
+                <span>Lastname</span>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">
+                                <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+                            </span>
+                    </div>
+                    <input class="form-control" type="text" value="{{ user.lastname }}" disabled>
+                </div>
+                <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
+            </div>
+            <div>
+                <span>Email</span>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">
+                                <img class="input-icon" src="{% static 'images/envelope-square-solid.svg' %}"
+                                     alt="email icon">
+                            </span>
+                    </div>
+                    <input class="form-control" type="text" value="{{ user.email }}" disabled>
+                </div>
+                <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
+            </div>
+            <div>
+                <span>Login</span>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">
+                                <img class="input-icon" src="{% static 'images/sign-in-alt-solid.svg' %}"
+                                     alt="login icon">
+                            </span>
+                    </div>
+                    <input class="form-control" type="text" value="{{ user.login }}" disabled>
+                </div>
+            </div>
+            <a class="btn btn-dark mt-4 mb-4" href="{% url 'profile_edit' %}" id="editProfileBtn">
+                Edit profile
+            </a>
+        </form>
+    </div>
+    <script src="{% static 'js/main.js' %}"></script>
+{% endblock %}

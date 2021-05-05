@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home page{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h2 class="h2-home-page" style="margin-top: 25px;">Popular books of the week</h2>
+        <!-- Slider main container -->
+    <div class="swiper-container first-container">
+      <!-- Additional required wrapper -->
+      <div class="swiper-wrapper">
+        <!-- Slides -->
+          {% for book in top_books %}
+            <div class="swiper-slide">
+                <a href="{% url 'book-details' book.id %}">
+                    <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                    <p><b>{{ book.title }}</b></p>
+                    <p>{{ book.author_id.name }}</p>
+                </a>
+            </div>
+          {% endfor %}
+      </div>
+    </div>
+    <div class="swiper-button-next first-next" style="position: relative; top: -278px; left: 1150px"></div>
+    <div class="swiper-button-prev first-prev" style="position: relative; top: -300px; left: -65px;"></div>
+</div>
+
+
+<div class="container">
+<!--    New books swiper-->
+    <h2 class="h2-home-page">New books on a website</h2>
+    <div class="swiper-container second-container">
+      <!-- Additional required wrapper -->
+      <div class="swiper-wrapper second-wrapper">
+        <!-- Slides -->
+          {% for book in new_books %}
+          <div class="swiper-slide">
+              <a href="{% url 'book-details' book.id %}">
+                  <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                  <p><b>{{ book.title }}</b></p>
+                  <p>{{ book.author_id.name }}</p>
+              </a>
+          </div>
+          {% endfor %}
+      </div>
+    </div>
+    <div class="swiper-button-next second-next" style="position: relative; top: -278px; left: 1150px"></div>
+    <div class="swiper-button-prev second-prev" style="position: relative; top: -300px; left: -65px;"></div>
+</div>
+
+
+
+<div class="container">
+    <!--    Search by category section-->
+    <h2 class="h2-home-page">Search your favourite book</h2>
+        <form class="search" action="{% url 'form-books' %}">
+            <input type="text" class="form-control search-category-input" placeholder="Title/ Author/ Year" name="searchbar">
+            <input type="submit" class="btn btn-info search-category-button" value="Search">
+        </form>
+    <div class="category-wrapper">
+        <div class="row">
+            {% for genre in genres %}
+                <div class="col-3">
+                    <a style="color: #323232;" href="{% url 'library-books' genre %}">{{ genre }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
