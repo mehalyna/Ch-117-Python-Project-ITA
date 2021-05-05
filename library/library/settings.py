@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'library.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 
-DB_NAME = os.getenv('DJANGO_DB_NAME')
+DB_NAME = os.getenv('DB_NAME')
 HOST = os.getenv('MONGO_URL')
 PORT = int(os.getenv('PORT'))
 
