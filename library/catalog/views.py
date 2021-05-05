@@ -148,15 +148,12 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            first_name = form.cleaned_data.get('firstname')
-            last_name = form.cleaned_data.get('lastname')
-            email = form.cleaned_data.get('email')
             username = form.cleaned_data.get('login')
             password = form.cleaned_data.get('password')
 
-            user = MongoUser(email=email)
-            user.first_name = first_name
-            user.last_name = last_name
+            user = MongoUser(email=form.cleaned_data.get('email'))
+            user.first_name = form.cleaned_data.get('firstname')
+            user.last_name = form.cleaned_data.get('lastname')
             user.username = username
             user.password = password
             user.save()
