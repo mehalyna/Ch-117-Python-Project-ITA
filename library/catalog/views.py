@@ -115,7 +115,7 @@ def home(request):
     genres = []
     for genres_lst in Book.objects.values_list('genres'):
         for genre in genres_lst:
-            if not genre in genres:
+            if genre and genre not in genres:
                 genres.append(genre)
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': genres})
 

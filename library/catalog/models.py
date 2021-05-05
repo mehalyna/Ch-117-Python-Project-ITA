@@ -1,3 +1,4 @@
+import math
 from copy import copy
 from datetime import datetime
 
@@ -42,23 +43,21 @@ class MongoUser(Document):
     reviews = ListField(default=[])
     recommended_books = ListField(default=[])
     wishlist = ListField(default=[])
-    #rated_books = DictField(default={})
+    # rated_books = DictField(default={})
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
-
-    def generate_passwords(self, password):
-        return generate_password_hash(password), make_password(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
     def save(self):
         if self.password:
-            self.password, django_password = self.generate_passwords(self.password)
+            User = get_user_model()
+            User.objects.create_user(username=self.username,
+                                     email=self.email,
+                                     password=self.password)
+
+            self.password = generate_password_hash(self.password)
         mongo_user = super().save()
-        django_user_model = get_user_model()
-        django_user_model.objects.create_user(username=self.username,
-                                              email=self.email,
-                                              password=django_password)
         return mongo_user
 
     def update(self, **kwargs):
