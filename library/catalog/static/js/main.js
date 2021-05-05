@@ -52,10 +52,10 @@ function login_user_redirect(){
                     window.location.replace(redirect_page);
                 }
                 else if(data['message'] == "inactive"){
-                    $("#errorlogin").html("Please verify this E-mail address.");
+                    $("#errorlogin").html("Please verify this Username address.");
                 }
                 else{
-                    $("#errorlogin").html("The E-mail and Password do not match.");
+                    $("#errorlogin").html("The Username and Password do not match.");
                 }
             }
         });
@@ -80,10 +80,10 @@ function login_user_redirect(){
                     location.reload();
                 }
                 else if(data['message'] == "inactive"){
-                    $("#errorlogin").html("Please verify this E-mail address.");
+                    $("#errorlogin").html("Please verify this Username address.");
                 }
                 else{
-                    $("#errorlogin").html("The E-mail and Password do not match.");
+                    $("#errorlogin").html("The Username and Password do not match.");
                 }
             }
         });

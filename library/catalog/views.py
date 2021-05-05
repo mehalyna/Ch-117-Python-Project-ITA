@@ -83,6 +83,7 @@ def add_review(request, user_id, book_id, text):
     reviews = Review.objects(book_id=book_id)
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
 
+
 def add_rating(request, user_id, book_id, rating):
     if rating and 1 <= rating <= 5:
         user = MongoUser.objects(id=user_id).first()
@@ -130,6 +131,7 @@ def category_search(request, genre):
     books = Book.objects.filter(genres=genre)
     return render(request, 'books.html', {'books': books, 'genre': genre})
 
+
 def form_search(request):
     q = request.GET.get('searchbar', '')
     if q:
@@ -167,17 +169,6 @@ def unique_registration_check(request, field_value):
     if user:
         return HttpResponse('Already taken', content_type="text/plain")
     return HttpResponse('', content_type="text/plain")
-
-
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request=request, username=username, password=password)
-        if user:
-            login(request, user)
-        print(user.is_authenticated)
-    return redirect(home)
 
 
 def logout_view(request):
