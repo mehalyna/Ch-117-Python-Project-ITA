@@ -123,6 +123,10 @@ def home(request):
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': genres})
 
 
+def information_page(request):
+    return render(request, 'information_page.html')
+
+
 def search_by_author(request, author_name):
     author = Author.objects(name=author_name)[0]
     books = [Book.objects(id=book_id)[0] for book_id in author.books]
