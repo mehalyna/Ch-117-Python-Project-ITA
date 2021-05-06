@@ -99,7 +99,7 @@ def add_rating(request, book_id, rating=1):
     user_rated_books = dict(user_rated_books, **{str(book_id): rating - 1})
     user.update(rated_books=user_rated_books)
     book.save()
-    return redirect(book_details, book_id=book_id)
+    return HttpResponse('Success', content_type="text/plain")
 
 
 def change_review_status(request, book_id, review_id, new_status):
