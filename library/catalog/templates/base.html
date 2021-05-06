@@ -74,41 +74,39 @@
                     </button>
                 </div>
 
-                <form class="login-form">
 
-                    <div class="modal-body">
-
-                        <div class="form-group">
-
-                            <label for="exampleInputUsername">Username</label>
-                            <input type="email" class="form-control" id="exampleInputUsername"
-                                   aria-describedby="emailHelp" placeholder="Username" required minlength="6">
-                            <small id="emailHelp" class="form-text text-muted">Enter your username</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="exampleInputPassword">Password</label>
-                            <input type="password" name="password" class="form-control" id="exampleInputPassword"
-                                   placeholder="Password" required minlength="8">
-                            <div id="errorlogin" style="color:red"></div>
-                        </div>
-
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="exampleInputUsername">Username</label>
+                        <input class="form-control" id="exampleInputUsername" aria-describedby="usernameHelp"
+                               placeholder="Username" onkeyup="validateCredentials()">
+                        <small id="usernameHelp" class="form-text text-muted">Enter your username</small>
                     </div>
-                    <div class="modal-footer">
-                        <div class="mb-3">
-                            <a href="{% url 'library-registration' %}" class="btn btn-link">Sign Up</a>
-                        </div>
-                        <div class="mb-3">
-                            <button type="button" class="btn btn-primary btn-lg btn-block login-btn"
-                                    style="max-width:500px" onclick="login_user()">Sign In
-                            </button>
-                        </div>
+
+                    <div class="form-group">
+                        <label for="exampleInputPassword">Password</label>
+                        <input type="password" name="password" class="form-control" id="exampleInputPassword"
+                               placeholder="Password" onkeyup="validateCredentials()">
+                        <div id="errorlogin" style="color:red"></div>
                     </div>
-                </form>
+                </div>
+
+
+                <div class="modal-footer">
+                    <div class="mb-3">
+                        <a href="{% url 'library-registration' %}" class="btn btn-link">Sign Up</a>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-primary btn-lg btn-block login-btn" id="submitButton"
+                                style="max-width:500px" onclick="login_user()" disabled="disabled">Sign In
+                        </button>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
-
 </div>
 
 
@@ -154,10 +152,6 @@
 
 
 <!-- Custom scripts -->
-<!-- MDB -->
-<!--<script type="text/javascript" src="js/mdb.min.js">-->
-<!-- fdsfsd -->
-
 <script src="{% static 'js/main.js' %}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -168,15 +162,17 @@
         $('#searchtool').toggle('slow');
     });
 
+function validateCredentials()
+{
+  var first = document.getElementById('exampleInputUsername').value.length;
+  var second = document.getElementById('exampleInputPassword').value.length;
 
-
-
-
-
-
-
-
-
+  if(first > 5 && second > 7){
+    document.getElementById('submitButton').disabled=false;
+  } else {
+    document.getElementById('submitButton').disabled=true;
+  }
+}
 </script>
 
 
