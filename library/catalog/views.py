@@ -86,7 +86,7 @@ def add_review(request, book_id):
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
 
 
-def add_rating(request, book_id, rating):
+def add_rating(request, book_id, rating=1):
     user = MongoUser.objects(id=request.user.mongo_user.id).first()
     user_rated_books = user.rated_books
 
@@ -95,7 +95,7 @@ def add_rating(request, book_id, rating):
         book.statistic.stars[user.rated_books[str(book_id)] - 1] -= 1
 
     book.statistic.stars[rating - 1] += 1
-    user_rated_books = dict(user_rated_books, **{str(book_id): rating})
+    user_rated_books = dict(user_rated_books, **{str(book_id): rating - 1})
     user.update(rated_books=user_rated_books)
     book.save()
     return redirect(book_details, book_id=book_id)
