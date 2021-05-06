@@ -127,13 +127,15 @@
                     <textarea class="form-control" placeholder="Your comment..." id="exampleFormControlTextarea1"
                               name="text-comment" rows="3"></textarea>
                 </div>
-                <button type="submit" style="float: right;" class="btn btn-success">Add comment</button>
+                <div class="d-flex flex-row-reverse">
+                    <button type="submit" class="btn btn-success">Add comment</button>
+                </div>
             </form>
         {% endif %}
 
         {% for review in reviews %}
             {% if review.status == 'active' %}
-                <div style="margin-top: 5px" class="card">
+                <div class="card mt-4">
                     <div style="font-size: large;font-weight: bolder" class="card-header">
                         {{ review.firstname }} {{ review.lastname }}
                         {% if user.is_authenticated and user.mongo_user.id == review.user_id.id and user.mongo_user.role == 'user' %}
