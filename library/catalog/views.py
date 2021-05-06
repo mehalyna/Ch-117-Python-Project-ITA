@@ -21,6 +21,7 @@ def profile_details(request):
 def profile_edit(request):
     user = request.user.mongo_user
     data = {
+        'user_id': user.id,
         'firstname': user.first_name,
         'lastname': user.last_name,
         'email': user.email,
