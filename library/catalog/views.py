@@ -65,27 +65,43 @@ def change_password(request):
 
   
 def profile_bookshelf(request):
-    rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
-    return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
+    rec_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.recommended_books]
+    wishlist_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.wishlist]
+    return render(request, 'profile_bookshelf.html', {'rec_books': rec_books, 'wishlist_books': wishlist_books})
 
-
-def book_details(request, book_id):
+def add_to_wishlist(request, book_id):
+    user = MongoUser.objects(id=request.user.mongo_user.id).first()
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
+    if not str(book_id) in user.wishlist:
+        user.wishlist.append(book_id)
+        user.update(wishlist=user.wishlist)
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'is_book_in_wishlist': True})
+
+def delete_from_wishlist(request, book_id):
+    user = MongoUser.objects(id=request.user.mongo_user.id).first()
+    book = Book.objects(id=book_id).first()
+    reviews = Review.objects(book_id=book_id)
+    if str(book_id) in user.wishlist:
+        user.wishlist.remove(book_id)
+        user.update(wishlist=user.wishlist)
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'is_book_in_wishlist': False})
+
+def book_details(request, book_id):
+    user = MongoUser.objects(id=request.user.mongo_user.id).first()
+    book = Book.objects(id=book_id).first()
+    reviews = Review.objects(book_id=book_id)
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews,'is_book_in_wishlist': str(book_id) in user.wishlist})
 
 
 def add_review(request, book_id):
+    user = MongoUser.objects(id=request.user.mongo_user.id).first()
     text = request.GET.get('text-comment')
     book = Book.objects(id=book_id).first()
     review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name, lastname=request.user.mongo_user.last_name, comment=text)
     review.save()
     reviews = list(Review.objects(book_id=book_id))[::-1]
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
-
-def add_rating(request, book_id, rating):
-    user = MongoUser.objects(id=request.user.mongo_user.id).first()
-    book = Book.objects(id=book_id).first()
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews,'is_book_in_wishlist': str(book_id) in user.wishlist})
 
 
 def add_rating(request, user_id, book_id, rating):
@@ -100,16 +116,17 @@ def add_rating(request, user_id, book_id, rating):
     book.save()
     book.calculate_rating()
     reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews,'is_book_in_wishlist': str(book_id) in user.wishlist})
 
 
 def change_review_status(request, book_id, review_id, new_status):
+    user = MongoUser.objects(id=request.user.mongo_user.id).first()
     review = Review.objects(id=review_id).first()
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
     if review:
         review.update(status=new_status)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews,'is_book_in_wishlist': str(book_id) in user.wishlist})
 
 
 def home(request):
