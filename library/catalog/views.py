@@ -65,7 +65,7 @@ def change_password(request):
 
   
 def profile_bookshelf(request):
-    rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
+    rec_books = sorted(Book.objects(), key=lambda book: book.statistic.total_read, reverse=True)[:10]
     return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
 
 
