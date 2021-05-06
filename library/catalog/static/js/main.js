@@ -32,3 +32,9 @@ const new_slider = new Swiper('.second-container', {
   spaceBetween: 20,
   speed: 600,
 });
+
+setTimeout(function () {
+    if ($('#msg').length > 0) {
+        $('#msg').fadeTo(500, 0, function () {})
+    }
+}, 2000)

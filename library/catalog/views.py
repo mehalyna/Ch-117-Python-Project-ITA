@@ -5,27 +5,22 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from mongoengine.queryset.visitor import Q
-from werkzeug.security import generate_password_hash
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Author, Book, Review, MongoUser
 
-_id = '606ecd74e5fd490b3c6d0657'
 
-
+@login_required
 def profile_details(request):
     user = MongoUser.objects(id=_id).first()
     return render(request, 'profile_details.html')
 
 
-def profile_bookshelf(request):
-    rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
-    return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
-
-
+@login_required
 def profile_edit(request):
-    user = MongoUser.objects(id=_id).first()
+    user = request.user.mongo_user
     data = {
         'firstname': user.first_name,
         'lastname': user.last_name,
@@ -51,22 +46,28 @@ def profile_edit(request):
     return render(request, 'profile_edit.html', {'form': form})
 
 
+@login_required
 def change_password(request):
-    user = MongoUser.objects(id=_id).first()
+    user = request.user.mongo_user
     if request.method == 'POST':
         form = ChangePasswordForm(request.POST)
         if form.is_valid():
             old_password = form.cleaned_data.get('old_password')
             if user and user.check_password(old_password):
-                new_password = generate_password_hash(form.cleaned_data.get('new_password'))
-                user.update(password_hash=new_password)
+                new_password = form.cleaned_data.get('new_password')
+                user.update(password=new_password)
                 messages.success(request, 'Password successfully updated.')
                 return redirect(profile_details)
             else:
-                messages.success(request, 'Wrong old password.')
+                messages.error(request, 'Wrong old password.')
     else:
         form = ChangePasswordForm()
     return render(request, 'change_password.html', {'form': form})
+
+  
+def profile_bookshelf(request):
+    rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
+    return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
 
 
 def book_details(request, book_id):
@@ -82,6 +83,7 @@ def add_review(request, user_id, book_id, text):
     review.save()
     reviews = Review.objects(book_id=book_id)
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
+
 
 def add_rating(request, user_id, book_id, rating):
     if rating and 1 <= rating <= 5:
@@ -110,7 +112,7 @@ def change_review_status(request, book_id, user_id, review_id, new_status):
 
 
 def home(request):
-    top_books = sorted(Book.objects(),key=lambda book: book.statistic.rating, reverse=True)[:20]
+    top_books = sorted(Book.objects(), key=lambda book: book.statistic.rating, reverse=True)[:20]
     new_books = Book.objects.order_by('-id')[:20]
     genres = []
     for genres_lst in Book.objects.values_list('genres'):
@@ -130,6 +132,7 @@ def category_search(request, genre):
     books = Book.objects.filter(genres=genre)
     return render(request, 'books.html', {'books': books, 'genre': genre})
 
+
 def form_search(request):
     q = request.GET.get('searchbar', '')
     if q:
@@ -148,14 +151,26 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
+            username = form.cleaned_data.get('login')
+            password = form.cleaned_data.get('password')
+
             user = MongoUser(email=form.cleaned_data.get('email'))
             user.first_name = form.cleaned_data.get('firstname')
             user.last_name = form.cleaned_data.get('lastname')
-            user.username = form.cleaned_data.get('login')
-            user.password = form.cleaned_data.get('password')
+            user.username = username
+            user.password = password
             user.save()
 
-            return redirect(home)
+            user = authenticate(request=request, username=username, password=password)
+            if user:
+                login(request, user)
+
+            script = f'''<script>
+                            window.location.href = "{reverse(home)}";
+                            localStorage.clear();
+                        </script>'''
+
+            return HttpResponse(script)
     else:
         form = RegistrationForm()
 
@@ -176,7 +191,6 @@ def login_view(request):
         user = authenticate(request=request, username=username, password=password)
         if user:
             login(request, user)
-        print(user.is_authenticated)
     return redirect(home)
 
 
@@ -195,16 +209,6 @@ def func_login(request):
             return HttpResponse(json.dumps({"message": "Success"}), content_type="application/json")
         else:
             return HttpResponse(json.dumps({"message": "Denied"}), content_type="application/json")
-
-
-@login_required
-def profile_details(request):
-    return render(request, 'profile_details.html')
-
-
-@login_required
-def profile_edit(request):
-    return render(request, 'profile_edit.html')
 
 
 def login_redirect_page(request):
