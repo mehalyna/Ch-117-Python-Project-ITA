@@ -14,6 +14,7 @@ from .models import Author, Book, Review, MongoUser
 
 @login_required
 def profile_details(request):
+    user = MongoUser.objects(id=_id).first()
     return render(request, 'profile_details.html')
 
 
@@ -63,7 +64,7 @@ def change_password(request):
         form = ChangePasswordForm()
     return render(request, 'change_password.html', {'form': form})
 
-
+  
 def profile_bookshelf(request):
     rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
     return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
@@ -72,7 +73,7 @@ def profile_bookshelf(request):
 def book_details(request, book_id):
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': None})
+    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
 
 
 def add_review(request, user_id, book_id, text):
