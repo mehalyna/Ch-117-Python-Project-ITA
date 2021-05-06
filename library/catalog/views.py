@@ -14,7 +14,6 @@ from .models import Author, Book, Review, MongoUser
 
 @login_required
 def profile_details(request):
-    user = MongoUser.objects(id=_id).first()
     return render(request, 'profile_details.html')
 
 
