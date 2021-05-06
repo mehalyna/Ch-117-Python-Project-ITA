@@ -6,7 +6,7 @@ from flask import request
 from flask_mongoengine import Document
 from mongoengine.queryset.visitor import Q
 
-from admin.models import Author, Book, Status, User
+from admin.models import Author, Book, Status, MongoUser
 
 ROWS_PER_PAGE = 6
 
@@ -32,9 +32,9 @@ def search_and_pagination(collection: Type[Document], order_field: str, status: 
             Q(title__contains=book_search) | Q(year__contains=book_search) | Q(id__in=books_id), status__in=status
         ).order_by('status', order_field).paginate(page=page, per_page=ROWS_PER_PAGE)
 
-    elif user_search and collection is User:
+    elif user_search and collection is MongoUser:
         collection_documents = collection.objects(
-            Q(firstname__contains=user_search) | Q(lastname__contains=user_search) | Q(email__contains=user_search),
+            Q(first_name__contains=user_search) | Q(last_name__contains=user_search) | Q(email__contains=user_search),
             status__in=status).order_by('status', order_field).paginate(page=page, per_page=ROWS_PER_PAGE)
     else:
         collection_documents = collection.objects(status__in=status).order_by(

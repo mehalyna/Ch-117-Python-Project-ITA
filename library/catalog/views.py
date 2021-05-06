@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from mongoengine.queryset.visitor import Q
 from werkzeug.security import generate_password_hash
 
@@ -111,12 +112,12 @@ def change_review_status(request, book_id, user_id, review_id, new_status):
 
 
 def home(request):
-    top_books = sorted(Book.objects(),key=lambda book: book.statistic.rating, reverse=True)[:20]
+    top_books = sorted(Book.objects(), key=lambda book: book.statistic.rating, reverse=True)[:20]
     new_books = Book.objects.order_by('-id')[:20]
     genres = []
     for genres_lst in Book.objects.values_list('genres'):
         for genre in genres_lst:
-            if not genre in genres:
+            if genre and genre not in genres:
                 genres.append(genre)
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': genres})
 
@@ -150,14 +151,26 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
+            username = form.cleaned_data.get('login')
+            password = form.cleaned_data.get('password')
+
             user = MongoUser(email=form.cleaned_data.get('email'))
             user.first_name = form.cleaned_data.get('firstname')
             user.last_name = form.cleaned_data.get('lastname')
-            user.username = form.cleaned_data.get('login')
-            user.password = form.cleaned_data.get('password')
+            user.username = username
+            user.password = password
             user.save()
 
-            return redirect(home)
+            user = authenticate(request=request, username=username, password=password)
+            if user:
+                login(request, user)
+
+            script = f'''<script>
+                            window.location.href = "{reverse(home)}";
+                            localStorage.clear();
+                        </script>'''
+
+            return HttpResponse(script)
     else:
         form = RegistrationForm()
 
