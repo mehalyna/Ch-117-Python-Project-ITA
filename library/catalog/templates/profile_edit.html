@@ -18,7 +18,7 @@
                     </div>
                     {{ form.firstname }}
                 </div>
-                <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
+                <small class="error-message text-danger" id="firstnameError">Error message</small>
             </div>
             <div>
                 <span>{{ form.lastname.label }}</span>
@@ -30,7 +30,7 @@
                     </div>
                     {{ form.lastname }}
                 </div>
-                <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
+                <small class="error-message text-danger" id="lastnameError">Error message</small>
             </div>
             <div>
                 <span>{{ form.email.label }}</span>
@@ -43,7 +43,7 @@
                     </div>
                     {{ form.email }}
                 </div>
-                <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
+                <small class="error-message text-danger" id="emailError">Error message</small>
             </div>
             <div>
                 <span>{{ form.login.label }}</span>
@@ -56,7 +56,7 @@
                     </div>
                     {{ form.login }}
                 </div>
-                <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
+                <small class="error-message text-danger" id="loginError">Error message</small>
             </div>
             {% if form.errors %}
                 <ul class="mb-4">
@@ -75,4 +75,5 @@
             </div>
         </form>
     </div>
+    <script src="{% static 'js/editUserForm.js' %}"></script>
 {% endblock %}

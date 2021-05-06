@@ -64,7 +64,7 @@ def change_password(request):
         form = ChangePasswordForm()
     return render(request, 'change_password.html', {'form': form})
 
-  
+
 def profile_bookshelf(request):
     rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
     return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
@@ -79,10 +79,12 @@ def book_details(request, book_id):
 def add_review(request, book_id):
     text = request.GET.get('text-comment')
     book = Book.objects(id=book_id).first()
-    review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name, lastname=request.user.mongo_user.last_name, comment=text)
+    review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name,
+                    lastname=request.user.mongo_user.last_name, comment=text)
     review.save()
     reviews = list(Review.objects(book_id=book_id))[::-1]
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
+
 
 def add_rating(request, book_id, rating):
     user = MongoUser.objects(id=request.user.mongo_user.id).first()
@@ -182,6 +184,17 @@ def registration(request):
 def unique_registration_check(request, field_value):
     user = MongoUser.objects(Q(username=field_value) | Q(email=field_value))
     if user:
+        return HttpResponse('Already taken', content_type="text/plain")
+    return HttpResponse('', content_type="text/plain")
+
+
+def edit_profile_check(request, field_value):
+    check_user = MongoUser.objects(Q(username=field_value) | Q(email=field_value)).first()
+    print(check_user.email)
+    print(check_user.username)
+    username = request.user.mongo_user.username
+    email = request.user.mongo_user.email
+    if check_user.username != username or check_user.email != email:
         return HttpResponse('Already taken', content_type="text/plain")
     return HttpResponse('', content_type="text/plain")
 
