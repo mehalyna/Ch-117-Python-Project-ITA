@@ -460,3 +460,11 @@ body{
 .swiper-container .swiper-button-next::after{
     opacity: 0.5;
 }
+
+.add-to-wishlist {
+    margin-top: 10px;
+}
+
+.delete-from-wishlist {
+    margin-top: 10px;
+}

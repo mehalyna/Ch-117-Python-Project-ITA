@@ -35,9 +35,14 @@
                 </div>
                 {% if user.is_authenticated %}
                     {% if is_book_in_wishlist %}
-                        <a href="{% url 'delete-from-wishlist' book.id %}" style="margin-top: 10px;padding: 6px 18px;" class="btn btn-warning">Delete from wishlist</a>
+                        <div class="add-to-wishlist">
+                            <a href="{% url 'delete-from-wishlist' book.id %}" class="btn btn-warning">Delete from wishlist</a>
+                        </div>
                     {% else %}
-                        <a href="{% url 'add-to-wishlist' book.id %}" style="margin-top: 10px;padding: 6px 18px;" class="btn btn-success">Add to wishlist</a>
+                        <div class="delete-from-wishlist">
+                            <a href="{% url 'add-to-wishlist' book.id %}" class="btn btn-success">Add to wishlist</a>
+                        </div>
+
                     {% endif %}
                 {% endif %}
             </div>

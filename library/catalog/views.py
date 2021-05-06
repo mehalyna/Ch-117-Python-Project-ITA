@@ -70,7 +70,7 @@ def profile_bookshelf(request):
     return render(request, 'profile_bookshelf.html', {'rec_books': rec_books, 'wishlist_books': wishlist_books})
 
 def add_to_wishlist(request, book_id):
-    user = MongoUser.objects(id=request.user.mongo_user.id).first()
+    user = request.user.mongo_user
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
     if not str(book_id) in user.wishlist:
@@ -79,7 +79,7 @@ def add_to_wishlist(request, book_id):
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'is_book_in_wishlist': True})
 
 def delete_from_wishlist(request, book_id):
-    user = MongoUser.objects(id=request.user.mongo_user.id).first()
+    user = request.user.mongo_user
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
     if str(book_id) in user.wishlist:
@@ -88,14 +88,14 @@ def delete_from_wishlist(request, book_id):
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'is_book_in_wishlist': False})
 
 def book_details(request, book_id):
-    user = MongoUser.objects(id=request.user.mongo_user.id).first()
+    user = request.user.mongo_user
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews,'is_book_in_wishlist': str(book_id) in user.wishlist})
 
 
 def add_review(request, book_id):
-    user = MongoUser.objects(id=request.user.mongo_user.id).first()
+    user = request.user.mongo_user
     text = request.GET.get('text-comment')
     book = Book.objects(id=book_id).first()
     review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name, lastname=request.user.mongo_user.last_name, comment=text)
@@ -120,7 +120,7 @@ def add_rating(request, user_id, book_id, rating):
 
 
 def change_review_status(request, book_id, review_id, new_status):
-    user = MongoUser.objects(id=request.user.mongo_user.id).first()
+    user = request.user.mongo_user
     review = Review.objects(id=review_id).first()
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id)
