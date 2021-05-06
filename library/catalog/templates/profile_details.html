@@ -2,17 +2,19 @@
 {% load static %}
 {% block details_link_class %}active{% endblock %}
 {% block profile_content %}
-    <div class="alert alert-success d-none" id="messages" role="alert">
     {% if messages %}
-            {% for message in messages %}
+         {% for message in messages %}
+            <div class="alert alert-success m-2" id="msg" role="alert">
                 {{ message }}
-            {% endfor %}
-        </ul>
+            </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-info m-2 error-msg" role="alert">Error</div>
     {% endif %}
-    </div>
-<h1 class="text-center">Profile details</h1>
+
+    <h1 class="text-center">Profile details</h1>
     <div class="d-flex align-items-center flex-column mt-5 mb-5">
-        <form action="" method="post" class="needs-validation border profile-edit-border col-md-3" novalidate>
+        <form action="" method="post" class="needs-validation border profile-edit-border col-md-4" novalidate>
             {% csrf_token %}
             <div>
                 <span>Firstname</span>
@@ -22,7 +24,7 @@
                     <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
                 </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.firstname }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.mongo_user.first_name }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
@@ -34,7 +36,7 @@
                                 <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.lastname }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.mongo_user.last_name }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
@@ -47,7 +49,7 @@
                                      alt="email icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.email }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.mongo_user.email }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
@@ -60,7 +62,7 @@
                                      alt="login icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.login }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.mongo_user.username }}" disabled>
                 </div>
             </div>
             <a class="btn btn-dark mt-4 mb-4" href="{% url 'profile_edit' %}" id="editProfileBtn">

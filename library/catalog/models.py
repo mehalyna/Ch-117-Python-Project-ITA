@@ -66,7 +66,7 @@ class MongoUser(Document):
         if 'password' in kwargs:
             mongo_kwargs['password'] = generate_password_hash(kwargs['password'])
             django_kwargs['password'] = make_password(kwargs['password'])
-
+            
         mongo_user = super().update(**mongo_kwargs)
 
         need_to_update_in_django = ['username', 'password', 'email']
