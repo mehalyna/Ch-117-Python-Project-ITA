@@ -3,6 +3,7 @@ from copy import copy
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django_mongoengine import Document
 from django.contrib.auth.models import AbstractUser
 from mongoengine import DateTimeField, DictField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
