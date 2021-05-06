@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
-{% block title  %}User Profile{% endblock %}
+{% block title %}User Profile{% endblock %}
 
 {% block body %}
     <div class="container mt-3 mb-3">
@@ -21,8 +21,8 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% block bookshelf_link_class %}{% endblock %}"
-                            href="{% url 'profile_bookshelf' %}">
-                                Bookshelf
+                           href="{% url 'profile_bookshelf' %}">
+                            Bookshelf
                         </a>
                     </li>
                     <li class="nav-item">
@@ -34,8 +34,8 @@
                 </ul>
             </div>
             <div class="flex-grow-1">
-            {% block profile_content %}
-            {% endblock %}
+                {% block profile_content %}
+                {% endblock %}
             </div>
         </div>
     </div>
