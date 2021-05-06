@@ -36,6 +36,6 @@ function saveStarRating(url) {
     if (!starValue) {
         location.replace(url);
     } else {
-        location.replace(url + `/${starValue}/`);
+        location.replace(url + `${starValue}/`);
     }
 }
