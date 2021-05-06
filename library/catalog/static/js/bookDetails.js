@@ -36,7 +36,6 @@ function saveStarRating(url) {
     if (starValue) {
         url = url + `${starValue}/`;
     }
-    console.log(url)
     let request = new XMLHttpRequest();
     request.open("GET", url, true);
     request.send(null);
