@@ -1,22 +1,35 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Search {{ q }}{% endblock %}
+{% block title %}Search: {{ q }} {{ genre }}{% endblock %}
 
 {% block body %}
-<div style="background: #e1e5e7;margin-bottom: 50px;margin-top: 50px" class="container">
-    <h1>Library page</h1>
-    <div class="row">
-        {% for book in books %}
-            <div class="col-3">
-                <div class="zoom">
-                    <a href="{% url 'book-details' book.id %}">
-                        <img style="padding: 10px 10px 10px 10px;max-height: 270px; width: 90%" src={{ book.link_img }}>
-                        <p style="margin-left: 10px; color: #323232">{{ book.title }}</p>
-                    </a>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+
+<div class="container">
+    <h1 style="margin-top: 25px;">Results of search: {{ q }} {{ genre }} </h1>
 </div>
+
+<div class="container container-search">
+    {% for book in books %}
+        <div class="container-search-box">
+            <a href="{% url 'book-details' book.id %}" class="image-search">
+                <img src="{{ book.link_img }}" alt="{{ book.title }}">
+            </a>
+            <div class="book-search-info">
+                <a href="{% url 'book-details' book.id %}">
+                    <b><p>
+                        {% if book.title|length > 60 %}
+                            {{ book.title| slice:':56' }} ...
+                        {% else %}
+                            {{ book.title }}
+                        {% endif %}
+                    </p></b>
+                </a>
+                <a href="{% url 'book-details' book.id %}"><p>{{ book.author_id.name }}</p></a>
+                <a href="{% url 'book-details' book.id %}"><p>{{ book.year }}</p></a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
 {% endblock %}

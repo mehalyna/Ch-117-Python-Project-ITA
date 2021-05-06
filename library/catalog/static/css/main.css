@@ -209,6 +209,47 @@
     margin-top: 10px;
 }
 
+.container-search{
+    min-height: 530px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+}
+
+.container-search-box{
+    background: #eeecec;
+    display: flex;
+    height: 205px;
+    width: 31%;
+    padding: 5px;
+    margin-bottom: 20px;
+    margin-right: 13px;
+    justify-content: space-between;
+}
+
+.image-search{
+    width: 45%;
+    height: 100%;
+}
+
+.image-search img{
+    width: 100%;
+    height: 100%;
+}
+
+.book-search-info{
+    height: 100%;
+    width: 50%;
+}
+
+.book-search-info a{
+    text-decoration: none;
+    color: #323232;
+}
+
 .navbar{
     height: 70px;
     background: #eeecec;
@@ -387,17 +428,19 @@ body{
     padding-left: 15px;
 }
 
-.zoom {
-    transition: transform .2s; /* Animation */
-    border-radius: 10%;
+.toggler-wrapper img{
+    margin-left: 30px;
 }
 
-.zoom:hover {
-    border-radius: 10%;
-    opacity: 70%;
-    font-size: medium;
-    transform: scale(1.1);
-}/* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+.navbar-right{
+    display: flex;
+    align-items: center;
+}
+
+.input-icon{
+    height: 36px;
+    width: 36px;
+}
 
 @media (min-width: 768px) {
     .col-md-4 {
