@@ -33,6 +33,12 @@ const new_slider = new Swiper('.second-container', {
   speed: 600,
 });
 
+setTimeout(function () {
+    if ($('#msg').length > 0) {
+        $('#msg').fadeTo(500, 0, function () {})
+    }
+}, 2000)
+
 function login_user_redirect(){
         let email = document.getElementById("inputUsername").value;
         let password = document.getElementById("inputPassword").value;

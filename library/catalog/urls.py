@@ -15,8 +15,8 @@ urlpatterns = [
     path('login_redirect_page/', views.login_redirect_page, name='login_redirect_page'),
     path('logout/', views.logout_view, name='logout'),
     path('author_books/<str:author_name>/', views.search_by_author, name='library-books-author'),
-    path('add_review/<str:user_id>/<str:book_id>/<str:text>', views.add_review, name='add-review'),
-    path('add_rating/<str:user_id>/<str:book_id>/<int:rating>', views.add_rating, name='add-rating'),
-    path('change_review_status/', views.change_review_status, name='change-review-status'),
+    path('add_review/<str:book_id>', views.add_review, name='add-review'),
+    path('add_rating/<str:book_id>/<int:rating>', views.add_rating, name='add-rating'),
+    path('change_review_status/<str:book_id>/<str:review_id>/<str:new_status>', views.change_review_status, name='change-review-status'),
     path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf')
 ]
