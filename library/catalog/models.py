@@ -5,9 +5,7 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django_mongoengine import Document
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.hashers import make_password
-from django_mongoengine.forms.fields import DictField
-from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
+from mongoengine import DateTimeField, DictField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -43,7 +41,7 @@ class MongoUser(Document):
     reviews = ListField(default=[])
     recommended_books = ListField(default=[])
     wishlist = ListField(default=[])
-    # rated_books = DictField(default={})
+    rated_books = DictField(default={})
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
 
     def check_password(self, password):
@@ -54,7 +52,8 @@ class MongoUser(Document):
             User = get_user_model()
             User.objects.create_user(username=self.username,
                                      email=self.email,
-                                     password=self.password)
+                                     password=self.password,
+                                     is_active=self.status != Status.INACTIVE)
 
             self.password = generate_password_hash(self.password)
         mongo_user = super().save()
@@ -64,14 +63,18 @@ class MongoUser(Document):
         mongo_kwargs = copy(kwargs)
         django_kwargs = copy(kwargs)
         if 'password' in kwargs:
-            mongo_kwargs['password'], django_kwargs['password'] = \
-                self.generate_passwords(kwargs['password'])
+            mongo_kwargs['password'] = generate_password_hash(kwargs['password'])
+            django_kwargs['password'] = make_password(kwargs['password'])
+
         mongo_user = super().update(**mongo_kwargs)
 
         need_to_update_in_django = ['username', 'password', 'email']
         for field in list(django_kwargs):
             if field not in need_to_update_in_django:
                 django_kwargs.pop(field)
+
+        if 'status' in kwargs:
+            django_kwargs['is_active'] = kwargs['status'] != Status.INACTIVE
 
         django_user_model = get_user_model()
         django_user_model.objects.filter(username=self.username).update(**django_kwargs)
@@ -149,5 +152,4 @@ class Review(Document):
     lastname = StringField(default='', max_length=50)
     status = StringField(default=Status.ACTIVE, max_length=100)
     comment = StringField(default='', max_length=5000)
-    rating = IntField(default=0, min_value=0.0, max_value=5)
     date = DateTimeField(default=datetime.now)
