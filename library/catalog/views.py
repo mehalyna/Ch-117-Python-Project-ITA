@@ -181,16 +181,6 @@ def unique_registration_check(request, field_value):
     return HttpResponse('', content_type="text/plain")
 
 
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request=request, username=username, password=password)
-        if user:
-            login(request, user)
-    return redirect(home)
-
-
 def logout_view(request):
     logout(request)
     return redirect(home)
