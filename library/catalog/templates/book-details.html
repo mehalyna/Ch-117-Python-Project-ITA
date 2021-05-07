@@ -26,7 +26,16 @@
                     </div>
                 </div>
                 {% if user.is_authenticated %}
-                    <button style="margin-top: 10px;padding: 6px 18px;" class="btn btn-success">Add to wishlist</button>
+                    {% if is_book_in_wishlist %}
+                        <div class="add-to-wishlist">
+                            <a href="{% url 'delete-from-wishlist' book.id %}" class="btn btn-warning">Delete from wishlist</a>
+                        </div>
+                    {% else %}
+                        <div class="delete-from-wishlist">
+                            <a href="{% url 'add-to-wishlist' book.id %}" class="btn btn-success">Add to wishlist</a>
+                        </div>
+
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="book_details_text">

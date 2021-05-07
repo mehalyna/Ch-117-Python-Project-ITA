@@ -24,7 +24,7 @@
     <div class="container">
         <h2 class="mb-5">Wishlist</h2>
         <div class="row">
-            {% for book in rec_books %}
+            {% for book in wishlist_books %}
             <div class="col-3">
                 <a href="{% url 'book-details' book.id %}">
                     <img src="{{ book.link_img }}" alt="{{ book.title }}">
