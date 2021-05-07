@@ -64,7 +64,7 @@ def change_password(request):
         form = ChangePasswordForm()
     return render(request, 'change_password.html', {'form': form})
 
-  
+
 def profile_bookshelf(request):
     rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
     return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
@@ -72,45 +72,40 @@ def profile_bookshelf(request):
 
 def book_details(request, book_id):
     book = Book.objects(id=book_id).first()
-    reviews = Review.objects(book_id=book_id)
+    book.calculate_rating()
+    reviews = Review.objects(book_id=book_id).order_by('-date')
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
 
 
 def add_review(request, book_id):
     text = request.GET.get('text-comment')
     book = Book.objects(id=book_id).first()
-    review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name, lastname=request.user.mongo_user.last_name, comment=text)
+    review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name,
+                    lastname=request.user.mongo_user.last_name, comment=text)
     review.save()
-    reviews = list(Review.objects(book_id=book_id))[::-1]
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
+    return redirect(book_details, book_id=book_id)
 
-def add_rating(request, book_id, rating):
+
+def add_rating(request, book_id, rating=1):
     user = MongoUser.objects(id=request.user.mongo_user.id).first()
-    book = Book.objects(id=book_id).first()
+    user_rated_books = user.rated_books
 
-
-def add_rating(request, user_id, book_id, rating):
-    user = MongoUser.objects(id=user_id).first()
     book = Book.objects(id=book_id).first()
     if str(book_id) in user.rated_books.keys():
-        book.statistic.stars[user.rated_books[str(book_id)]] -= 1
+        book.statistic.stars[user.rated_books[str(book_id)] - 1] -= 1
 
-    book.statistic.stars[rating] += 1
-    user.rated_books[str(book_id)] = rating
-    user.save()
+    book.statistic.stars[rating - 1] += 1
+    user_rated_books = dict(user_rated_books, **{str(book_id): rating - 1})
+    user.update(rated_books=user_rated_books)
     book.save()
-    book.calculate_rating()
-    reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
+    return redirect(book_details, book_id=book_id)
 
 
 def change_review_status(request, book_id, review_id, new_status):
     review = Review.objects(id=review_id).first()
-    book = Book.objects(id=book_id).first()
-    reviews = Review.objects(book_id=book_id)
     if review:
         review.update(status=new_status)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews})
+    return redirect(book_details, book_id=book_id)
 
 
 def home(request):
