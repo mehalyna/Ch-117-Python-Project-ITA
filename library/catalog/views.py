@@ -66,6 +66,7 @@ def change_password(request):
 
 
 def profile_bookshelf(request):
+    request.user.mongo_user.make_recommended_books_list()
     rec_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.recommended_books]
     wishlist_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.wishlist]
     return render(request, 'profile_bookshelf.html', {'rec_books': rec_books, 'wishlist_books': wishlist_books})
