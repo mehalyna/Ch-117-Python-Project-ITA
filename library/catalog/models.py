@@ -3,6 +3,7 @@ from copy import copy
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django_mongoengine import Document
 from django.contrib.auth.models import AbstractUser
 from mongoengine import DateTimeField, DictField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
@@ -52,7 +53,8 @@ class MongoUser(Document):
             User = get_user_model()
             User.objects.create_user(username=self.username,
                                      email=self.email,
-                                     password=self.password)
+                                     password=self.password,
+                                     is_active=self.status != Status.INACTIVE)
 
             self.password = generate_password_hash(self.password)
         mongo_user = super().save()
@@ -64,13 +66,16 @@ class MongoUser(Document):
         if 'password' in kwargs:
             mongo_kwargs['password'] = generate_password_hash(kwargs['password'])
             django_kwargs['password'] = make_password(kwargs['password'])
-            
+
         mongo_user = super().update(**mongo_kwargs)
 
         need_to_update_in_django = ['username', 'password', 'email']
         for field in list(django_kwargs):
             if field not in need_to_update_in_django:
                 django_kwargs.pop(field)
+
+        if 'status' in kwargs:
+            django_kwargs['is_active'] = kwargs['status'] != Status.INACTIVE
 
         django_user_model = get_user_model()
         django_user_model.objects.filter(username=self.username).update(**django_kwargs)
