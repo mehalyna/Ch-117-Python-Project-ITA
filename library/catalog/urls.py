@@ -21,5 +21,6 @@ urlpatterns = [
     path('add_to_wishlist/<str:book_id>', views.add_to_wishlist, name='add-to-wishlist'),
     path('delete_from_wishlist/<str:book_id>', views.delete_from_wishlist, name='delete-from-wishlist'),
     path('change_review_status/<str:book_id>/<str:review_id>/<str:new_status>/', views.change_review_status, name='change-review-status'),
-    path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf')
+    path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf'),
+    path('information/', views.information_page, name='information_page')
 ]

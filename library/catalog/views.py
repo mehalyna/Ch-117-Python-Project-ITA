@@ -70,6 +70,7 @@ def profile_bookshelf(request):
     wishlist_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.wishlist]
     return render(request, 'profile_bookshelf.html', {'rec_books': rec_books, 'wishlist_books': wishlist_books})
 
+
 def add_to_wishlist(request, book_id):
     user = request.user.mongo_user
     book = Book.objects(id=book_id).first()
@@ -138,6 +139,10 @@ def home(request):
             if genre and genre not in genres:
                 genres.append(genre)
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': genres})
+
+
+def information_page(request):
+    return render(request, 'information_page.html')
 
 
 def search_by_author(request, author_name):

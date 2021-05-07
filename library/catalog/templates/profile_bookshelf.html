@@ -8,25 +8,29 @@
             <div class="swiper-wrapper">
                 {% for book in rec_books %}
                 <div class="swiper-slide">
-                    <img src="{{ book.link_img }}" alt="Cover">
-                    <p><b>{{book.title}}</b></p>
-                    <p>{{ book.author_id.name}}</p>
+                    <a href="{% url 'book-details' book.id %}">
+                        <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                        <p><b>{{book.title}}</b></p>
+                        <p>{{ book.author_id.name}}</p>
+                    </a>
                 </div>
                 {% endfor %}
             </div>
-            <div class="swiper-button-prev first-prev"></div>
-            <div class="swiper-button-next first-next"></div>
         </div>
+        <div class="swiper-button-prev first-prev" style="position: relative; top: -278px; left: -40px"></div>
+        <div class="swiper-button-next first-next" style="position: relative; top: -300px; left: 1125px;"></div>
         <br>
     </div>
     <div class="container">
-        <h2 class="my-5">Wishlist</h2>
+        <h2 class="mb-5">Wishlist</h2>
         <div class="row">
             {% for book in wishlist_books %}
             <div class="col-3">
-                <img src="{{ book.link_img }}" alt="Cover">
-                <p><b>{{book.title}}</b></p>
-                <p>{{ book.author_id.name}}</p>
+                <a href="{% url 'book-details' book.id %}">
+                    <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                    <p><b>{{book.title}}</b></p>
+                    <p>{{ book.author_id.name}}</p>
+                </a>
             </div>
             {% endfor %}
         </div>
