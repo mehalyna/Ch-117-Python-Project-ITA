@@ -16,8 +16,12 @@ urlpatterns = [
     path('login_redirect_page/', views.login_redirect_page, name='login_redirect_page'),
     path('logout/', views.logout_view, name='logout'),
     path('author_books/<str:author_name>/', views.search_by_author, name='library-books-author'),
-    path('add_review/<str:book_id>', views.add_review, name='add-review'),
-    path('add_rating/<str:book_id>/<int:rating>', views.add_rating, name='add-rating'),
-    path('change_review_status/<str:book_id>/<str:review_id>/<str:new_status>', views.change_review_status, name='change-review-status'),
-    path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf')
+    path('add_review/<str:book_id>/', views.add_review, name='add-review'),
+    path('add_rating/<str:book_id>/', views.add_rating, name='add-rating'),
+    path('add_rating/<str:book_id>/<int:rating>/', views.add_rating, name='add-rating'),
+    path('add_to_wishlist/<str:book_id>', views.add_to_wishlist, name='add-to-wishlist'),
+    path('delete_from_wishlist/<str:book_id>', views.delete_from_wishlist, name='delete-from-wishlist'),
+    path('change_review_status/<str:book_id>/<str:review_id>/<str:new_status>/', views.change_review_status, name='change-review-status'),
+    path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf'),
+    path('information/', views.information_page, name='information_page')
 ]
