@@ -490,3 +490,9 @@ body {
 #editing_form {
     margin-left: -150px;
 }
+
+.toast{
+    position: absolute;
+    left: 40%;
+    opacity: 0.8 !important;
+}
