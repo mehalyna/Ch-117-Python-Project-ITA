@@ -21,6 +21,7 @@ def profile_details(request):
 def profile_edit(request):
     user = request.user.mongo_user
     data = {
+        'user_id': user.id,
         'firstname': user.first_name,
         'lastname': user.last_name,
         'email': user.email,
@@ -63,7 +64,7 @@ def change_password(request):
         form = ChangePasswordForm()
     return render(request, 'change_password.html', {'form': form})
 
-  
+
 def profile_bookshelf(request):
     rec_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.recommended_books]
     wishlist_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.wishlist]
@@ -90,7 +91,7 @@ def delete_from_wishlist(request, book_id):
 def book_details(request, book_id):
     user = request.user.mongo_user
     book = Book.objects(id=book_id).first()
-    reviews = Review.objects(book_id=book_id)
+    reviews = Review.objects(book_id=book_id).order_by('-date')
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews,'is_book_in_wishlist': str(book_id) in user.wishlist})
 
 
@@ -98,35 +99,34 @@ def add_review(request, book_id):
     user = request.user.mongo_user
     text = request.GET.get('text-comment')
     book = Book.objects(id=book_id).first()
-    review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name, lastname=request.user.mongo_user.last_name, comment=text)
+    review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name,
+                    lastname=request.user.mongo_user.last_name, comment=text)
     review.save()
-    reviews = list(Review.objects(book_id=book_id))[::-1]
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews,'is_book_in_wishlist': str(book_id) in user.wishlist})
+    reviews = Review.objects(book_id=book_id).order_by('-date')
+    return redirect(book_details, book_id=book_id)
 
+def add_rating(request, book_id, rating=1):
+    user = MongoUser.objects(id=request.user.mongo_user.id).first()
+    user_rated_books = user.rated_books
 
-def add_rating(request, user_id, book_id, rating):
-    user = MongoUser.objects(id=user_id).first()
     book = Book.objects(id=book_id).first()
     if str(book_id) in user.rated_books.keys():
-        book.statistic.stars[user.rated_books[str(book_id)]] -= 1
+        book.statistic.stars[user.rated_books[str(book_id)] - 1] -= 1
 
-    book.statistic.stars[rating] += 1
-    user.rated_books[str(book_id)] = rating
-    user.save()
+    book.statistic.stars[rating - 1] += 1
+    user_rated_books = dict(user_rated_books, **{str(book_id): rating - 1})
+    user.update(rated_books=user_rated_books)
     book.save()
     book.calculate_rating()
-    reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews,'is_book_in_wishlist': str(book_id) in user.wishlist})
+    return HttpResponse('Success', content_type="text/plain")
 
 
 def change_review_status(request, book_id, review_id, new_status):
     user = request.user.mongo_user
     review = Review.objects(id=review_id).first()
-    book = Book.objects(id=book_id).first()
-    reviews = Review.objects(book_id=book_id)
     if review:
         review.update(status=new_status)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews,'is_book_in_wishlist': str(book_id) in user.wishlist})
+    return redirect(book_details, book_id=book_id)
 
 
 def home(request):
@@ -200,16 +200,6 @@ def unique_registration_check(request, field_value):
     if user:
         return HttpResponse('Already taken', content_type="text/plain")
     return HttpResponse('', content_type="text/plain")
-
-
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request=request, username=username, password=password)
-        if user:
-            login(request, user)
-    return redirect(home)
 
 
 def logout_view(request):
