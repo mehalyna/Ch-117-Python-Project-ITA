@@ -25,8 +25,9 @@
                         {% endfor %}
                     </div>
                 </div>
+
                 {% if user.is_authenticated %}
-                    {% if is_book_in_wishlist %}
+                    {% if book_id in user.mongo_user.wishlist %}
                         <div class="add-to-wishlist">
                             <a href="{% url 'delete-from-wishlist' book.id %}" class="btn btn-warning">Delete from wishlist</a>
                         </div>

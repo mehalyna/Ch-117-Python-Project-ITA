@@ -80,6 +80,7 @@ def add_to_wishlist(request, book_id):
         user.update(wishlist=user.wishlist)
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'is_book_in_wishlist': True})
 
+
 def delete_from_wishlist(request, book_id):
     user = request.user.mongo_user
     book = Book.objects(id=book_id).first()
@@ -89,11 +90,12 @@ def delete_from_wishlist(request, book_id):
         user.update(wishlist=user.wishlist)
     return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'is_book_in_wishlist': False})
 
+
 def book_details(request, book_id):
-    user = request.user.mongo_user
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id).order_by('-date')
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews,'is_book_in_wishlist': str(book_id) in user.wishlist})
+    return render(request, 'book-details.html',
+                  {'book': book, 'reviews': reviews, 'book_id': book_id})
 
 
 def add_review(request, book_id):
@@ -105,6 +107,7 @@ def add_review(request, book_id):
     review.save()
     reviews = Review.objects(book_id=book_id).order_by('-date')
     return redirect(book_details, book_id=book_id)
+
 
 def add_rating(request, book_id, rating=1):
     user = MongoUser.objects(id=request.user.mongo_user.id).first()
