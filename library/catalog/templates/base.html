@@ -47,7 +47,7 @@
         <div class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
                aria-haspopup="true" aria-expanded="false">
-                <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+                <img class="user-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{% url 'profile_details' %}">Profile details</a>
@@ -65,49 +65,52 @@
 </div>
 
 
-    <div id="ModalAuth" class="modal fade loginM" role="dialog">
+    <div id="ModalAuth" class="modal fade bd-example-modal-md" role="dialog" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="AuthModalLabel">Sign In</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AuthModalLabel">Sign In</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="exampleInputUsername">Username</label>
+                        <input class="form-control" id="exampleInputUsername" aria-describedby="usernameHelp"
+                               placeholder="Username" onkeyup="validateCredentials()">
+                        <small id="usernameHelp" class="form-text text-muted">Enter your username</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleInputPassword">Password</label>
+                        <input type="password" name="password" class="form-control" id="exampleInputPassword"
+                               placeholder="Password" onkeyup="validateCredentials()">
+                        <div id="errorlogin" style="color:red"></div>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <div class="mb-3">
+                        <a href="{% url 'library-registration' %}" class="btn btn-link">Sign Up</a>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-primary btn-lg btn-block login-btn" id="submitButton"
+                                style="max-width:500px" onclick="login_user()" disabled="disabled">Sign In
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <form class="login-form"></form>
-                        <div class="form-group">
-                            <label for="exampleInputUsername">Username</label>
-                            <input type="email" class="form-control" id="exampleInputUsername"
-                                   aria-describedby="emailHelp" placeholder="Username">
-                            <small id="emailHelp" class="form-text text-muted">Enter your username</small>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="exampleInputPassword">Password</label>
-                            <input type="password" name="password" class="form-control" id="exampleInputPassword"
-                                   placeholder="Password">
-                            <div id="errorlogin" style="color:red"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="mb-3">
-                            <a href="{% url 'library-registration' %}" class="btn btn-link">Sign Up</a>
-                        </div>
-                        <div class="mb-3">
-                            <button type="button" class="btn btn-primary btn-lg btn-block login-btn"
-                                    style="max-width:500px" onclick="login_user()">Sign In
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-
 </div>
+
 
 {% block body %}
 {% endblock %}
@@ -151,34 +154,6 @@
 
 
 <!-- Custom scripts -->
-<script type="text/javascript">
-    function login_user(){
-        email = document.getElementById("exampleInputUsername").value;
-        password = document.getElementById("exampleInputPassword").value;
-        csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
-        $("#errorlogin").html("");
-        $.ajax({
-            type:"POST",
-            url:'{% url 'func_login' %}',
-            data:{
-                'csrfmiddlewaretoken': csrfmiddlewaretoken,
-                'username':email,
-                'password':password,
-            },
-            success : function(data){
-                if(data['message'] == "Success"){
-                    location.reload();
-                }
-                else if(data['message'] == "inactive"){
-                    $("#errorlogin").html("Please verify this E-mail address.");
-                }
-                else{
-                    $("#errorlogin").html("The E-mail and Password do not match.");
-                }
-            }
-        });
-    }
-</script>
 
 <script src="{% static 'js/main.js' %}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -189,6 +164,20 @@
     $('#toggler').click(function (){
         $('#searchtool').toggle('slow');
     });
+
+
+function validateCredentials()
+{
+  var first = document.getElementById('exampleInputUsername').value.length;
+  var second = document.getElementById('exampleInputPassword').value.length;
+
+  if(first > 5 && second > 7){
+    document.getElementById('submitButton').disabled=false;
+  } else {
+    document.getElementById('submitButton').disabled=true;
+  }
+}
+
 </script>
 
 </body>
