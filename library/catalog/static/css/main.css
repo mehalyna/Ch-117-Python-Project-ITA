@@ -417,3 +417,16 @@ body{
 .swiper-container .swiper-button-next::after{
     opacity: 0.5;
 }
+
+#errorUsername{
+height:10px;
+}
+
+#errorPassword{
+height:10px;
+margin-bottom:7px;
+}
+
+#errorlogin{
+height:10px;
+}
