@@ -65,12 +65,14 @@ def change_password(request):
     return render(request, 'change_password.html', {'form': form})
 
 
+@login_required
 def profile_bookshelf(request):
     rec_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.recommended_books]
     wishlist_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.wishlist]
     return render(request, 'profile_bookshelf.html', {'rec_books': rec_books, 'wishlist_books': wishlist_books})
 
 
+@login_required
 def add_to_wishlist(request, book_id):
     user = request.user.mongo_user
     if not str(book_id) in user.wishlist:
@@ -80,6 +82,8 @@ def add_to_wishlist(request, book_id):
     return redirect(book_details, book_id=book_id)
 
 
+
+@login_required
 def delete_from_wishlist(request, book_id):
     user = request.user.mongo_user
     if str(book_id) in user.wishlist:
@@ -87,6 +91,7 @@ def delete_from_wishlist(request, book_id):
         user.update(wishlist=user.wishlist)
 
     return redirect(book_details, book_id=book_id)
+
 
 
 def book_details(request, book_id):
@@ -97,6 +102,7 @@ def book_details(request, book_id):
                   {'book': book, 'reviews': reviews, 'book_id': book_id})
 
 
+@login_required
 def add_review(request, book_id):
     text = request.GET.get('text-comment')
     book = Book.objects(id=book_id).first()
@@ -107,6 +113,7 @@ def add_review(request, book_id):
     return redirect(book_details, book_id=book_id)
 
 
+@login_required
 def add_rating(request, book_id, rating=1):
     user = MongoUser.objects(id=request.user.mongo_user.id).first()
     user_rated_books = user.rated_books
@@ -124,6 +131,7 @@ def add_rating(request, book_id, rating=1):
     return HttpResponse('Success', content_type="text/plain")
 
 
+@login_required
 def change_review_status(request, book_id, review_id, new_status):
     review = Review.objects(id=review_id).first()
     if review:
