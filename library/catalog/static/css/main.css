@@ -11,10 +11,6 @@
     box-shadow: 12px 12px 3px #37598c;
 }
 
-.profile-edit-border {
-    box-shadow: 12px 12px 3px #70747c;
-}
-
 .sign-up-button {
     width: 110px !important;
     border-radius: 20px !important;
@@ -68,8 +64,7 @@
     border: 1px solid #bad8e3;
     box-shadow: 0 10px 10px;
     border-radius: 10px 100px / 30px;
-    max-height: 700px;
-    min-height: 600px;
+    height: 560px;
 }
 
 .user_menu_buttons li a {
@@ -446,7 +441,7 @@ body {
     align-items: center;
 }
 
-.user-icon{
+.user-icon {
     height: 36px;
     width: 36px;
 }
