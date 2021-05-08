@@ -107,3 +107,15 @@ function validatePasswords(element, errorId) {
         return true;
     }
 }
+
+function showPassword() {
+  if (old_password.type === "password" && new_password.type === "password"  && confirmPassword.type === "password" ) {
+    old_password.type = "text";
+    new_password.type = "text";
+    confirmPassword.type = "text";
+  } else {
+    old_password.type = "password";
+    new_password.type = "password";
+    confirmPassword.type = "password";
+  }
+}
