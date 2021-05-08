@@ -4,12 +4,12 @@
 {% block profile_content %}
     <div class="alert alert-info m-2 error-msg" role="alert">Error</div>
     <div class="d-flex align-items-center flex-column mt-5 mb-5">
-        <form id="editing_form" action="" method="post" class="needs-validation border profile-edit-border col-md-4" novalidate>
+        <form id="editing_form" action="" method="post" class="needs-validation border registration-border col-md-4" novalidate>
             {% csrf_token %}
-            <h1 class="text-center mt-2 mb-2">Edit profile</h1>
+            <h1 class="text-center mt-2 mb-2 text-ultramarine">Edit profile</h1>
             <div class="d-none">{{ form.user_id }}</div>
             <div>
-                <span>{{ form.firstname.label }}</span>
+                <span class="text-ultramarine">{{ form.firstname.label }}</span>
                 <div class="input-group">
                     <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">
@@ -21,7 +21,7 @@
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
             <div>
-                <span>{{ form.lastname.label }}</span>
+                <span class="text-ultramarine">{{ form.lastname.label }}</span>
                 <div class="input-group">
                     <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">
@@ -33,7 +33,7 @@
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
             <div>
-                <span>{{ form.email.label }}</span>
+                <span class="text-ultramarine">{{ form.email.label }}</span>
                 <div class="input-group">
                     <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">
@@ -46,7 +46,7 @@
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
             <div>
-                <span>{{ form.login.label }}</span>
+                <span class="text-ultramarine">{{ form.login.label }}</span>
                 <div class="input-group">
                     <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">
