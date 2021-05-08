@@ -33,7 +33,7 @@ function validationFuncsConfirmPassword() {
 
 function validateOldPassword() {
     validatePasswords(old_password, '#oldPasswordError');
-g}
+}
 
 function validateNewPassword() {
     validatePasswords(new_password, '#newPasswordError');
