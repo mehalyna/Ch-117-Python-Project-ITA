@@ -219,8 +219,6 @@ def unique_registration_check(request, field_value):
 
 def edit_profile_check(request, field_value):
     check_user = MongoUser.objects(Q(username=field_value) | Q(email=field_value)).first()
-    print(check_user.email)
-    print(check_user.username)
     username = request.user.mongo_user.username
     email = request.user.mongo_user.email
     if check_user.username != username or check_user.email != email:
