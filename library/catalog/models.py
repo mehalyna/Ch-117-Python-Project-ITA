@@ -1,4 +1,5 @@
 import math
+import random
 from copy import copy
 from datetime import datetime
 
@@ -7,7 +8,7 @@ from django.contrib.auth.hashers import make_password
 from django_mongoengine import Document
 from django.contrib.auth.models import AbstractUser
 from mongoengine import DateTimeField, DictField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
-    IntField, ListField, ReferenceField, StringField
+    IntField, ListField, Q, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
@@ -44,6 +45,44 @@ class MongoUser(Document):
     wishlist = ListField(default=[])
     rated_books = DictField(default={})
     preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
+
+    def make_recommended_books_list(self, books_limit=50):
+        if self.wishlist:
+            wishlist_books = [Book.objects(id=book_id).first() for book_id in self.wishlist]
+            wishlist_books.sort(key=lambda book: book.statistic.rating, reverse=True)
+
+            books_by_author_and_genre = []
+            books_by_author = []
+            books_by_genre = []
+
+            for book in wishlist_books:
+                books_by_author_and_genre += list(Book.objects.filter(
+                    Q(author_id=book.author_id) & Q(genres__icontains=book.genres)).order_by('-statistic__rating'))
+                books_by_author += list(Book.objects.filter(author_id=book.author_id).order_by('-statistic__rating'))
+                books_by_genre += list(
+                    Book.objects.filter(genres__icontains=book.genres).order_by('-statistic__rating'))
+
+            recommendations_list = books_by_author_and_genre + books_by_author + books_by_genre
+            recommendations_list.reverse()
+            for book in recommendations_list:
+                while recommendations_list.count(book) != 1:
+                    recommendations_list.remove(book)
+            recommendations_list.reverse()
+
+            recommended_books = [str(book.id) for book in recommendations_list]
+            for book_id in self.wishlist:
+                if book_id in recommended_books:
+                    recommended_books.remove(book_id)
+            self.recommended_books = recommended_books[:books_limit]
+
+        else:
+            top_books = list(Book.objects().order_by('-statistic__rating'))[:books_limit // 2]
+            random_books = random.choices(list(set(Book.objects()) - set(top_books)), k=books_limit - books_limit // 2)
+            total_list = top_books + random_books
+            random.shuffle(total_list)
+            self.recommended_books = [str(book.id) for book in total_list]
+
+        self.update(recommended_books=self.recommended_books)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
@@ -141,7 +180,7 @@ class Book(Document):
         result_sum = get_sum_from_expression(stars_by_value, self.statistic.stars)
         rating = result_sum - Z * math.sqrt(
             (get_sum_from_expression(price_stars, self.statistic.stars) - result_sum ** 2) / (
-                        number_of_vote + number_of_stars + 1))
+                    number_of_vote + number_of_stars + 1))
 
         super(Book, self).update(statistic__rating=round(rating, 2))
 
