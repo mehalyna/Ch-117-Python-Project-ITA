@@ -1,8 +1,5 @@
 const profanityRegexp = /(\w?\d?)(ass|bastard|bitch|bollocks|boobs|bottom|bugger|clunge|cock|cunt|damn|dick|fuck|gash|knob|minge|motherfucker|piss off|prick|punani|pussy|shit|snatch|suck|tits|twat|wanker)(\w?\d?)/gi;
 const emailPattern = /^(\w|\.|_|-)+[@](\w|_|-|\.)+[.]\w{2,3}$/;
-const passPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-const timeToLiveMin = 10;
-const storageKeyPrefix = 'registration_';
 
 let form = document.querySelector('.needs-validation');
 let inputsList = form.querySelectorAll('input.form-control');
@@ -12,50 +9,30 @@ let lastname = form.elements.namedItem('lastname');
 let email = form.elements.namedItem('email');
 let login = form.elements.namedItem('login');
 
-let old_password = form.elements.namedItem('old_password');
-let new_password = form.elements.namedItem('new_password');
-let confirmPassword = form.elements.namedItem('confirm_password');
 let submitButton = form.elements.namedItem('submitButton');
 
 firstname.addEventListener('input', validationFuncsFirstname);
 lastname.addEventListener('input', validationFuncsLastname);
 email.addEventListener('input', validationFuncsEmail);
 login.addEventListener('input', validationFuncsLogin);
-old_password.addEventListener('input', validationFuncsPassword);
-new_password.addEventListener('input', validationFuncsPassword);
-confirmPassword.addEventListener('input', validationFuncsConfirmPassword);
 
 function validationFuncsFirstname() {
-    setWithExpiry(storageKeyPrefix + firstname.id, firstname.value, timeToLiveMin);
     validateFirstname();
     checkFormValid();
 }
 
 function validationFuncsLastname() {
-    setWithExpiry(storageKeyPrefix + lastname.id, lastname.value, timeToLiveMin);
     validateLastname();
     checkFormValid();
 }
 
 function validationFuncsEmail() {
-    setWithExpiry(storageKeyPrefix + email.id, email.value, timeToLiveMin);
     validateEmail();
     checkFormValid();
 }
 
 function validationFuncsLogin() {
-    setWithExpiry(storageKeyPrefix + login.id, login.value, timeToLiveMin);
     validateLogin();
-    checkFormValid();
-}
-
-function validationFuncsPassword() {
-    validatePassword();
-    checkFormValid();
-}
-
-function validationFuncsConfirmPassword() {
-    validateConfirmPassword();
     checkFormValid();
 }
 
@@ -103,14 +80,6 @@ function validateLogin() {
     }
 }
 
-function validatePassword() {
-    validatePasswords(password, '#passwordError');
-}
-
-function validateConfirmPassword() {
-    validatePasswords(confirmPassword, '#confirmPasswordError');
-}
-
 
 function setErrorFor(errorId, message) {
     let validationError = document.querySelector(errorId);
@@ -122,7 +91,6 @@ function setErrorFor(errorId, message) {
 
 function setSuccessFor(errorId) {
     let validationError = document.querySelector(errorId);
-
     validationError.style.visibility = 'hidden';
 }
 
@@ -154,28 +122,6 @@ function dataRequired(element, errorId) {
 }
 
 
-function validatePasswords(element, errorId) {
-    if (!dataRequired(element, errorId)) {
-
-    } else if (!passPattern.test(element.value)) {
-        element.classList.add('is-invalid');
-        setErrorFor(errorId, 'Minimum 8 characters, at least 1 letter and 1 number');
-        return false;
-    } else if (password.value !== confirmPassword.value && password.value && confirmPassword.value) {
-        confirmPassword.classList.add('is-invalid');
-        setErrorFor('#confirmPasswordError', 'Passwords doesn\'t match');
-        return false;
-    } else if (password.value === confirmPassword.value) {
-        confirmPassword.classList.remove('is-invalid');
-        setSuccessFor('#confirmPasswordError');
-        return true;
-    } else {
-        element.classList.remove('is-invalid');
-        setSuccessFor(errorId);
-        return true;
-    }
-}
-
 function validateUnique(element, errorId) {
     let validationText = '';
     let validateUrl = `/library/edit_profile_validation/${element.value}`;
@@ -196,35 +142,6 @@ function validateUnique(element, errorId) {
     }
 }
 
-function setWithExpiry(key, value, ttl) {
-    let now = new Date()
-
-    // `item` is an object which contains the original value
-    // as well as the time when it's supposed to expire
-    let item = {
-        value: value,
-        expiry: now.getTime() + ttl * 60000,
-    }
-    localStorage.setItem(key, JSON.stringify(item))
-}
-
-function getWithExpiry(key) {
-    const itemStr = localStorage.getItem(key)
-    // if the item doesn't exist, return null
-    if (!itemStr) {
-        return null
-    }
-    let item = JSON.parse(itemStr)
-    let now = new Date()
-    // compare the expiry time of the item with the current time
-    if (now.getTime() > item.expiry) {
-        // If the item is expired, delete the item from storage
-        // and return null
-        localStorage.removeItem(key)
-        return null
-    }
-    return item.value
-}
 
 function validateProfanity(element, errorId) {
     if (!element.value.search(profanityRegexp)) {
