@@ -10,13 +10,18 @@ let confirmPassword = form.elements.namedItem('confirm_password');
 let submitButton = form.elements.namedItem('submitButton');
 submitButton.disabled = true;
 
-old_password.addEventListener('input', validationFuncsPassword);
-new_password.addEventListener('input', validationFuncsPassword);
+old_password.addEventListener('input', validationFuncsOldPassword);
+new_password.addEventListener('input', validationFuncsNewPassword);
 confirmPassword.addEventListener('input', validationFuncsConfirmPassword);
 
 
-function validationFuncsPassword() {
-    validatePassword();
+function validationFuncsOldPassword() {
+    validateOldPassword();
+    checkFormValid();
+}
+
+function validationFuncsNewPassword() {
+    validateNewPassword();
     checkFormValid();
 }
 
@@ -26,11 +31,13 @@ function validationFuncsConfirmPassword() {
 }
 
 
-function validatePassword() {
+function validateOldPassword() {
     validatePasswords(old_password, '#oldPasswordError');
+g}
+
+function validateNewPassword() {
     validatePasswords(new_password, '#newPasswordError');
 }
-
 
 function validateConfirmPassword() {
     validatePasswords(confirmPassword, '#confirmPasswordError');
