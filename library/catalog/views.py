@@ -219,6 +219,15 @@ def unique_registration_check(request, field_value):
     return HttpResponse('', content_type="text/plain")
 
 
+def edit_profile_check(request, field_value):
+    check_user = MongoUser.objects(Q(username=field_value) | Q(email=field_value)).first()
+    username = request.user.mongo_user.username
+    email = request.user.mongo_user.email
+    if check_user.username != username or check_user.email != email:
+        return HttpResponse('Already taken', content_type="text/plain")
+    return HttpResponse('', content_type="text/plain")
+
+
 def logout_view(request):
     logout(request)
     return redirect(home)
