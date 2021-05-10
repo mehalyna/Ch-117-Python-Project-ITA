@@ -105,11 +105,13 @@ def book_details(request, book_id):
 @login_required
 def add_review(request, book_id):
     text = request.GET.get('text-comment')
-    book = Book.objects(id=book_id).first()
-    review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name,
-                    lastname=request.user.mongo_user.last_name, comment=text)
-    review.save()
-
+    if text.strip():
+        book = Book.objects(id=book_id).first()
+        review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name,
+                        lastname=request.user.mongo_user.last_name, comment=text)
+        review.save()
+    else:
+        messages.error(request, "The comment field should not be blank")
     return redirect(book_details, book_id=book_id)
 
 

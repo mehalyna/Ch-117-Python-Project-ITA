@@ -2,6 +2,12 @@ const timeToLiveMin = 10;
 const starStorageKey = 'bookDetailsRatingStar';
 let ratingStars = document.querySelectorAll('.rating__control');
 
+
+$(document).ready(function(){
+    $('.toast').toast({delay: 3000});
+    $('.toast').toast('show');
+});
+
 ratingStars.forEach(ratingStar => {
     ratingStar.addEventListener('click', function () {
         setWithExpiry(starStorageKey, parseInt(ratingStar.value), timeToLiveMin);
