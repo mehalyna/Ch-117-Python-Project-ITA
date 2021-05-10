@@ -82,7 +82,6 @@ def add_to_wishlist(request, book_id):
     return redirect(book_details, book_id=book_id)
 
 
-
 @login_required
 def delete_from_wishlist(request, book_id):
     user = request.user.mongo_user
@@ -93,7 +92,6 @@ def delete_from_wishlist(request, book_id):
     return redirect(book_details, book_id=book_id)
 
 
-
 def book_details(request, book_id):
     book = Book.objects(id=book_id).first()
     reviews = Review.objects(book_id=book_id).order_by('-date')
@@ -101,26 +99,11 @@ def book_details(request, book_id):
     return render(request, 'book-details.html',
                   {'book': book, 'reviews': reviews, 'book_id': book_id})
 
-<<<<<<< HEAD
-def add_review(request, user_id, book_id, text):
-    user = MongoUser.objects(id=user_id).first()
-    book = Book.objects(id=book_id).first()
-    review = Review(user_id=user.pk, book_id=book.pk, firstname=user.firstname, lastname=user.lastname, comment=text)
-    review.save()
-    reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
-
-
-def add_rating(request, user_id, book_id, rating):
-    if rating and 1 <= rating <= 5:
-        user = MongoUser.objects(id=user_id).first()
-=======
 
 @login_required
 def add_review(request, book_id):
     text = request.GET.get('text-comment')
     if text.strip():
->>>>>>> 30d8778916461f98b588b1e6ba010d92d21cc1b7
         book = Book.objects(id=book_id).first()
         review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name,
                         lastname=request.user.mongo_user.last_name, comment=text)
