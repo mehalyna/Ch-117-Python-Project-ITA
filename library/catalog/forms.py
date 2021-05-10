@@ -49,16 +49,29 @@ class RegistrationForm(Form):
 
 
 class EditProfileForm(Form):
-    # user = MongoUser.objects(id='606ecd74e5fd490b3c6d0657').first()  # for autofill data session user
-    # user_id = CharField(required=False, widget=TextInput(attrs={'value': user.id}))
-    firstname = CharField(label='Firstname', max_length=100,
+    user_id = CharField(required=False)
+    firstname = CharField(label='Firstname', max_length=100, validators=[profanity_check],
                           widget=TextInput(attrs={'class': 'form-control'}))
-    lastname = CharField(label='Lastname', max_length=100,
+    lastname = CharField(label='Lastname', max_length=100, validators=[profanity_check],
                          widget=TextInput(attrs={'class': 'form-control'}))
-    email = EmailField(label='Email', max_length=100,
+    email = EmailField(label='Email', max_length=100, validators=[profanity_check],
                        widget=TextInput(attrs={'class': 'form-control'}))
-    login = CharField(label='Login', min_length=6, max_length=100,
+    login = CharField(label='Login', min_length=6, max_length=100, validators=[profanity_check],
                       widget=TextInput(attrs={'class': 'form-control'}))
+
+    def clean_email(self):
+        check_user = MongoUser.objects(email=self.cleaned_data.get('email')).first()
+        user = MongoUser.objects(id=self.cleaned_data.get('user_id')).first()
+        if check_user and user.email != self.cleaned_data.get('email'):
+            raise ValidationError('is already taken')
+        return self.cleaned_data.get('email')
+
+    def clean_login(self):
+        check_user = MongoUser.objects(username=self.cleaned_data.get('login')).first()
+        user = MongoUser.objects(id=self.cleaned_data.get('user_id')).first()
+        if check_user and user.username != self.cleaned_data.get('login'):
+            raise ValidationError('is already taken')
+        return self.cleaned_data.get('login')
 
 
 class ChangePasswordForm(Form):

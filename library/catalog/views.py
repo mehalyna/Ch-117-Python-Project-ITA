@@ -5,28 +5,23 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from mongoengine.queryset.visitor import Q
-from werkzeug.security import generate_password_hash
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Author, Book, Review, MongoUser
 
-_id = '606ecd74e5fd490b3c6d0657'
 
-
+@login_required
 def profile_details(request):
-    user = MongoUser.objects(id=_id).first()
-    return render(request, 'profile_details.html', {'user': user})
+    return render(request, 'profile_details.html')
 
 
-def profile_bookshelf(request):
-    rec_books = Book.objects.filter(statistic__rating__gte=4.5)[:10]
-    return render(request, 'profile_bookshelf.html', {'rec_books': rec_books})
-
-
+@login_required
 def profile_edit(request):
-    user = MongoUser.objects(id=_id).first()
+    user = request.user.mongo_user
     data = {
+        'user_id': user.id,
         'firstname': user.first_name,
         'lastname': user.last_name,
         'email': user.email,
@@ -48,33 +43,65 @@ def profile_edit(request):
             return redirect(profile_details)
     else:
         form = EditProfileForm(initial=data)
-    return render(request, 'profile_edit.html', {'user': user, 'form': form})
+    return render(request, 'profile_edit.html', {'form': form})
 
 
+@login_required
 def change_password(request):
-    user = MongoUser.objects(id=_id).first()
+    user = request.user.mongo_user
     if request.method == 'POST':
         form = ChangePasswordForm(request.POST)
         if form.is_valid():
             old_password = form.cleaned_data.get('old_password')
             if user and user.check_password(old_password):
-                new_password = generate_password_hash(form.cleaned_data.get('new_password'))
-                user.update(password_hash=new_password)
+                new_password = form.cleaned_data.get('new_password')
+                user.update(password=new_password)
                 messages.success(request, 'Password successfully updated.')
                 return redirect(profile_details)
             else:
-                messages.success(request, 'Wrong old password.')
+                messages.error(request, 'Wrong old password.')
     else:
         form = ChangePasswordForm()
-    return render(request, 'change_password.html', {'user': user, 'form': form})
+    return render(request, 'change_password.html', {'form': form})
+
+
+@login_required
+def profile_bookshelf(request):
+    rec_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.recommended_books]
+    wishlist_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.wishlist]
+    return render(request, 'profile_bookshelf.html', {'rec_books': rec_books, 'wishlist_books': wishlist_books})
+
+
+@login_required
+def add_to_wishlist(request, book_id):
+    user = request.user.mongo_user
+    if not str(book_id) in user.wishlist:
+        user.wishlist.append(book_id)
+        user.update(wishlist=user.wishlist)
+
+    return redirect(book_details, book_id=book_id)
+
+
+
+@login_required
+def delete_from_wishlist(request, book_id):
+    user = request.user.mongo_user
+    if str(book_id) in user.wishlist:
+        user.wishlist.remove(book_id)
+        user.update(wishlist=user.wishlist)
+
+    return redirect(book_details, book_id=book_id)
+
 
 
 def book_details(request, book_id):
     book = Book.objects(id=book_id).first()
-    reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': None})
+    reviews = Review.objects(book_id=book_id).order_by('-date')
 
+    return render(request, 'book-details.html',
+                  {'book': book, 'reviews': reviews, 'book_id': book_id})
 
+<<<<<<< HEAD
 def add_review(request, user_id, book_id, text):
     user = MongoUser.objects(id=user_id).first()
     book = Book.objects(id=book_id).first()
@@ -87,38 +114,62 @@ def add_review(request, user_id, book_id, text):
 def add_rating(request, user_id, book_id, rating):
     if rating and 1 <= rating <= 5:
         user = MongoUser.objects(id=user_id).first()
+=======
+
+@login_required
+def add_review(request, book_id):
+    text = request.GET.get('text-comment')
+    if text.strip():
+>>>>>>> 30d8778916461f98b588b1e6ba010d92d21cc1b7
         book = Book.objects(id=book_id).first()
-        if str(book_id) in user.rated_books.keys():
-            book.statistic.stars[user.rated_books[str(book_id)]] -= 1
-
-        book.statistic.stars[rating] += 1
-        user.rated_books[str(book_id)] = rating
-        user.save()
-        book.save()
-        book.calculate_rating()
-        reviews = Review.objects(book_id=book_id)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
+        review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name,
+                        lastname=request.user.mongo_user.last_name, comment=text)
+        review.save()
+    else:
+        messages.error(request, "The comment field should not be blank")
+    return redirect(book_details, book_id=book_id)
 
 
-def change_review_status(request, book_id, user_id, review_id, new_status):
-    review = Review.objects(id=review_id).first()
-    user = MongoUser.objects(id=user_id).first()
+@login_required
+def add_rating(request, book_id, rating=1):
+    user = MongoUser.objects(id=request.user.mongo_user.id).first()
+    user_rated_books = user.rated_books
+
     book = Book.objects(id=book_id).first()
-    reviews = Review.objects(book_id=book_id)
+    if str(book_id) in user.rated_books.keys():
+        book.statistic.stars[user.rated_books[str(book_id)] - 1] -= 1
+
+    book.statistic.stars[rating - 1] += 1
+    user_rated_books = dict(user_rated_books, **{str(book_id): rating - 1})
+    user.update(rated_books=user_rated_books)
+    book.save()
+    book.calculate_rating()
+
+    return HttpResponse('Success', content_type="text/plain")
+
+
+@login_required
+def change_review_status(request, book_id, review_id, new_status):
+    review = Review.objects(id=review_id).first()
     if review:
         review.update(status=new_status)
-    return render(request, 'book-details.html', {'book': book, 'reviews': reviews, 'user': user})
+
+    return redirect(book_details, book_id=book_id)
 
 
 def home(request):
-    top_books = sorted(Book.objects(),key=lambda book: book.statistic.rating, reverse=True)[:20]
+    top_books = sorted(Book.objects(), key=lambda book: book.statistic.rating, reverse=True)[:20]
     new_books = Book.objects.order_by('-id')[:20]
     genres = []
     for genres_lst in Book.objects.values_list('genres'):
         for genre in genres_lst:
-            if not genre in genres:
+            if genre and genre not in genres:
                 genres.append(genre)
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': genres})
+
+
+def information_page(request):
+    return render(request, 'information_page.html')
 
 
 def search_by_author(request, author_name):
@@ -150,14 +201,26 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
+            username = form.cleaned_data.get('login')
+            password = form.cleaned_data.get('password')
+
             user = MongoUser(email=form.cleaned_data.get('email'))
             user.first_name = form.cleaned_data.get('firstname')
             user.last_name = form.cleaned_data.get('lastname')
-            user.username = form.cleaned_data.get('login')
-            user.password = form.cleaned_data.get('password')
+            user.username = username
+            user.password = password
             user.save()
 
-            return redirect(home)
+            user = authenticate(request=request, username=username, password=password)
+            if user:
+                login(request, user)
+
+            script = f'''<script>
+                            window.location.href = "{reverse(home)}";
+                            localStorage.clear();
+                        </script>'''
+
+            return HttpResponse(script)
     else:
         form = RegistrationForm()
 
@@ -169,17 +232,6 @@ def unique_registration_check(request, field_value):
     if user:
         return HttpResponse('Already taken', content_type="text/plain")
     return HttpResponse('', content_type="text/plain")
-
-
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request=request, username=username, password=password)
-        if user:
-            login(request, user)
-        print(user.is_authenticated)
-    return redirect(home)
 
 
 def logout_view(request):
@@ -197,16 +249,6 @@ def func_login(request):
             return HttpResponse(json.dumps({"message": "Success"}), content_type="application/json")
         else:
             return HttpResponse(json.dumps({"message": "Denied"}), content_type="application/json")
-
-
-@login_required
-def profile_details(request):
-    return render(request, 'profile_details.html')
-
-
-@login_required
-def profile_edit(request):
-    return render(request, 'profile_edit.html')
 
 
 def login_redirect_page(request):
