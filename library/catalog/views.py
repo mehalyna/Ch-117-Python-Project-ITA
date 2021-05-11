@@ -82,7 +82,6 @@ def add_to_wishlist(request, book_id):
     return redirect(book_details, book_id=book_id)
 
 
-
 @login_required
 def delete_from_wishlist(request, book_id):
     user = request.user.mongo_user
@@ -91,7 +90,6 @@ def delete_from_wishlist(request, book_id):
         user.update(wishlist=user.wishlist)
 
     return redirect(book_details, book_id=book_id)
-
 
 
 def book_details(request, book_id):
