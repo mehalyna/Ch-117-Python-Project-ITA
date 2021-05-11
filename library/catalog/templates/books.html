@@ -5,31 +5,42 @@
 
 {% block body %}
 
-<div class="container">
-    <h1 style="margin-top: 25px;">Results of search: {{ q }} {{ genre }} </h1>
-</div>
+{% if books|length < 1 %}
+    <div class="container" style="min-height: 640px">
+        <h2 class="h2-author">Use the search tool to find the right book</h2>
 
-<div class="container container-search">
-    {% for book in books %}
-        <div class="container-search-box">
-            <a href="{% url 'book-details' book.id %}" class="image-search">
-                <img src="{{ book.link_img }}" alt="{{ book.title }}">
-            </a>
-            <div class="book-search-info">
-                <a href="{% url 'book-details' book.id %}">
-                    <b><p>
-                        {% if book.title|length > 60 %}
-                            {{ book.title| slice:':56' }} ...
-                        {% else %}
-                            {{ book.title }}
-                        {% endif %}
-                    </p></b>
+        <form class="search" action="{% url 'form-books' %}">
+            <input type="text" class="form-control search-category-input" placeholder="Title/ Author/ Year" name="searchbar">
+            <input type="submit" class="btn btn-info search-category-button" value="Search">
+        </form>
+    </div>
+{% else %}
+    <div class="container">
+        <h1 style="margin-top: 25px;">Results of search: {{ q }} {{ genre }} </h1>
+    </div>
+
+    <div class="container container-search">
+        {% for book in books %}
+            <div class="container-search-box">
+                <a href="{% url 'book-details' book.id %}" class="image-search">
+                    <img src="{{ book.link_img }}" alt="{{ book.title }}">
                 </a>
-                <a href="{% url 'book-details' book.id %}"><p>{{ book.author_id.name }}</p></a>
-                <a href="{% url 'book-details' book.id %}"><p>{{ book.year }}</p></a>
+                <div class="book-search-info">
+                    <a href="{% url 'book-details' book.id %}">
+                        <b><p>
+                            {% if book.title|length > 60 %}
+                                {{ book.title| slice:':56' }} ...
+                            {% else %}
+                                {{ book.title }}
+                            {% endif %}
+                        </p></b>
+                    </a>
+                    <a href="{% url 'book-details' book.id %}"><p>{{ book.author_id.name }}</p></a>
+                    <a href="{% url 'book-details' book.id %}"><p>{{ book.year }}</p></a>
+                </div>
             </div>
-        </div>
-    {% endfor %}
-</div>
+        {% endfor %}
+    </div>
+{% endif %}
 
 {% endblock %}

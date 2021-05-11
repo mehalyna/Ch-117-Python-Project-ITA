@@ -246,3 +246,18 @@ def func_login(request):
 
 def login_redirect_page(request):
     return render(request, 'login_redirect.html')
+
+
+def news_page(request):
+    return render(request, 'news_page.html')
+
+
+def collections_page(request):
+    pages_books = Book.objects(pages__gte=1000)[:10]
+    total_read_books = Book.objects.order_by('-statistic__total_read')[:10]
+    return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': total_read_books})
+
+
+def authors_page(request):
+    authors = Author.objects.order_by('name')
+    return render(request, 'authors.html', {'authors': authors})
