@@ -568,3 +568,29 @@ margin-bottom:7px;
     position: absolute;
     bottom: 0;
 }
+
+.h2-collections{
+    margin-top: 25px;
+    margin-bottom: 20px;
+}
+
+.slide-relative{
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.min-height-650{
+    min-height: 650px;
+}
+
+.collections-next-arrow{
+    position: relative !important;
+    top: -278px !important;
+    left: 1150px !important;
+}
+
+.collections-prev-arrow{
+    position: relative !important;
+    top: -300px !important;
+    left: -65px !important;
+}
