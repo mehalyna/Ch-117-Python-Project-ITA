@@ -538,6 +538,8 @@ margin-bottom:7px;
     height: 400px;
     margin-bottom: 10px;
     text-align: center;
+    position: relative;
+    padding-bottom: 10px;
 }
 
 .trb-container{
@@ -559,4 +561,10 @@ margin-bottom:7px;
 .trb-box img{
     height: 60%;
     width: 100%;
+}
+
+.text-bottom{
+    width: 100%;
+    position: absolute;
+    bottom: 0;
 }

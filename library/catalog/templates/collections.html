@@ -13,11 +13,11 @@
       <div class="swiper-wrapper">
         <!-- Slides -->
           {% for book in pages_books %}
-            <div class="swiper-slide">
+            <div class="swiper-slide" style="position: relative; margin-bottom: 10px;">
                 <a href="{% url 'book-details' book.id %}">
                     <img src="{{ book.link_img }}" alt="{{ book.title }}">
                     <p><b>{{ book.title }}</b></p>
-                    <p>Pages: {{ book.pages }}</p>
+                    <p class="text-bottom">Pages: {{ book.pages }}</p>
                 </a>
             </div>
           {% endfor %}
@@ -33,7 +33,7 @@
                 <a href="{% url 'book-details' book.id %}">
                 <img src="{{ book.link_img }}" alt="{{ book.title }}">
                 <b><p>{{ book.title }}</p></b>
-                <p>Total read: {{ book.statistic.total_read }}</p>
+                <p class="text-bottom">Total read: {{ book.statistic.total_read }}</p>
                 </a>
             </div>
         {% endfor %}
