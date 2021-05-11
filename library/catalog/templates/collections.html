@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Collections{% endblock %}
+
+{% block body %}
+
+<div class="container" style="min-height: 660px">
+
+    <h2 style="margin-top: 25px; margin-bottom: 20px;">Books with over 1000 pages</h2>
+    <div class="swiper-container first-container">
+      <!-- Additional required wrapper -->
+      <div class="swiper-wrapper">
+        <!-- Slides -->
+          {% for book in pages_books %}
+            <div class="swiper-slide">
+                <a href="{% url 'book-details' book.id %}">
+                    <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                    <p><b>{{ book.title }}</b></p>
+                    <p>Pages: {{ book.pages }}</p>
+                </a>
+            </div>
+          {% endfor %}
+      </div>
+    </div>
+    <div class="swiper-button-next first-next" style="position: relative; top: -278px; left: 1150px"></div>
+    <div class="swiper-button-prev first-prev" style="position: relative; top: -300px; left: -65px;"></div>
+
+    <h2 style="margin-bottom: 20px;">Most read books</h2>
+    <div class="trb-container">
+        {% for book in total_read_books %}
+            <div class="trb-box">
+                <a href="{% url 'book-details' book.id %}">
+                <img src="{{ book.link_img }}" alt="{{ book.title }}">
+                <b><p>{{ book.title }}</p></b>
+                <p>Total read: {{ book.statistic.total_read }}</p>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

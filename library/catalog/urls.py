@@ -23,5 +23,8 @@ urlpatterns = [
     path('delete_from_wishlist/<str:book_id>/', views.delete_from_wishlist, name='delete-from-wishlist'),
     path('change_review_status/<str:book_id>/<str:review_id>/<str:new_status>/', views.change_review_status, name='change-review-status'),
     path('profile_bookshelf/', views.profile_bookshelf, name='profile_bookshelf'),
-    path('information/', views.information_page, name='information_page')
+    path('information/', views.information_page, name='information_page'),
+    path('news/', views.news_page, name='news_page'),
+    path('collections/', views.collections_page, name='collections_page'),
+    path('authors/', views.authors_page, name='authors_page')
 ]

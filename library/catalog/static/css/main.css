@@ -475,8 +475,9 @@ height:10px;
 margin-bottom:7px;
 }
 
-#errorlogin{
-height:10px;
+#errorlogin {
+    height: 10px;
+}
 
 .info_page {
     padding: 1%;
@@ -501,4 +502,61 @@ height:10px;
     position: absolute;
     left: 40%;
     opacity: 0.8 !important;
+}
+
+.author-box{
+    display:flex;
+    flex-wrap: wrap;
+}
+
+.h2-author{
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.author-box a{
+    width: 25%;
+    color: #323232;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.author-box a:hover{
+    width: 25%;
+    color: #323232;
+    text-decoration: underline;
+    font-size: 18px;
+}
+
+.book-search-info a:hover{
+    color: #323232;
+    text-decoration: underline;
+}
+
+.trb-box{
+    width: 18%;
+    height: 400px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.trb-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.trb-box a{
+    color: #323232;
+    text-decoration: none;
+}
+
+.trb-box a:hover{
+    color: #323232;
+    text-decoration: underline;
+}
+
+.trb-box img{
+    height: 60%;
+    width: 100%;
 }
