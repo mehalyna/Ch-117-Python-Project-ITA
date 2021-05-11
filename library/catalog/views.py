@@ -67,7 +67,7 @@ def change_password(request):
 
 @login_required
 def profile_bookshelf(request):
-    rec_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.recommended_books]
+    rec_books = sorted(Book.objects(), key=lambda book: book.statistic.total_read, reverse=True)[:15]
     wishlist_books = [Book.objects(id=book_id).first() for book_id in request.user.mongo_user.wishlist]
     return render(request, 'profile_bookshelf.html', {'rec_books': rec_books, 'wishlist_books': wishlist_books})
 
@@ -105,7 +105,8 @@ def add_review(request, book_id):
     text = request.GET.get('text-comment')
     if text.strip():
         book = Book.objects(id=book_id).first()
-        review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk, firstname=request.user.mongo_user.first_name,
+        review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk,
+                        firstname=request.user.mongo_user.first_name,
                         lastname=request.user.mongo_user.last_name, comment=text)
         review.save()
     else:
