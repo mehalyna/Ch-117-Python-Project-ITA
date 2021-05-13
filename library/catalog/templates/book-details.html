@@ -59,7 +59,7 @@
                         <a class="btn btn-secondary" onclick="window.history.back();">Back</a>
                     </div>
                 </div>
-                <p>by <a href={% url 'library-books-author' book.author_id.name %}><b>{{ book.author_id.name }}</b></a>
+                <p>by <a href="{% url 'library-books-author' book.author_id.name %}"><b>{{ book.author_id.name }}</b></a>
                 </p>
                 <p>
                     Genres:
