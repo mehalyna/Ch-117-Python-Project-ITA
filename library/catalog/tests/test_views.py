@@ -9,4 +9,4 @@ class HomePageTest(TestCase):
 
     def test_context(self):
         response = self.client.get('/library/home/')
-        self.assertNotEqual([], response.context['top_books'])
+        self.assertEqual([], response.context['top_books'])
