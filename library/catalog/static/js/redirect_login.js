@@ -68,3 +68,16 @@ function login_user_redirect(){
             }
         });
     }
+$(function() {
+    $('#inputUsername').on('keypress', function(e) {
+        if (e.which == 32)
+            return false;
+    });
+});
+
+$(function() {
+    $('#inputPassword').on('keypress', function(e) {
+        if (e.which == 32)
+            return false;
+    });
+});
