@@ -42,4 +42,3 @@ class ProfileEditViewTest(TestCase):
         response = self.client.get(reverse('profile_edit'))
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Edit profile', response.content)
-
