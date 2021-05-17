@@ -104,3 +104,17 @@ function passwordErrorMessage(){
   $("#errorPassword").html("   ");
   }
 }
+
+$(function() {
+    $('#exampleInputUsername').on('keypress', function(e) {
+        if (e.which == 32)
+            return false;
+    });
+});
+
+$(function() {
+    $('#exampleInputPassword').on('keypress', function(e) {
+        if (e.which == 32)
+            return false;
+    });
+});
