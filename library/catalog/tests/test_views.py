@@ -10,3 +10,11 @@ class HomePageTest(TestCase):
     def test_context(self):
         response = self.client.get('/library/home/')
         self.assertNotEqual([], response.context['top_books'])
+
+
+class ProfileEditViewTest(TestCase):
+    def test_unauthorized_get_page(self):
+        response = self.client.get('/library/profile_edit/')
+        self.assertEqual(response.status_code, 302)
+
+

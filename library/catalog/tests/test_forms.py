@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..forms import ChangePasswordForm
+from ..forms import ChangePasswordForm, EditProfileForm
 
 
 class ChangePasswordFormTest(TestCase):
@@ -12,3 +12,12 @@ class ChangePasswordFormTest(TestCase):
         }
         form = ChangePasswordForm(data=data)
         self.assertFalse(form.is_valid())
+
+
+class EditProfileFormTest(TestCase):
+    def test_edit_profile_form_fields_labels(self):
+        form = EditProfileForm()
+        self.assertTrue(form.fields['firstname'].label == 'Firstname')
+        self.assertTrue(form.fields['lastname'].label == 'Lastname')
+        self.assertTrue(form.fields['email'].label == 'Email')
+        self.assertTrue(form.fields['login'].label == 'Login')
