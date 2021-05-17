@@ -15,9 +15,18 @@ class ChangePasswordFormTest(TestCase):
 
 
 class EditProfileFormTest(TestCase):
-    def test_edit_profile_form_fields_labels(self):
+    def test_edit_profile_form_firstname_label(self):
         form = EditProfileForm()
         self.assertTrue(form.fields['firstname'].label == 'Firstname')
+
+    def test_edit_profile_form_lastname_label(self):
+        form = EditProfileForm()
         self.assertTrue(form.fields['lastname'].label == 'Lastname')
+
+    def test_edit_profile_form_email_label(self):
+        form = EditProfileForm()
         self.assertTrue(form.fields['email'].label == 'Email')
+
+    def test_edit_profile_form_login_label(self):
+        form = EditProfileForm()
         self.assertTrue(form.fields['login'].label == 'Login')
