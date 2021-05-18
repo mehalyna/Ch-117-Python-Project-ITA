@@ -85,7 +85,6 @@ class RegistrationFormTest(TestCase):
         user1.save()
 
     def setUp(self) -> None:
-        self.user1 = MongoUser.objects(email='test_registration_email1@example.com').first()
         self.data = {
             'firstname': 'John',
             'lastname': 'Wick',
@@ -119,86 +118,75 @@ class RegistrationFormTest(TestCase):
         self.assertEqual(self.form().fields['confirm_password'].label, 'Confirm password')
 
     def test_firstname_blank(self):
-        data = self.data
-        data['firstname'] = ''
-        self.assertEqual(self.form(data=data).errors['firstname'], ['This field is required.'])
+        self.data['firstname'] = ''
+        self.assertEqual(self.form(data=self.data).errors['firstname'], ['This field is required.'])
 
     def test_firstname_profanity(self):
-        data = self.data
-        data['firstname'] = 'shit'
-        self.assertEqual(self.form(data=data).errors['firstname'], ['Contains profanity'])
+        self.data['firstname'] = 'shit'
+        self.assertEqual(self.form(data=self.data).errors['firstname'], ['Contains profanity'])
 
     def test_lastname_blank(self):
-        data = self.data
-        data['lastname'] = ''
-        self.assertEqual(self.form(data=data).errors['lastname'], ['This field is required.'])
+        self.data['lastname'] = ''
+        self.assertEqual(self.form(data=self.data).errors['lastname'], ['This field is required.'])
 
     def test_lastname_profanity(self):
-        data = self.data
-        data['lastname'] = 'shit'
-        self.assertEqual(self.form(data=data).errors['lastname'], ['Contains profanity'])
+        self.data['lastname'] = 'shit'
+        self.assertEqual(self.form(data=self.data).errors['lastname'], ['Contains profanity'])
 
     def test_email_blank(self):
-        data = self.data
-        data['email'] = ''
-        self.assertEqual(self.form(data=data).errors['email'], ['This field is required.'])
+        self.data['email'] = ''
+        self.assertEqual(self.form(data=self.data).errors['email'], ['This field is required.'])
 
     def test_email_invalid(self):
-        data = self.data
-        data['email'] = 'johngmail.com'
-        self.assertEqual(self.form(data=data).errors['email'], ['Enter a valid email address.'])
+        self.data['email'] = 'johngmail.com'
+        self.assertEqual(self.form(data=self.data).errors['email'], ['Enter a valid email address.'])
 
     def test_email_profanity(self):
-        data = self.data
-        data['email'] = 'shit@example.com'
-        self.assertEqual(self.form(data=data).errors['email'], ['Contains profanity'])
+        self.data['email'] = 'shit@example.com'
+        self.assertEqual(self.form(data=self.data).errors['email'], ['Contains profanity'])
 
     def test_email_unique_validation(self):
-        data = self.data
-        data['email'] = self.user1.email
-        self.assertEqual(self.form(data=data).errors['email'], ['Is already taken'])
+        user = MongoUser.objects(email='test_registration_email1@example.com').only('email').first()
+        self.data['email'] = user.email
+        self.assertEqual(self.form(data=self.data).errors['email'], ['Is already taken'])
 
     def test_username_blank(self):
-        data = self.data
-        data['login'] = ''
-        self.assertEqual(self.form(data=data).errors['login'], ['This field is required.'])
+        self.data['login'] = ''
+        self.assertEqual(self.form(data=self.data).errors['login'], ['This field is required.'])
 
     def test_username_invalid_length(self):
-        data = self.data
-        data['login'] = 'joh1'
+        self.data['login'] = 'joh1'
         self.assertEqual(
-            self.form(data=data).errors['login'], ['Ensure this value has at least 6 characters (it has 4).']
+            self.form(data=self.data).errors['login'], ['Ensure this value has at least 6 characters (it has 4).']
         )
 
     def test_username_profanity(self):
-        data = self.data
-        data['login'] = '1shit123'
-        self.assertEqual(self.form(data=data).errors['login'], ['Contains profanity'])
+        self.data['login'] = '1shit123'
+        self.assertEqual(self.form(data=self.data).errors['login'], ['Contains profanity'])
 
     def test_username_unique_validation(self):
-        data = self.data
-        data['login'] = self.user1.username
-        self.assertEqual(self.form(data=data).errors['login'], ['Is already taken'])
+        user = MongoUser.objects(username='test_registration_username1').only('username').first()
+        self.data['login'] = user.username
+        self.assertEqual(self.form(data=self.data).errors['login'], ['Is already taken'])
 
     def test_password_invalid(self):
-        data = self.data
-        data['password'] = 'joh123'
+        
+        self.data['password'] = 'joh123'
         self.assertEqual(
-            self.form(data=data).errors['password'], ['Minimum 8 characters, at least 1 letter and 1 number']
+            self.form(data=self.data).errors['password'], ['Minimum 8 characters, at least 1 letter and 1 number']
         )
 
     def test_confirm_password(self):
-        data = self.data
-        data['confirm_password'] = '543584798375943'
+        self.data['confirm_password'] = '543584798375943'
         self.assertEqual(
-            self.form(data=data).errors['confirm_password'], ['Minimum 8 characters, at least 1 letter and 1 number']
+            self.form(data=self.data).errors['confirm_password'],
+            ['Minimum 8 characters, at least 1 letter and 1 number']
         )
 
     def test_passwords_doesnt_match(self):
-        data = self.data
-        data['password'] = 'user1234'
-        data['confirm_password'] = 'user12345'
-        self.assertEqual(self.form(data=data).errors['__all__'], ['Password and confirm password doesn\'t match'])
+        self.data['password'] = 'user1234'
+        self.data['confirm_password'] = 'user12345'
+        self.assertEqual(self.form(data=self.data).errors['__all__'], ['Password and confirm password doesn\'t match'])
 
     def test_error_count(self):
         data = {
