@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from ..models import MongoUser
+from ..models import MongoUser, Book, Author
 
 
 class HomePageTest(TestCase):
@@ -43,7 +43,100 @@ class ProfileEditViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Edit profile', response.content)
 
+        
+class SearchPageTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        author = Author()
+        author.name = 'author'
+        author.save()
 
+        book = Book()
+        book.title = 'title'
+        book.author_id = author.id
+        book.year = '2000'
+        book.save()
+
+    def test_get_search_page_without_result(self):
+        response = self.client.get('/library/search/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Use the search tool to find the right book', response.content)
+
+    def test_get_search_page_with_title(self):
+        book = Book.objects(title='title').first()
+        response = self.client.get('/library/search/?searchbar={}'.format(book.title))
+        self.assertIn(b'title', response.content)
+
+    def test_get_search_page_with_author(self):
+        author = Author.objects(name='author').first()
+        response = self.client.get('/library/search/?searchbar={}/'.format(author.name))
+        self.assertIn(b'author', response.content)
+
+    def test_get_search_page_with_year(self):
+        book = Book.objects(year='2000').first()
+        response = self.client.get('/library/search/?searchbar={}/'.format(book.year))
+        self.assertIn(b'2000', response.content)
+
+
+class NewsPageTest(TestCase):
+    def test_get_news_page(self):
+        response = self.client.get('/library/news/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'News and information about updates', response.content)
+
+
+class CollectionsPageTest(TestCase):
+    def test_get_collections_page(self):
+        response = self.client.get('/library/collections/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Books with over 1000 pages', response.content)
+
+
+class AuthorsPageTest(TestCase):
+    def test_get_authors_page(self):
+        response = self.client.get('/library/authors/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Available authors', response.content)
+
+        
+class LoginViewTest(TestCase):
+    def setUp(self) -> None:
+        user = MongoUser()
+        user.first_name = 'test'
+        user.last_name = 'test'
+        user.username = 'testing'
+        user.email = 'test@gmail.com'
+        user.password = 'test1234'
+        self.user = user.save()
+
+    def tearDown(self) -> None:
+        self.user.delete()
+
+    def test_login_with_valid_data(self):
+        data = {
+            'username': 'testing',
+            'password': 'test1234'
+        }
+        response = self.client.post('/library/func_login', data=data)
+        self.assertIn(b'Success', response.content)
+
+    def test_login_with_invalid_username(self):
+        data = {
+            'username': 'not_exist_username',
+            'password': 'test1234'
+        }
+        response = self.client.post('/library/func_login', data=data)
+        self.assertIn(b'Denied', response.content)
+
+    def test_login_with_invalid_password(self):
+        data = {
+            'username': 'testing',
+            'password': 'invalid_pass'
+        }
+        response = self.client.post('/library/func_login', data=data)
+        self.assertIn(b'Denied', response.content)
+
+        
 class RegistrationPageTest(TestCase):
     def setUp(self) -> None:
         self.registration_url = reverse('library-registration')
@@ -63,3 +156,46 @@ class RegistrationPageTest(TestCase):
         }
         response = self.client.post(self.registration_url, data=data, follow=True)
         self.assertEqual(response.status_code, 200)
+
+
+class BookshelfPageTest(TestCase):
+    def setUp(self):
+        user = MongoUser()
+        user.first_name = 'test'
+        user.last_name = 'test'
+        user.username = 'test111_user'
+        user.email = 'test_user111@gmail.com'
+        user.password = 'test1234'
+        self.user = user.save()
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_unauthorized_get_page(self):
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_get_page(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_recbooks_context(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertIn(b'Recommended for you', response.content)
+
+    def test_wishlist_context(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertIn(b'Wishlist', response.content)
+
+    def test_recbooks(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertEqual([], response.context['rec_books'])
+
+    def test_wishbooks(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertEqual([], response.context['wishlist_books'])
