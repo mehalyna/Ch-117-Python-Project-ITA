@@ -102,3 +102,45 @@ class RegistrationPageTest(TestCase):
         response = self.client.post(self.registration_url, data=data, follow=True)
         self.assertEqual(response.status_code, 200)
 
+
+class BookshelfPageTest(TestCase):
+    def setUp(self):
+        user = MongoUser()
+        user.first_name = 'test'
+        user.last_name = 'test'
+        user.username = 'test111_user'
+        user.email = 'test_user111@gmail.com'
+        user.password = 'test1234'
+        self.user = user.save()
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_unauthorized_get_page(self):
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_get_page(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_recbooks_context(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertIn(b'Recommended for you', response.content)
+
+    def test_wishlist_context(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertIn(b'Wishlist', response.content)
+
+    def test_recbooks(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertEqual([], response.context['rec_books'])
+
+    def test_wishbooks(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get('/library/profile_bookshelf/')
+        self.assertEqual([], response.context['wishlist_books'])
