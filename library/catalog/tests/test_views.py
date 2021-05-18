@@ -159,17 +159,6 @@ class RegistrationPageTest(TestCase):
 
 
 class BookshelfPageTest(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        author = Author()
-        author.name = 'author'
-        author.save()
-
-        book = Book()
-        book.title = 'title'
-        book.author_id = author.id
-        book.year = '2000'
-        book.save()
 
     def setUp(self):
         user = MongoUser()
