@@ -44,6 +44,44 @@ class ProfileEditViewTest(TestCase):
         self.assertIn(b'Edit profile', response.content)
 
 
+class LoginViewTest(TestCase):
+    def setUp(self) -> None:
+        user = MongoUser()
+        user.first_name = 'test'
+        user.last_name = 'test'
+        user.username = 'testing'
+        user.email = 'test@gmail.com'
+        user.password = 'test1234'
+        self.user = user.save()
+
+    def tearDown(self) -> None:
+        self.user.delete()
+
+    def test_login_with_valid_data(self):
+        data = {
+            'username': 'testing',
+            'password': 'test1234'
+        }
+        response = self.client.post('/library/func_login', data=data)
+        self.assertIn(b'Success', response.content)
+
+    def test_login_with_invalid_username(self):
+        data = {
+            'username': 'not_exist_username',
+            'password': 'test1234'
+        }
+        response = self.client.post('/library/func_login', data=data)
+        self.assertIn(b'Denied', response.content)
+
+    def test_login_with_invalid_password(self):
+        data = {
+            'username': 'testing',
+            'password': 'invalid_pass'
+        }
+        response = self.client.post('/library/func_login', data=data)
+        self.assertIn(b'Denied', response.content)
+
+  
 class RegistrationPageTest(TestCase):
     def setUp(self) -> None:
         self.registration_url = reverse('library-registration')
