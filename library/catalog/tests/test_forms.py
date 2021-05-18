@@ -107,7 +107,7 @@ class RegistrationFormTest(TestCase):
         self.assertEqual(self.form().fields['lastname'].label, 'Lastname')
 
     def test_email_label(self):
-        self.assertTrue(self.form().fields['email'].label == 'Email')
+        self.assertEqual(self.form().fields['email'].label, 'Email')
 
     def test_login_label(self):
         self.assertEqual(self.form().fields['login'].label, 'Login')
@@ -121,7 +121,7 @@ class RegistrationFormTest(TestCase):
     def test_firstname_blank(self):
         data = self.data
         data['firstname'] = ''
-        self.assertTrue(self.form(data=data).errors['firstname'], ['Data required.'])
+        self.assertEqual(self.form(data=data).errors['firstname'], ['This field is required.'])
 
     def test_firstname_profanity(self):
         data = self.data
@@ -131,7 +131,7 @@ class RegistrationFormTest(TestCase):
     def test_lastname_blank(self):
         data = self.data
         data['lastname'] = ''
-        self.assertTrue(self.form(data=data).errors['lastname'], ['Data required.'])
+        self.assertEqual(self.form(data=data).errors['lastname'], ['This field is required.'])
 
     def test_lastname_profanity(self):
         data = self.data
@@ -141,7 +141,7 @@ class RegistrationFormTest(TestCase):
     def test_email_blank(self):
         data = self.data
         data['email'] = ''
-        self.assertTrue(self.form(data=data).errors['email'], ['Data required.'])
+        self.assertEqual(self.form(data=data).errors['email'], ['This field is required.'])
 
     def test_email_invalid(self):
         data = self.data
@@ -161,7 +161,7 @@ class RegistrationFormTest(TestCase):
     def test_username_blank(self):
         data = self.data
         data['login'] = ''
-        self.assertTrue(self.form(data=data).errors['login'], ['Data required.'])
+        self.assertEqual(self.form(data=data).errors['login'], ['This field is required.'])
 
     def test_username_invalid_length(self):
         data = self.data
