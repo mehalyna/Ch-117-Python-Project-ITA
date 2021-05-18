@@ -59,6 +59,7 @@ def change_password(request):
                 messages.success(request, 'Password successfully updated.')
                 return redirect(profile_details)
             else:
+                print(user.check_password(old_password))
                 messages.error(request, 'Wrong old password.')
     else:
         form = ChangePasswordForm()
