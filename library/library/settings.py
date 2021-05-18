@@ -97,6 +97,9 @@ mongoengine.connect(DB_NAME, host=MONGO_DATABASE_HOST)
 
 AUTH_USER_MODEL = 'catalog.DjangoUser'
 
+TEST_RUNNER = 'library.library_test_runner.LibraryMixinRunner'
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
