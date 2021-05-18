@@ -64,6 +64,7 @@ class RegistrationPageTest(TestCase):
         response = self.client.post(self.registration_url, data=data, follow=True)
         self.assertEqual(response.status_code, 200)
 
+
 class BookshelfPageTest(TestCase):
     def setUp(self):
         user = MongoUser()
