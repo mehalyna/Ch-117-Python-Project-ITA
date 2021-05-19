@@ -1,0 +1,5 @@
+[run]
+omit=*/.venv_flask/*
+
+[report]
+skip_covered=True
