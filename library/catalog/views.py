@@ -84,10 +84,12 @@ def add_to_wishlist(request, book_id):
         return redirect(home)
 
     if not str(book_id) in user.wishlist:
-        book.update(statistic__total_read=book.statistic.total_read + 1)
-        book.update(statistic__reading_now=book.statistic.reading_now + 1)
-        user.wishlist.append(book_id)
-        user.update(wishlist=user.wishlist)
+        book = Book.objects(id=book_id).first()
+        if book:
+            book.update(statistic__total_read=book.statistic.total_read + 1)
+            book.update(statistic__reading_now=book.statistic.reading_now + 1)
+            user.wishlist.append(book_id)
+            user.update(wishlist=user.wishlist)
 
     return redirect(book_details, book_id=book_id)
 
@@ -100,6 +102,7 @@ def delete_from_wishlist(request, book_id):
         return redirect(home)
 
     if str(book_id) in user.wishlist:
+        book = Book.objects(id=book_id).first()
         book.update(statistic__reading_now=book.statistic.reading_now - 1)
         user.wishlist.remove(book_id)
         user.update(wishlist=user.wishlist)
