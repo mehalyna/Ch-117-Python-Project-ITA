@@ -213,7 +213,7 @@ class BookDetailsPageTest(TestCase):
         self.user = user.save()
 
         author = Author(name='author')
-        author.save()
+        self.author = author.save()
 
         book = Book(title='title',author_id=author.id,year='2000')
         self.book = book.save()
@@ -221,6 +221,7 @@ class BookDetailsPageTest(TestCase):
     def tearDown(self):
         self.user.delete()
         self.book.delete()
+        self.author.delete()
 
     def test_get_page(self):
         response = self.client.get(f'/library/book_details/{str(self.book.id)}')
