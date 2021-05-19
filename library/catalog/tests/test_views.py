@@ -43,7 +43,17 @@ class ProfileEditViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Edit profile', response.content)
 
-        
+
+class RedirectLoginTest(TestCase):
+
+    def setUp(self) -> None:
+        self.login_redirect_page = reverse('login_redirect_page')
+
+    def test_can_access_redirect_page(self):
+        response = self.client.get(self.login_redirect_page)
+        self.assertEqual(response.status_code, 200)
+
+
 class SearchPageTest(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -98,7 +108,7 @@ class AuthorsPageTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Available authors', response.content)
 
-        
+
 class LoginViewTest(TestCase):
     def setUp(self) -> None:
         user = MongoUser()
@@ -136,7 +146,7 @@ class LoginViewTest(TestCase):
         response = self.client.post('/library/func_login', data=data)
         self.assertIn(b'Denied', response.content)
 
-        
+
 class RegistrationPageTest(TestCase):
     def setUp(self) -> None:
         self.registration_url = reverse('library-registration')
@@ -199,3 +209,54 @@ class BookshelfPageTest(TestCase):
         self.client.login(username='test111_user', password='test1234')
         response = self.client.get('/library/profile_bookshelf/')
         self.assertEqual([], response.context['wishlist_books'])
+
+
+class ChangePasswordPageTest(TestCase):
+    def setUp(self):
+        user = MongoUser()
+        user.first_name = 'test'
+        user.last_name = 'test'
+        user.username = 'testing'
+        user.email = 'test_user111@gmail.com'
+        user.password = 'test1234'
+        self.user = user.save()
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_change_password_with_valid_data(self):
+        self.client.login(username='testing', password='test1234')
+        data = {
+            'old_password': 'test1234',
+            'new_password': 'test12345'
+        }
+        response = self.client.post(reverse('change_password'), data=data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_change_password_with_invalid_data(self):
+        self.client.login(username='testing', password='test1234')
+        data = {
+            'old_password': 'test12',
+            'new_password': 'test12345'
+        }
+        response = self.client.post(reverse('change_password'), data=data)
+        self.assertTemplateUsed(response, 'change_password.html')
+
+
+class LogoutViewTest(TestCase):
+    def setUp(self):
+        user = MongoUser()
+        user.first_name = 'test'
+        user.last_name = 'test'
+        user.username = 'testing'
+        user.email = 'test_user111@gmail.com'
+        user.password = 'test1234'
+        self.user = user.save()
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_logout(self):
+        self.client.login(username='testing', password='test1234')
+        response = self.client.post(reverse('logout'))
+        self.assertEqual(response.status_code, 302)
