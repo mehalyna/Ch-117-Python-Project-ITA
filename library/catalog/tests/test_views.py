@@ -202,13 +202,6 @@ class BookshelfPageTest(TestCase):
         self.assertEqual([], response.context['wishlist_books'])
 
 class BookDetailsPageTest(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        author = Author(name='author')
-        author.save()
-
-        book = Book(title='title',author_id=author.id,year='2000')
-        cls.book = book.save()
 
     def setUp(self):
         user = MongoUser()
@@ -219,8 +212,15 @@ class BookDetailsPageTest(TestCase):
         user.password = 'test1234'
         self.user = user.save()
 
+        author = Author(name='author')
+        author.save()
+
+        book = Book(title='title',author_id=author.id,year='2000')
+        self.book = book.save()
+
     def tearDown(self):
         self.user.delete()
+        self.book.delete()
 
     def test_get_page(self):
         response = self.client.get(f'/library/book_details/{str(self.book.id)}')
