@@ -52,7 +52,6 @@ class RedirectLoginTest(TestCase):
     def test_can_access_redirect_page(self):
         response = self.client.get(self.login_redirect_page)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'login_redirect.html')
 
 
 class SearchPageTest(TestCase):
