@@ -169,6 +169,7 @@ class RegistrationPageTest(TestCase):
 
 
 class BookshelfPageTest(TestCase):
+
     def setUp(self):
         user = MongoUser()
         user.first_name = 'test'
@@ -210,6 +211,75 @@ class BookshelfPageTest(TestCase):
         response = self.client.get('/library/profile_bookshelf/')
         self.assertEqual([], response.context['wishlist_books'])
 
+class BookDetailsPageTest(TestCase):
+
+    def setUp(self):
+        user = MongoUser()
+        user.first_name = 'test'
+        user.last_name = 'test'
+        user.username = 'test111_user'
+        user.email = 'test_user111@gmail.com'
+        user.password = 'test1234'
+        self.user = user.save()
+
+        author = Author(name='author')
+        self.author = author.save()
+
+        book = Book(title='title',author_id=author.id,year='2000')
+        self.book = book.save()
+
+    def tearDown(self):
+        self.user.delete()
+        self.book.delete()
+        self.author.delete()
+
+    def test_get_page(self):
+        response = self.client.get(f'/library/book_details/{str(self.book.id)}')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.book.title.encode(), response.content)
+        self.assertIn(self.book.year.encode(), response.content)
+        self.assertIn(self.book.author_id.name.encode(), response.content)
+
+    def test_unauthorized_get_page(self):
+        response = self.client.get(f'/library/book_details/{str(self.book.id)}')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(b'Add to wishlist',response.content)
+        self.assertNotIn(b'Add rating',response.content)
+        self.assertNotIn(b'Add comment',response.content)
+
+    def test_authorized_get_page(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get(f'/library/book_details/{str(self.book.id)}')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Add to wishlist',response.content)
+        self.assertIn(b'Add rating',response.content)
+        self.assertIn(b'Add comment',response.content)
+
+    def test_add_to_wishlist(self):
+        self.client.login(username='test111_user', password='test1234')
+        response = self.client.get(f'/library/book_details/{str(self.book.id)}')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Add to wishlist',response.content)
+        self.client.post(f'/library/add_to_wishlist/{str(self.book.id)}/')
+        response = self.client.get(f'/library/book_details/{str(self.book.id)}')
+        self.user.reload()
+        self.assertIn(b'Delete from wishlist',response.content)
+        self.assertNotIn(b'Add to wishlist',response.content)
+        self.assertTrue(str(self.book.id) in self.user.wishlist)
+
+    def test_delete_from_wishlist(self):
+        self.client.login(username='test111_user', password='test1234')
+        self.client.post(f'/library/add_to_wishlist/{str(self.book.id)}/')
+        response = self.client.get(f'/library/book_details/{str(self.book.id)}')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(b'Add to wishlist',response.content)
+        self.assertIn(b'Delete from wishlist',response.content)
+        self.client.post(f'/library/delete_from_wishlist/{str(self.book.id)}/')
+        response = self.client.get(f'/library/book_details/{str(self.book.id)}')
+        self.user.reload()
+        self.assertNotIn(b'Delete from wishlist',response.content)
+        self.assertIn(b'Add to wishlist',response.content)
+        self.assertFalse(str(self.book.id) in self.user.wishlist)
 
 class ChangePasswordPageTest(TestCase):
     def setUp(self):
