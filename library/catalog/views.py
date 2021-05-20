@@ -221,12 +221,13 @@ def registration(request):
             username = form.cleaned_data.get('login')
             password = form.cleaned_data.get('password')
 
-            user = MongoUser(email=form.cleaned_data.get('email'))
-            user.first_name = form.cleaned_data.get('firstname')
-            user.last_name = form.cleaned_data.get('lastname')
-            user.username = username
-            user.password = password
-            user.save()
+            MongoUser.objects.create_user(
+                firstname=form.cleaned_data.get('firstname'),
+                lastname=form.cleaned_data.get('lastname'),
+                username=username,
+                email=form.cleaned_data.get('email'),
+                password=password,
+            )
 
             user = authenticate(request=request, username=username, password=password)
             if user:

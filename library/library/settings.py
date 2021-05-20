@@ -96,7 +96,7 @@ DATABASES = {
 
 mongoengine.connect(DB_NAME, host=MONGO_DATABASE_HOST)
 
-AUTH_USER_MODEL = 'catalog.DjangoUser'
+AUTH_USER_MODEL = 'catalog.MongoUser'
 
 TEST_RUNNER = 'library.library_test_runner.LibraryMixinRunner'
 
