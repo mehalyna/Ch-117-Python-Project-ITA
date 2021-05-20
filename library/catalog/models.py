@@ -1,13 +1,11 @@
 import math
-from copy import copy
 from datetime import datetime
 
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from djongo import models
 from django_mongoengine import Document
-from mongoengine import DateTimeField, DictField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
+from mongoengine import DateTimeField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
-from werkzeug.security import check_password_hash, generate_password_hash
 
 
 class Status:
