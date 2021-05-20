@@ -1,0 +1,5 @@
+[run]
+omit=*/venv/*
+
+[report]
+skip_covered=True
