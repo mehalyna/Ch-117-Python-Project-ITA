@@ -13,7 +13,14 @@ Python Project of Ch-117 mixed group ITA
    ```sh
    pip install -r requirements.txt
    ```
-5. Initialize database
+
+### Our project include two servers:
+   - admin
+   - user
+  
+#### To run admin server:
+
+1. Initialize database
    - Install MongoDB Compass
    - Connect to local db
    ```python
@@ -40,18 +47,41 @@ Python Project of Ch-117 mixed group ITA
    - Minimum number of characters for password = 8
    - ```sh   
       u.save()
-   
-6. Run the server <br/>
-   In admin directory run the comand
-    ```sh
-    ..\admin>app.py
-    ```
-7. Run tests <br/>
-   In admin directory run the comand 
-   ```sh
-   ..\admin>pytest
-   ```
+      ```
+      
+Following commands should be run in the 'admin' directory of the projectad
 
+2. Run the server <br/>
+    ```sh
+    theproject\admin>app.py
+    ```
+3. Run the tests <br/>
+   ```sh
+   theproject\admin>pytest
+   ```
+4. To see test coverage <br/>
+   ```sh
+   theproject\admin>coverage run -m --omit='*/venv/*' pytest
+   theproject\admin>coverage report
+   ```
+   
+
+#### To run user server:
+Following commands should be run in the 'library' directory of the project
+1. Run the server <br/>
+   
+   ```sh
+    theproject\library>python manage.py runserver
+   ```
+2. Run the tests <br/>
+   ```sh
+    theproject\library>python manage.py test
+   ```
+3. To see test coverage <br/>
+   ```sh
+   theproject\library>coverage run --omit='*/venv/*' manage.py test
+   theproject\library>coverage report
+   ```
 ## For contributors
 ### Project setup
 Start with our wiki
