@@ -13,26 +13,27 @@ Python Project of Ch-117 mixed group ITA
    ```sh
    pip install -r requirements.txt
    ```
+5. Initialize database
+   - Install MongoDB Compass
+   - Set up MongoDB Compass
+      - Meke connection mongodb://<your_url>:<your_port>
+      - Create database <your_db_name>
+   - Create file `.env` in root folder of the project with fields:
+   ```text
+      FLASK_SECRET_KEY=<your_secret_key>
+      DJANGO_SECRET_KEY=<your_secret_key>
+      DB_NAME=<your_db_name>
+      MONGO_URL=<your_url>
+      PORT=<your_port>
+   ```
 
 ### Our project include two servers:
    - admin
    - user
   
-#### To run admin server:
 
-1. Initialize database
-   - Install MongoDB Compass
-   - Connect to local db
-   ```python
-   from mongoengine import connect
-   connect(
-       db=DB_NAME,
-       host=MONGO_URL,
-       port=PORT
-    )
-   ```
-   
-   - You must create the first administrator user yourself.
+#### To run admin server:
+ 1. Create the first administrator user to login in admin.
    - Start flask shell from terminal:
    - ```sh
      from models import User
@@ -57,11 +58,11 @@ Following commands should be run in the 'admin' directory of the projectad
     ```
 3. Run the tests <br/>
    ```sh
-   theproject\admin>pytest
+   theproject\admin>pytest -v
    ```
 4. To see test coverage <br/>
    ```sh
-   theproject\admin>coverage run -m --omit='*/venv/*' pytest
+   theproject\admin>coverage run -m --omit='*/venv/*' pytest -v
    theproject\admin>coverage report
    ```
    
@@ -75,11 +76,11 @@ Following commands should be run in the 'library' directory of the project
    ```
 2. Run the tests <br/>
    ```sh
-    theproject\library>python manage.py test
+    theproject\library>python manage.py test -v 2
    ```
 3. To see test coverage <br/>
    ```sh
-   theproject\library>coverage run --omit='*/venv/*' manage.py test
+   theproject\library>coverage run --omit='*/venv/*' manage.py test -v 2
    theproject\library>coverage report
    ```
 ## For contributors
