@@ -2,10 +2,9 @@ import math
 from copy import copy
 from datetime import datetime
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from djongo import models
 from django_mongoengine import Document
-from django.contrib.auth.models import AbstractUser
 from mongoengine import DateTimeField, DictField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
     IntField, ListField, ReferenceField, StringField
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -23,69 +22,84 @@ class Role:
     ADMIN = 'admin'
 
 
-class Preference(EmbeddedDocument):
-    genres = ListField(default=[])
-    authors = ListField(default=[])
-    rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
-    years = ListField(default=(), max_length=2)
+class Preference(models.Model):
+    id = models.AutoField(primary_key=True)
+    genres = models.JSONField(default=[])
+    authors = models.JSONField(default=[])
+    rating = models.FloatField(default=2.5)
+    years = models.JSONField(default=[], max_length=2)
 
 
-class MongoUser(Document):
-    first_name = StringField(max_length=100, min_length=1, required=True)
-    last_name = StringField(max_length=100, min_length=1, required=True)
-    email = EmailField(required=True, unique=True)
-    username = StringField(required=True, unique=True)
-    password = StringField(required=True, min_length=8)
-    role = StringField(default=Role.USER)
-    status = StringField(default=Status.ACTIVE)
-    last_login = DateTimeField(default=datetime.now)
-    reviews = ListField(default=[])
-    recommended_books = ListField(default=[])
-    wishlist = ListField(default=[])
-    rated_books = DictField(default={})
-    preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
+class CustomUserManager(BaseUserManager):
+    def create_user(self, firstname, lastname, email, username, password=None):
+        if not firstname:
+            raise ValueError('Users must have a firstname')
+        if not lastname:
+            raise ValueError('Users must have a lastname')
+        if not email:
+            raise ValueError('Users must have an email')
+        if not username:
+            raise ValueError('Users must have an username')
+        if not password:
+            raise ValueError('Users must have a password')
 
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
+        preference = Preference()
+        preference.save()
+        user = self.model(
+            firstname=firstname,
+            lastname=lastname,
+            email=self.normalize_email(email),
+            username=username,
+            preference=preference
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-    def save(self):
-        if self.password:
-            User = get_user_model()
-            User.objects.create_user(username=self.username,
-                                     email=self.email,
-                                     password=self.password,
-                                     is_active=self.status != Status.INACTIVE)
-
-            self.password = generate_password_hash(self.password)
-        mongo_user = super().save()
-        return mongo_user
-
-    def update(self, **kwargs):
-        mongo_kwargs = copy(kwargs)
-        django_kwargs = copy(kwargs)
-        if 'password' in kwargs:
-            mongo_kwargs['password'] = generate_password_hash(kwargs['password'])
-            django_kwargs['password'] = make_password(kwargs['password'])
-
-        mongo_user = super().update(**mongo_kwargs)
-
-        need_to_update_in_django = ['username', 'password', 'email']
-        for field in list(django_kwargs):
-            if field not in need_to_update_in_django:
-                django_kwargs.pop(field)
-
-        if 'status' in kwargs:
-            django_kwargs['is_active'] = kwargs['status'] != Status.INACTIVE
-
-        django_user_model = get_user_model()
-        django_user_model.objects.filter(username=self.username).update(**django_kwargs)
-        return mongo_user
+    def create_superuser(self, firstname, lastname, email, username, password=None):
+        user = self.create_user(
+            firstname=firstname,
+            lastname=lastname,
+            email=self.normalize_email(email),
+            username=username,
+            password=password,
+        )
+        user.is_admin = True
+        user.is_staff = True
+        user.is_superuser = True
+        user.role = Role.ADMIN
+        user.save(using=self._db)
+        return user
 
 
-class DjangoUser(AbstractUser):
-    @property
-    def mongo_user(self):
-        return MongoUser.objects(username=self.username).first()
+class MongoUser(AbstractBaseUser):
+    id = models.AutoField(primary_key=True)
+    firstname = models.CharField(max_length=100)
+    lastname = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100, unique=True)
+    username = models.CharField(max_length=100, unique=True)
+    password = models.CharField(max_length=100)
+    role = models.CharField(default=Role.USER, max_length=10)
+    status = models.CharField(default=Status.ACTIVE, max_length=10)
+    reviews = models.JSONField(default=[])
+    recommended_books = models.JSONField(default=[])
+    wishlist = models.JSONField(default=[])
+    rated_books = models.JSONField(default={})
+    preference = models.ForeignKey(to=Preference, on_delete=models.CASCADE)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(auto_now=True)
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['firstname', 'lastname', 'email', 'password']
+
+    def __str__(self):
+        return self.username
 
 
 class BookStatistic(EmbeddedDocument):
