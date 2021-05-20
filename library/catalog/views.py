@@ -19,11 +19,11 @@ def profile_details(request):
 
 @login_required
 def profile_edit(request):
-    user = request.user.mongo_user
+    user = request.user
     data = {
         'user_id': user.id,
-        'firstname': user.first_name,
-        'lastname': user.last_name,
+        'firstname': user.firstname,
+        'lastname': user.lastname,
         'email': user.email,
         'login': user.username,
     }
@@ -34,9 +34,10 @@ def profile_edit(request):
             lastname = form.cleaned_data.get('lastname')
             email = form.cleaned_data.get('email')
             login = form.cleaned_data.get('login')
-            user.update(
-                first_name=firstname,
-                last_name=lastname,
+            MongoUser.objects.update(
+                user=user,
+                firstname=firstname,
+                lastname=lastname,
                 email=email,
                 username=login
             )
@@ -48,14 +49,15 @@ def profile_edit(request):
 
 @login_required
 def change_password(request):
-    user = request.user.mongo_user
+    user = request.user
     if request.method == 'POST':
         form = ChangePasswordForm(request.POST)
         if form.is_valid():
             old_password = form.cleaned_data.get('old_password')
             if user and user.check_password(old_password):
                 new_password = form.cleaned_data.get('new_password')
-                user.update(password=new_password)
+                user.set_password(new_password)
+                user.save()
                 messages.success(request, 'Password successfully updated.')
                 return redirect(profile_details)
             else:
