@@ -24,7 +24,7 @@ class RegistrationForm(Form):
                          widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'Wick'}))
     email = EmailField(label='Email', max_length=100, validators=[profanity_check],
                        widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'john@example.com'}))
-    login = CharField(label='Login', min_length=6, max_length=100, validators=[profanity_check],
+    username = CharField(label='Username', min_length=6, max_length=100, validators=[profanity_check],
                       widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'johny_1234'}))
     password = CharField(label='Password', max_length=100, validators=[
         RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)
@@ -47,12 +47,12 @@ class RegistrationForm(Form):
             raise ValidationError('Is already taken')
         return email
 
-    def clean_login(self):
-        login = self.cleaned_data.get('login')
-        user = MongoUser.objects.filter(username=login).first()
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        user = MongoUser.objects.filter(username=username).first()
         if user:
             raise ValidationError('Is already taken')
-        return login
+        return username
 
 
 class EditProfileForm(Form):
@@ -63,7 +63,7 @@ class EditProfileForm(Form):
                          widget=TextInput(attrs={'class': 'form-control'}))
     email = EmailField(label='Email', max_length=100, validators=[profanity_check],
                        widget=TextInput(attrs={'class': 'form-control'}))
-    login = CharField(label='Login', min_length=6, max_length=100, validators=[profanity_check],
+    username = CharField(label='Username', min_length=6, max_length=100, validators=[profanity_check],
                       widget=TextInput(attrs={'class': 'form-control'}))
 
     def clean_email(self):
@@ -73,12 +73,12 @@ class EditProfileForm(Form):
             raise ValidationError('is already taken')
         return self.cleaned_data.get('email')
 
-    def clean_login(self):
-        check_user = MongoUser.objects.filter(username=self.cleaned_data.get('login')).first()
+    def clean_username(self):
+        check_user = MongoUser.objects.filter(username=self.cleaned_data.get('username')).first()
         user = MongoUser.objects.filter(id=self.cleaned_data.get('user_id')).first()
-        if check_user and user.username != self.cleaned_data.get('login'):
+        if check_user and user.username != self.cleaned_data.get('username'):
             raise ValidationError('is already taken')
-        return self.cleaned_data.get('login')
+        return self.cleaned_data.get('username')
 
 
 class ChangePasswordForm(Form):

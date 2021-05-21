@@ -13,8 +13,8 @@ let lastname = form.elements.namedItem('lastname');
 lastname.value = getWithExpiry(storageKeyPrefix + lastname.id);
 let email = form.elements.namedItem('email');
 email.value = getWithExpiry(storageKeyPrefix + email.id);
-let login = form.elements.namedItem('login');
-login.value = getWithExpiry(storageKeyPrefix + login.id);
+let username = form.elements.namedItem('username');
+username.value = getWithExpiry(storageKeyPrefix + username.id);
 
 let password = form.elements.namedItem('password');
 let confirmPassword = form.elements.namedItem('confirm_password');
@@ -29,15 +29,15 @@ window.onload = function (event) {
     if (email.value) {
         validateEmail();
     }
-    if (login.value) {
-        validateLogin();
+    if (username.value) {
+        validateusername();
     }
 }
 
 firstname.addEventListener('input', validationFuncsFirstname);
 lastname.addEventListener('input', validationFuncsLastname);
 email.addEventListener('input', validationFuncsEmail);
-login.addEventListener('input', validationFuncsLogin);
+username.addEventListener('input', validationFuncsUsername);
 password.addEventListener('input', validationFuncsPassword);
 confirmPassword.addEventListener('input', validationFuncsConfirmPassword);
 
@@ -59,9 +59,9 @@ function validationFuncsEmail() {
     checkFormValid();
 }
 
-function validationFuncsLogin() {
-    setWithExpiry(storageKeyPrefix + login.id, login.value, timeToLiveMin);
-    validateLogin();
+function validationFuncsUsername() {
+    setWithExpiry(storageKeyPrefix + username.id, username.value, timeToLiveMin);
+    validateUsername();
     checkFormValid();
 }
 
@@ -104,17 +104,17 @@ function validateEmail() {
     }
 }
 
-function validateLogin() {
-    let errorId = '#loginError'
+function validateUsername() {
+    let errorId = '#usernameError'
 
-    if (!dataRequired(login, errorId)) {
-    } else if (login.value.length < 6) {
-        login.classList.add('is-invalid');
+    if (!dataRequired(username, errorId)) {
+    } else if (username.value.length < 6) {
+        username.classList.add('is-invalid');
         setErrorFor(errorId, 'Minimum 6 characters long');
-    } else if (!validateProfanity(login, errorId)) {
-    } else if (!validateUnique(login, errorId)) {
+    } else if (!validateProfanity(username, errorId)) {
+    } else if (!validateUnique(username, errorId)) {
     } else {
-        login.classList.remove('is-invalid');
+        username.classList.remove('is-invalid');
         setSuccessFor(errorId);
     }
 }
