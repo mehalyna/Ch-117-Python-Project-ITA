@@ -11,13 +11,6 @@ PASSWORD_PATTERN = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'
 pf = ProfanityFilter(no_word_boundaries=True)
 
 
-def unique_check(value):
-    message = f'Is already taken'
-    user = MongoUser.objects(Q(username=value) | Q(email=value))
-    if user:
-        raise ValidationError(message)
-
-
 def profanity_check(value):
     message = 'Contains profanity'
     if not pf.is_clean(value):
@@ -29,9 +22,9 @@ class RegistrationForm(Form):
                           widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'John'}))
     lastname = CharField(label='Lastname', max_length=100, validators=[profanity_check],
                          widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'Wick'}))
-    email = EmailField(label='Email', max_length=100, validators=[profanity_check, unique_check],
+    email = EmailField(label='Email', max_length=100, validators=[profanity_check],
                        widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'john@example.com'}))
-    login = CharField(label='Login', min_length=6, max_length=100, validators=[profanity_check, unique_check],
+    login = CharField(label='Login', min_length=6, max_length=100, validators=[profanity_check],
                       widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'johny_1234'}))
     password = CharField(label='Password', max_length=100, validators=[
         RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)
@@ -46,6 +39,20 @@ class RegistrationForm(Form):
 
         if password != confirm_password:
             raise ValidationError('Password and confirm password doesn\'t match')
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        user = MongoUser.objects.filter(email=email).first()
+        if user:
+            raise ValidationError('Is already taken')
+        return email
+
+    def clean_login(self):
+        login = self.cleaned_data.get('login')
+        user = MongoUser.objects.filter(username=login).first()
+        if user:
+            raise ValidationError('Is already taken')
+        return login
 
 
 class EditProfileForm(Form):
