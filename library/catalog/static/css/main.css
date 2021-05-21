@@ -118,6 +118,26 @@
     background: rgba(238, 236, 236, 0.6)
 }
 
+.container .profile-content {
+    max-width: 78%;
+}
+
+.container .rec-books{
+    position: relative;
+}
+
+.container .rec-books .left-arrow {
+    position: relative;
+    top: -17em;
+    left: -2.5em;
+}
+
+.container .rec-books .right-arrow {
+    position: relative;
+    top: -18rem;
+    left: 51.2em;
+}
+
 .h2-home-page {
     margin-bottom: 25px;
 }
