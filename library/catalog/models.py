@@ -69,6 +69,13 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def update(self, user, firstname, lastname, email, username):
+        user.firstname = firstname
+        user.lastname = lastname
+        user.email = email
+        user.username = username
+        user.save(using=self._db)
+
 
 class MongoUser(AbstractBaseUser):
     id = models.AutoField(primary_key=True)
@@ -153,7 +160,7 @@ class Book(Document):
         result_sum = get_sum_from_expression(stars_by_value, self.statistic.stars)
         rating = result_sum - Z * math.sqrt(
             (get_sum_from_expression(price_stars, self.statistic.stars) - result_sum ** 2) / (
-                        number_of_vote + number_of_stars + 1))
+                    number_of_vote + number_of_stars + 1))
 
         super(Book, self).update(statistic__rating=round(rating, 2))
 

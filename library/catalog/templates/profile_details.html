@@ -23,7 +23,7 @@
                     <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
                 </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.mongo_user.first_name }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.firstname }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
@@ -35,7 +35,7 @@
                                 <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.mongo_user.last_name }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.lastname }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
@@ -48,7 +48,7 @@
                                      alt="email icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.mongo_user.email }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.email }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
@@ -61,7 +61,7 @@
                                      alt="login icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.mongo_user.username }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.username }}" disabled>
                 </div>
             </div>
             <a class="btn btn-info mt-4 mb-4 sign-up-button" href="{% url 'profile_edit' %}" id="editProfileBtn">

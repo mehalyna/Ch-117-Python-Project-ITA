@@ -67,15 +67,15 @@ class EditProfileForm(Form):
                       widget=TextInput(attrs={'class': 'form-control'}))
 
     def clean_email(self):
-        check_user = MongoUser.objects(email=self.cleaned_data.get('email')).first()
-        user = MongoUser.objects(id=self.cleaned_data.get('user_id')).first()
+        check_user = MongoUser.objects.filter(email=self.cleaned_data.get('email')).first()
+        user = MongoUser.objects.filter(id=self.cleaned_data.get('user_id')).first()
         if check_user and user.email != self.cleaned_data.get('email'):
             raise ValidationError('is already taken')
         return self.cleaned_data.get('email')
 
     def clean_login(self):
-        check_user = MongoUser.objects(username=self.cleaned_data.get('login')).first()
-        user = MongoUser.objects(id=self.cleaned_data.get('user_id')).first()
+        check_user = MongoUser.objects.filter(username=self.cleaned_data.get('login')).first()
+        user = MongoUser.objects.filter(id=self.cleaned_data.get('user_id')).first()
         if check_user and user.username != self.cleaned_data.get('login'):
             raise ValidationError('is already taken')
         return self.cleaned_data.get('login')
