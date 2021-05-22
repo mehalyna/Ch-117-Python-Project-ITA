@@ -69,8 +69,7 @@ def change_password(request):
 
 @login_required
 def profile_bookshelf(request):
-    rec_books = sorted(Book.objects(status=Status.ACTIVE), key=lambda book: book.statistic.total_read, reverse=True)[
-                :15]
+    rec_books = Book.objects(status=Status.ACTIVE).order_by('-statistic__total_read')[:15]
     wishlist_books = []
     for book_id in request.user.wishlist:
         book = Book.objects(id=book_id).first()
