@@ -26,7 +26,7 @@ def profile_edit(request):
         'firstname': user.firstname,
         'lastname': user.lastname,
         'email': user.email,
-        'login': user.username,
+        'username': user.username,
     }
     if request.method == 'POST':
         form = EditProfileForm(request.POST)
@@ -34,13 +34,13 @@ def profile_edit(request):
             firstname = form.cleaned_data.get('firstname')
             lastname = form.cleaned_data.get('lastname')
             email = form.cleaned_data.get('email')
-            login = form.cleaned_data.get('login')
+            username = form.cleaned_data.get('username')
             MongoUser.objects.update(
                 user=user,
                 firstname=firstname,
                 lastname=lastname,
                 email=email,
-                username=login
+                username=username
             )
             return redirect(profile_details)
     else:
@@ -230,7 +230,7 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('login')
+            username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
 
             MongoUser.objects.create_user(
