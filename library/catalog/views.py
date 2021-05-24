@@ -1,8 +1,11 @@
 import json
+import random
+import string
 
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 from django.db.models import Q as DQ
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -307,3 +310,27 @@ def collections_page(request):
 def authors_page(request):
     authors = Author.objects(status=Status.ACTIVE).order_by('name')
     return render(request, 'authors.html', {'authors': authors})
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = MongoUser.objects.filter(email=email).first()
+        if user:
+            new_password = ''
+            for i in range(5):
+                new_password += random.choice(string.ascii_letters)
+                new_password += str(random.choice(range(1, 21)))
+            user.set_password(new_password)
+            user.save()
+            send_mail('Library support',
+                      f'''
+                      Your temporary password - {new_password}
+                      You can authorize on home page
+                      Home page link - {request.build_absolute_uri(reverse(home))}
+                      ''',
+                      'pythonproject117@gmail.com',
+                      [email],
+                      fail_silently=False)
+        return render(request, 'reset_password_email.html')
+    return render(request, 'reset_password.html')

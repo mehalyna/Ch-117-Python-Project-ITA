@@ -30,4 +30,5 @@ urlpatterns = [
     path('news/', views.news_page, name='news_page'),
     path('collections/', views.collections_page, name='collections_page'),
     path('authors/', views.authors_page, name='authors_page'),
+    path('reset_password/', views.reset_password, name='reset_password'),
 ]
