@@ -46,3 +46,4 @@ function saveStarRating(url) {
     request.open("GET", url, true);
     request.send(null);
 }
+

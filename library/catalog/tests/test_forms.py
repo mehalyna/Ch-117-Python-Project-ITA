@@ -170,7 +170,7 @@ class RegistrationFormTest(TestCase):
         self.assertEqual(self.form(data=self.data).errors['login'], ['Is already taken'])
 
     def test_password_invalid(self):
-        
+
         self.data['password'] = 'joh123'
         self.assertEqual(
             self.form(data=self.data).errors['password'], ['Minimum 8 characters, at least 1 letter and 1 number']

@@ -131,7 +131,7 @@
 
 
 .category-wrapper {
-    height: 240px;
+    height: auto;
     display: flex;
     justify-content: space-between;
     margin-bottom: 45px;
@@ -255,6 +255,7 @@
 .navbar {
     height: 70px;
     background: #eeecec;
+    width: 100%;
 }
 
 .navbar-wrapper {
@@ -595,3 +596,15 @@ margin-bottom:7px;
     top: -300px !important;
     left: -65px !important;
 }
+
+
+/*Media queries*/
+
+@media screen and (max-device-width: 1250px) {
+    .swiper-button-prev::after, .swiper-button-next::after {
+        display: none;
+    }
+    .swiper-button-next, .swiper-button-prev{
+        display: none !important;
+    }
+   }
