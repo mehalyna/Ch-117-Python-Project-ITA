@@ -14,7 +14,7 @@
         <!-- Slides -->
           {% for book in pages_books %}
             <div class="swiper-slide slide-relative">
-                <a href="{% url 'book-details' book.id %}">
+                <a href="{% url 'book-details' book.pk %}">
                     <img src="{{ book.link_img }}" alt="{{ book.title }}">
                     <p><b>{{ book.title }}</b></p>
                     <p class="text-bottom">Pages: {{ book.pages }}</p>
@@ -30,7 +30,7 @@
     <div class="trb-container">
         {% for book in total_read_books %}
             <div class="trb-box">
-                <a href="{% url 'book-details' book.id %}">
+                <a href="{% url 'book-details' book.pk %}">
                 <img src="{{ book.link_img }}" alt="{{ book.title }}">
                 <b><p>{{ book.title }}</p></b>
                 <p class="text-bottom">Total read: {{ book.statistic.total_read }}</p>

@@ -161,9 +161,8 @@ class Book(models.Model):
             (get_sum_from_expression(price_stars, self.statistic.stars) - result_sum ** 2) / (
                     number_of_vote + number_of_stars + 1))
 
-        book = super(Book, self)
-        book.statistic.rating = round(rating, 2)
-        book.save()
+        self.statistic.rating = round(rating, 2)
+        self.statistic.save()
 
 
 class Review(models.Model):
