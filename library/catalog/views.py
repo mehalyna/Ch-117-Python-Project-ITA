@@ -3,7 +3,7 @@ import json
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from mongoengine.queryset.visitor import Q
@@ -100,9 +100,10 @@ def book_details(request, book_id):
                   {'book': book, 'reviews': reviews, 'book_id': book_id})
 
 
-@login_required
 def add_review(request, book_id):
-    text = request.GET.get('text-comment')
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "Not authorized"})
+    text = request.POST.get('text-comment')
     if text.strip():
         book = Book.objects(id=book_id).first()
         review = Review(user_id=request.user.mongo_user.pk, book_id=book.pk,
@@ -111,7 +112,16 @@ def add_review(request, book_id):
         review.save()
     else:
         messages.error(request, "The comment field should not be blank")
-    return redirect(book_details, book_id=book_id)
+    reviews = json.loads(Review.objects(book_id=book_id).order_by('-date').to_json())
+
+    return JsonResponse({"reviews": reviews})
+
+
+def show_reviews(request, book_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "Not authorized"})
+    reviews = json.loads(Review.objects(book_id=book_id).order_by('-date').to_json())
+    return JsonResponse({"reviews": reviews})
 
 
 @login_required
