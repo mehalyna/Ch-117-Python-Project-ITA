@@ -2,7 +2,6 @@ from bson import ObjectId
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
-from mongoengine.queryset.visitor import Q
 from profanityfilter import ProfanityFilter
 
 from .models import MongoUser

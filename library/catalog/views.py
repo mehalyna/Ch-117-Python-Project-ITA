@@ -183,11 +183,13 @@ def change_review_status(request, book_id, review_id, new_status):
 def home(request):
     top_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__rating')[:20]
     new_books = Book.objects.filter(status=Status.ACTIVE).order_by('-pk')[:20]
-    genres = []
-    for genre in Book.objects.values('genres'):
-        if genre and genre['genres'][0] not in genres:
-            genres.append(genre['genres'][0])
-    return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': genres})
+    books_genres = []
+    for genres_list in Book.objects.values('genres'):
+        for genre in genres_list.get('genres'):
+            if genre and genre not in books_genres:
+                books_genres.append(genre)
+
+    return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': books_genres})
 
 
 def information_page(request):
