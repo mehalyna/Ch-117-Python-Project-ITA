@@ -1,11 +1,7 @@
 import math
-from datetime import datetime
 
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from djongo import models
-from django_mongoengine import Document
-from mongoengine import DateTimeField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
-    IntField, ListField, ReferenceField, StringField
 
 
 class Status:
@@ -21,7 +17,7 @@ class Role:
 
 
 class Preference(models.Model):
-    id = models.AutoField(primary_key=True)
+    _id = models.ObjectIdField(primary_key=True)
     genres = models.JSONField(default=[])
     authors = models.JSONField(default=[])
     rating = models.FloatField(default=2.5)
@@ -78,7 +74,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class MongoUser(AbstractBaseUser):
-    id = models.AutoField(primary_key=True)
+    _id = models.ObjectIdField(primary_key=True)
     firstname = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     email = models.EmailField(max_length=100, unique=True)
@@ -107,34 +103,37 @@ class MongoUser(AbstractBaseUser):
         return self.username
 
 
-class BookStatistic(EmbeddedDocument):
-    rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
-    total_read = IntField(default=0, min_value=0)
-    reading_now = IntField(default=0, min_value=0)
-    stars = ListField(default=[0, 0, 0, 0, 0])
+class BookStatistic(models.Model):
+    _id = models.ObjectIdField(primary_key=True)
+    rating = models.FloatField(default=2.5)
+    total_read = models.IntegerField(default=0)
+    reading_now = models.IntegerField(default=0)
+    stars = models.JSONField(default=[0, 0, 0, 0, 0])
 
 
-class Author(Document):
-    name = StringField(default='', max_length=500)
-    birthdate = StringField(default='', max_length=15)
-    death_date = StringField(default='', max_length=15)
-    status = StringField(default=Status.ACTIVE, max_length=50)
-    books = ListField(default=[])
+class Author(models.Model):
+    _id = models.ObjectIdField(primary_key=True)
+    name = models.CharField(default='', max_length=50)
+    birthdate = models.CharField(default='', max_length=15)
+    death_date = models.CharField(default='', max_length=15)
+    status = models.CharField(default=Status.ACTIVE, max_length=50)
+    books = models.JSONField(default=[])
 
 
-class Book(Document):
-    title = StringField(default='', max_length=200)
-    author_id = ReferenceField(Author.__name__)
-    year = StringField(default='', max_length=20)
-    publisher = StringField(default='', max_length=200)
-    language = StringField(default='', max_length=20)
-    description = StringField(default='', max_length=10000)
-    link_img = StringField(default='', max_length=1000)
-    pages = IntField(default=1, min_value=1)
-    genres = ListField(default=[])
-    status = StringField(default=Status.ACTIVE, max_length=100)
-    store_links = ListField(default=[])
-    statistic = EmbeddedDocumentField(BookStatistic.__name__, default=BookStatistic())
+class Book(models.Model):
+    _id = models.ObjectIdField(primary_key=True)
+    title = models.CharField(default='', max_length=100)
+    author = models.ForeignKey(to=Author, on_delete=models.CASCADE)
+    year = models.CharField(default='', max_length=20)
+    publisher = models.CharField(default='', max_length=200)
+    language = models.CharField(default='', max_length=20)
+    description = models.CharField(default='', max_length=10000)
+    link_img = models.CharField(default='', max_length=1000)
+    pages = models.IntegerField(default=1)
+    genres = models.JSONField(default=[])
+    status = models.CharField(default=Status.ACTIVE, max_length=100)
+    store_links = models.JSONField(default=[])
+    statistic = models.ForeignKey(to=BookStatistic, on_delete=models.CASCADE)
 
     def calculate_rating(self):
         """
@@ -162,14 +161,17 @@ class Book(Document):
             (get_sum_from_expression(price_stars, self.statistic.stars) - result_sum ** 2) / (
                     number_of_vote + number_of_stars + 1))
 
-        super(Book, self).update(statistic__rating=round(rating, 2))
+        book = super(Book, self)
+        book.statistic.rating = round(rating, 2)
+        book.save()
 
 
-class Review(Document):
-    user_id = ReferenceField(MongoUser.__name__, required=True)
-    book_id = ReferenceField(Book.__name__, required=True)
-    firstname = StringField(default='', max_length=50)
-    lastname = StringField(default='', max_length=50)
-    status = StringField(default=Status.ACTIVE, max_length=100)
-    comment = StringField(default='', max_length=5000)
-    date = DateTimeField(default=datetime.now)
+class Review(models.Model):
+    _id = models.ObjectIdField(primary_key=True)
+    user = models.ForeignKey(to=MongoUser, on_delete=models.CASCADE)
+    book = models.ForeignKey(to=Book, on_delete=models.CASCADE)
+    firstname = models.CharField(default='', max_length=50)
+    lastname = models.CharField(default='', max_length=50)
+    status = models.CharField(default=Status.ACTIVE, max_length=10)
+    comment = models.CharField(default='', max_length=5000)
+    date = models.DateTimeField(auto_now=True)
