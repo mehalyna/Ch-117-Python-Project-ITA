@@ -14,7 +14,7 @@
         <!-- Slides -->
           {% for book in top_books %}
             <div class="swiper-slide">
-                <a href="{% url 'book-details' book.pk %}">
+                <a href="{% url 'book-details' book.id %}">
                     <img src="{{ book.link_img }}" alt="{{ book.title }}">
                     <p><b>{{ book.title }}</b></p>
                     <p>{{ book.author_id.name }}</p>
@@ -37,7 +37,7 @@
         <!-- Slides -->
           {% for book in new_books %}
           <div class="swiper-slide">
-              <a href="{% url 'book-details' book.pk %}">
+              <a href="{% url 'book-details' book.id %}">
                   <img src="{{ book.link_img }}" alt="{{ book.title }}">
                   <p><b>{{ book.title }}</b></p>
                   <p>{{ book.author_id.name }}</p>
