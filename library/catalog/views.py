@@ -325,16 +325,26 @@ def reset_password(request):
                 new_password += str(random.choice(range(1, 21)))
             user.set_password(new_password)
             user.save()
-            send_mail('Library support',
-                      f'''
-                      Your temporary password - {new_password}
-                      You can authorize on home page
-                      Home page link - {request.build_absolute_uri(reverse(home))}
-                      ''',
-                      'pythonproject117@gmail.com',
-                      [email],
-                      fail_silently=False)
-            messages.success(request, 'Temporary password was sent to your email ')
+            send_mail(
+                'Library support',
+                f'''
+                Your temporary password - {new_password}
+                You can authorize on home page
+                Home page link - {request.build_absolute_uri(reverse(home))}
+                ''',
+                'pythonproject117@gmail.com',
+                [email],
+                fail_silently=False
+            )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Success! Check your email and sign in with new credentials.'
+            )
         else:
-            messages.success(request, 'You entered wrong email.')
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Warning! You entered the invalid email.'
+            )
     return render(request, 'reset_password.html')
