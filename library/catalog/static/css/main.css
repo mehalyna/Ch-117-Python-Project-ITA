@@ -118,6 +118,26 @@
     background: rgba(238, 236, 236, 0.6)
 }
 
+.container .profile-content {
+    max-width: 78%;
+}
+
+.container .rec-books{
+    position: relative;
+}
+
+.container .rec-books .left-arrow {
+    position: relative;
+    top: -17em;
+    left: -2.5em;
+}
+
+.container .rec-books .right-arrow {
+    position: relative;
+    top: -18rem;
+    left: 51.2em;
+}
+
 .h2-home-page {
     margin-bottom: 25px;
 }
@@ -172,6 +192,7 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    margin-top: auto;
 }
 
 .footer-container {
@@ -212,7 +233,6 @@
 }
 
 .container-search {
-    min-height: 530px;
     margin-top: 30px;
     margin-bottom: 30px;
     height: auto;
@@ -388,6 +408,9 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Open Sans, Ubuntu, Fira Sans, Helvetica Neue, sans-serif;
     font-size: 1rem;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .page {
@@ -581,10 +604,6 @@ margin-bottom:7px;
     margin-bottom: 10px;
 }
 
-.min-height-650{
-    min-height: 650px;
-}
-
 .collections-next-arrow{
     position: relative !important;
     top: -278px !important;
@@ -608,3 +627,12 @@ margin-bottom:7px;
         display: none !important;
     }
    }
+
+@media screen and (max-device-width: 1000px ) {
+    .container-search-box{
+        width: 48%;
+    }
+    .trb-box{
+        width: 23%;
+    }
+}

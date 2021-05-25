@@ -2,9 +2,9 @@
 {% load static %}
 {% block bookshelf_link_class %}active{% endblock %}
 {% block profile_content %}
-    <div class="container">
+    <div class="container rec-books">
         <h2 class="my-5">Recommended for you</h2>
-        <div class="swiper-container first-container">
+        <div class="swiper-container third-container">
             <div class="swiper-wrapper">
                 {% for book in rec_books %}
                 <div class="swiper-slide">
@@ -17,8 +17,8 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="swiper-button-prev first-prev" style="position: relative; top: -278px; left: -40px"></div>
-        <div class="swiper-button-next first-next" style="position: relative; top: -300px; left: 1125px;"></div>
+        <div class="swiper-button-prev first-prev left-arrow"></div>
+        <div class="swiper-button-next first-next right-arrow"></div>
         <br>
     </div>
     <div class="container">

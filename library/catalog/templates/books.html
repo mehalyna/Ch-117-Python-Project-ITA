@@ -6,7 +6,7 @@
 {% block body %}
 
 {% if books|length < 1 %}
-    <div class="container" style="min-height: 640px">
+    <div class="container">
         <h2 class="h2-author">Use the search tool to find the right book</h2>
 
         <form class="search" action="{% url 'form-books' %}">
