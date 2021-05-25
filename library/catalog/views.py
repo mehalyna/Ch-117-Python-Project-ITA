@@ -15,6 +15,9 @@ from django.urls import reverse
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Author, Book, Review, MongoUser, Status
 
+PASSWORD_LENGTH = 5
+MAX_PASSWORD_NUM = 21
+
 
 @login_required
 def profile_details(request):
@@ -319,10 +322,12 @@ def reset_password(request):
         email = request.POST.get('email')
         user = MongoUser.objects.filter(email=email).first()
         if user:
+            number_string = [str(i) for i in range(MAX_PASSWORD_NUM)]
+            eng_alphabet = string.ascii_letters
             new_password = ''
-            for i in range(5):
-                new_password += random.choice(string.ascii_letters)
-                new_password += str(random.choice(range(1, 21)))
+            for i in range(PASSWORD_LENGTH):
+                new_password += random.choice(eng_alphabet)
+                new_password += random.choice(number_string)
             user.set_password(new_password)
             user.save()
             send_mail(
