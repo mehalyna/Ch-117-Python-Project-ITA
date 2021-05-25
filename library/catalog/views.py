@@ -181,17 +181,20 @@ def change_review_status(request, book_id, review_id, new_status):
 
 
 def home(request):
-    if CacheStorage.sorted_books_by_rating is None or CacheStorage.sorted_books_by_rating.is_expire():
-        CacheStorage.sorted_books_by_rating = CacheManager.update_rating_cache(
+    if CacheStorage.books_rating_cache is None or CacheStorage.books_rating_cache.is_expire():
+        CacheStorage.books_rating_cache = CacheManager.update_rating_cache(
             Book.objects.filter(status=Status.ACTIVE))
 
-    top_books = CacheStorage.sorted_books_by_rating.data
-    new_books = Book.objects.filter(status=Status.ACTIVE).order_by('-pk')[:20]
-    books_genres = []
-    for genres_list in Book.objects.values('genres'):
-        for genre in genres_list.get('genres'):
-            if genre and genre not in books_genres:
-                books_genres.append(genre)
+    if CacheStorage.new_books_cache is None or CacheStorage.new_books_cache.is_expire():
+        CacheStorage.new_books_cache = CacheManager.update_new_books_cache(
+            Book.objects.filter(status=Status.ACTIVE))
+
+    if CacheStorage.books_genres_cache is None or CacheStorage.books_genres_cache.is_expire():
+        CacheStorage.books_genres_cache = CacheManager.update_books_genres_cache(Book.objects.values('genres'))
+
+    top_books = CacheStorage.books_rating_cache.data
+    new_books = CacheStorage.new_books_cache.data
+    books_genres = CacheStorage.books_genres_cache.data
 
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': books_genres})
 
@@ -305,15 +308,18 @@ def news_page(request):
 
 
 def collections_page(request):
-    if CacheStorage.sorted_books_by_total_read is None or CacheStorage.sorted_books_by_total_read.is_expire():
-        CacheStorage.sorted_books_by_total_read = CacheManager.update_total_read_cache(
+    if CacheStorage.books_total_read_cache is None or CacheStorage.books_total_read_cache.is_expire():
+        CacheStorage.books_total_read_cache = CacheManager.update_total_read_cache(
             Book.objects.filter(status=Status.ACTIVE))
 
     pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:10]
-    total_read_books = CacheStorage.sorted_books_by_total_read.data
+    total_read_books = CacheStorage.books_total_read_cache.data
     return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': total_read_books})
 
 
 def authors_page(request):
-    authors = Author.objects.filter(status=Status.ACTIVE).order_by('name')
+    if CacheStorage.authors_cache is None or CacheStorage.authors_cache.is_expire():
+        CacheStorage.authors_cache = CacheManager.update_authors_cache(Author.objects.filter(status=Status.ACTIVE))
+
+    authors = CacheStorage.authors_cache.data
     return render(request, 'authors.html', {'authors': authors})

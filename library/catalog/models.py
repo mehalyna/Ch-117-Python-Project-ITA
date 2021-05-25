@@ -17,8 +17,11 @@ class Role:
 
 
 class CacheStorage:
-    sorted_books_by_rating = None
-    sorted_books_by_total_read = None
+    books_rating_cache = None
+    books_total_read_cache = None
+    new_books_cache = None
+    books_genres_cache = None
+    authors_cache = None
 
 
 class CacheManager:
@@ -32,16 +35,35 @@ class CacheManager:
         sorted_books = sorted(books, key=lambda book: book.statistic.total_read, reverse=True)
         return Cache(sorted_books[:20], datetime.utcnow())
 
+    @staticmethod
+    def update_new_books_cache(books):
+        sorted_books = sorted(books, key=lambda book: book.pk, reverse=True)
+        return Cache(sorted_books[:20], datetime.utcnow())
+
+    @staticmethod
+    def update_books_genres_cache(genres):
+        books_genres = []
+        for genres_list in genres:
+            for genre in genres_list.get('genres'):
+                if genre and genre not in books_genres:
+                    books_genres.append(genre)
+        return Cache(books_genres, datetime.utcnow())
+
+    @staticmethod
+    def update_authors_cache(authors):
+        sorted_authors = sorted(authors, key=lambda author: author.name)
+        return Cache(sorted_authors, datetime.utcnow())
+
 
 class Cache:
     # time_expires in minutes
-    def __init__(self, data, last_update, time_expires=20):
+    def __init__(self, data, last_update, time_expires=60):
         self.data = data
         self.last_update = last_update
         self.time_expires = time_expires
 
     def is_expire(self):
-        return (datetime.utcnow() - self.last_update).total_seconds() > self.time_expires
+        return (datetime.utcnow() - self.last_update).total_seconds()/60 > self.time_expires
 
 
 class CustomUserManager(BaseUserManager):
