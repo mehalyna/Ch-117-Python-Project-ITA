@@ -44,6 +44,7 @@ const recbook_swiper = new Swiper('.third-container', {
   slidesPerView: 4,
   spaceBetween: 20,
   speed: 600,
+
 });
 
 setTimeout(function () {
