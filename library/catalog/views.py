@@ -116,7 +116,7 @@ def delete_from_wishlist(request, book_id):
 
 def book_details(request, book_id):
     if 'book_details' in request.META['HTTP_REFERER']:
-        request.META['HTTP_REFERER'] = request.session['previous']
+        request.META['HTTP_REFERER'] = request.session.get('previous') or reverse('library-home')
     else:
         request.session['previous'] = request.META['HTTP_REFERER']
 
