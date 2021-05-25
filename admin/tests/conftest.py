@@ -5,7 +5,7 @@ from mongoengine import disconnect, connect
 
 from admin.app import create_app
 from admin.tests.test_unit.test_routes.app import App
-from admin.models import User
+from admin.models import MongoUser
 from admin.tests.config import (
     EMAIL, LOGIN, LAST_NAME, FIRST_NAME, PASSWORD, ROLE
 )
@@ -23,12 +23,13 @@ def flask_app():
 
 @pytest.fixture(scope='session')
 def flask_app_with_admin(flask_app):
-    u = User()
+    u = MongoUser()
     u.firstname = FIRST_NAME
     u.lastname = LAST_NAME
     u.email = EMAIL
-    u.login = LOGIN
+    u.username = LOGIN
     u.role = ROLE
+    u.is_admin = True
     u.set_password(PASSWORD)
     u.save()
     return flask_app

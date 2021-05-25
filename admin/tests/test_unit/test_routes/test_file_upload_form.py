@@ -4,7 +4,7 @@ import io
 
 def test_correct_data(app):
     app.authorize(LOGIN, PASSWORD)
-    with open('admin/tests/test_data/books.json', 'rb') as f:
+    with open('tests/test_data/books.json', 'rb') as f:
         data = {'file': (io.BytesIO(f.read()), 'books.json')}
     response = app.post_import_file(data)
 
@@ -13,7 +13,7 @@ def test_correct_data(app):
 
 def test_incorrect_data(app):
     app.authorize(LOGIN, PASSWORD)
-    with open('admin/tests/test_data/books.json', 'rb') as f:
+    with open('tests/test_data/books.json', 'rb') as f:
         data = {'file': (io.BytesIO(f.read(10)), 'books.json')}
     response = app.post_import_file(data)
 
@@ -22,7 +22,7 @@ def test_incorrect_data(app):
 
 def test_too_large_file(app):
     app.authorize(LOGIN, PASSWORD)
-    with open('admin/tests/test_data/books.json', 'rb') as f:
+    with open('tests/test_data/books.json', 'rb') as f:
         data = {'file': (io.BytesIO(f.read()*10000), 'books.json')}
     response = app.post_import_file(data)
 
@@ -39,7 +39,7 @@ def test_file_is_not_selected(app):
 
 def test_wrong_file_type(app):
     app.authorize(LOGIN, PASSWORD)
-    with open('admin/tests/test_data/books.json', 'rb') as f:
+    with open('tests/test_data/books.json', 'rb') as f:
         data = {'file': (io.BytesIO(f.read()), 'books.png')}
     response = app.post_import_file(data)
 

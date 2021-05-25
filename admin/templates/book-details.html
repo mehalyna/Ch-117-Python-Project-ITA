@@ -10,7 +10,7 @@
                 <small>Published in {{ book.year }} by {{ book.publisher }}</small><br>
                 <small>Language: <b>{{ book.language.title() }}</b></small><br>
                 <small>Status: <b>{{ book.status }}</b></small><br>
-                <small>Rating: <b>{{ book.statistic.rating }}</b></small>
+                <small>Rating: <b>{{ book.statistic_id.rating }}</b></small>
                 <div class="dropdown show mt-2">
                     <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -34,13 +34,13 @@
                 </div>
                 <p>by <b>{{ book.author_id.name }}</b></p>
                 <p>Genres: <b>{{','.join(book.genres)}}</b></p>
-                <span data-toggle="tooltip" data-placement="top" title="Total read {{ book.statistic.total_read }}">
+                <span data-toggle="tooltip" data-placement="top" title="Total read {{ book.statistic_id.total_read }}">
                 <img src="{{ url_for('static', filename='images/totalRead.png') }}" alt="total read icon">
-                {{ book.statistic.total_read }}
+                {{ book.statistic_id.total_read }}
             </span>
-                <span data-toggle="tooltip" data-placement="top" title="Reading now {{ book.statistic.reading_now }}">
+                <span data-toggle="tooltip" data-placement="top" title="Reading now {{ book.statistic_id.reading_now }}">
                 <img src="{{ url_for('static', filename='images/readingNow.png') }}" alt="reading now icon">
-                {{ book.statistic.reading_now }}
+                {{ book.statistic_id.reading_now }}
             </span><br><br>
                 <p>
                     {{ book.description }}
