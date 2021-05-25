@@ -5,7 +5,7 @@ from flask_login import UserMixin
 from flask_mongoengine import Document
 from mongoengine import (
     DateTimeField, EmailField, FloatField, IntField, ListField, ReferenceField,
-    StringField, BooleanField
+    StringField, BooleanField, DictField
 )
 
 
@@ -47,7 +47,7 @@ class MongoUser(UserMixin, Document):
     reviews = ListField(default=[])
     recommended_books = ListField(default=[])
     wishlist = ListField(default=[])
-    rated_books = ListField(default=[])
+    rated_books = DictField(default={})
     last_login = DateTimeField(default=datetime.now)
     date_joined = DateTimeField(default=datetime.now)
     is_admin = BooleanField(default=True)
