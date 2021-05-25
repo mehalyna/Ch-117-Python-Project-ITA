@@ -34,7 +34,7 @@ def search_and_pagination(collection: Type[Document], order_field: str, status: 
 
     elif user_search and collection is MongoUser:
         collection_documents = collection.objects(
-            Q(first_name__contains=user_search) | Q(last_name__contains=user_search) | Q(email__contains=user_search),
+            Q(firstname__contains=user_search) | Q(lastname__contains=user_search) | Q(email__contains=user_search),
             status__in=status).order_by('status', order_field).paginate(page=page, per_page=ROWS_PER_PAGE)
     else:
         collection_documents = collection.objects(status__in=status).order_by(
