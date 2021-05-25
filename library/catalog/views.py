@@ -92,7 +92,7 @@ def add_to_wishlist(request, book_id):
             book.update(statistic__total_read=book.statistic.total_read + 1)
             book.update(statistic__reading_now=book.statistic.reading_now + 1)
             user.wishlist.append(book_id)
-            user.update(wishlist=user.wishlist)
+            user.save()
 
     return redirect(book_details, book_id=book_id)
 
@@ -139,8 +139,8 @@ def add_review(request, book_id):
         review = Review(
             user_id=user.pk,
             book_id=book.pk,
-            firstname=user.first_name,
-            lastname=user.last_name,
+            firstname=user.firstname,
+            lastname=user.lastname,
             comment=text
         )
         review.save()
@@ -180,13 +180,13 @@ def change_review_status(request, book_id, review_id, new_status):
 
 
 def home(request):
-    top_books = sorted(Book.objects(status=Status.ACTIVE), key=lambda book: book.statistic.rating, reverse=True)[:20]
-    new_books = Book.objects(status=Status.ACTIVE).order_by('-id')[:20]
+    top_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__rating')[:20]
+    new_books = Book.objects.filter(status=Status.ACTIVE).order_by('-pk')[:20]
     genres = []
-    for genres_lst in Book.objects.values_list('genres'):
-        for genre in genres_lst:
-            if genre and genre not in genres:
-                genres.append(genre)
+    # for genres_lst in Book.objects.values_list('genres'):
+    #     for genre in genres_lst:
+    #         if genre and genre not in genres:
+    #             genres.append(genre)
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': genres})
 
 
