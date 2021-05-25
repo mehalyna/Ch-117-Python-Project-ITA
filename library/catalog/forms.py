@@ -1,7 +1,7 @@
+from bson import ObjectId
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
-from mongoengine.queryset.visitor import Q
 from profanityfilter import ProfanityFilter
 
 from .models import MongoUser
@@ -25,7 +25,7 @@ class RegistrationForm(Form):
     email = EmailField(label='Email', max_length=100, validators=[profanity_check],
                        widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'john@example.com'}))
     username = CharField(label='Username', min_length=6, max_length=100, validators=[profanity_check],
-                      widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'johny_1234'}))
+                         widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'johny_1234'}))
     password = CharField(label='Password', max_length=100, validators=[
         RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)
     ], widget=PasswordInput(attrs={'class': 'form-control'}))
@@ -64,18 +64,18 @@ class EditProfileForm(Form):
     email = EmailField(label='Email', max_length=100, validators=[profanity_check],
                        widget=TextInput(attrs={'class': 'form-control'}))
     username = CharField(label='Username', min_length=6, max_length=100, validators=[profanity_check],
-                      widget=TextInput(attrs={'class': 'form-control'}))
+                         widget=TextInput(attrs={'class': 'form-control'}))
 
     def clean_email(self):
         check_user = MongoUser.objects.filter(email=self.cleaned_data.get('email')).first()
-        user = MongoUser.objects.filter(id=self.cleaned_data.get('user_id')).first()
+        user = MongoUser.objects.filter(pk=ObjectId(self.cleaned_data.get('user_id'))).first()
         if check_user and user.email != self.cleaned_data.get('email'):
             raise ValidationError('is already taken')
         return self.cleaned_data.get('email')
 
     def clean_username(self):
         check_user = MongoUser.objects.filter(username=self.cleaned_data.get('username')).first()
-        user = MongoUser.objects.filter(id=self.cleaned_data.get('user_id')).first()
+        user = MongoUser.objects.filter(pk=ObjectId(self.cleaned_data.get('user_id'))).first()
         if check_user and user.username != self.cleaned_data.get('username'):
             raise ValidationError('is already taken')
         return self.cleaned_data.get('username')

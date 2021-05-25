@@ -22,11 +22,11 @@
     <div class="container container-search">
         {% for book in books %}
             <div class="container-search-box">
-                <a href="{% url 'book-details' book.id %}" class="image-search">
+                <a href="{% url 'book-details' book.pk %}" class="image-search">
                     <img src="{{ book.link_img }}" alt="{{ book.title }}">
                 </a>
                 <div class="book-search-info">
-                    <a href="{% url 'book-details' book.id %}">
+                    <a href="{% url 'book-details' book.pk %}">
                         <b><p>
                             {% if book.title|length > 60 %}
                                 {{ book.title| slice:':56' }} ...
@@ -35,8 +35,8 @@
                             {% endif %}
                         </p></b>
                     </a>
-                    <a href="{% url 'book-details' book.id %}"><p>{{ book.author_id.name }}</p></a>
-                    <a href="{% url 'book-details' book.id %}"><p>{{ book.year }}</p></a>
+                    <a href="{% url 'book-details' book.pk %}"><p>{{ book.author.name }}</p></a>
+                    <a href="{% url 'book-details' book.pk %}"><p>{{ book.year }}</p></a>
                 </div>
             </div>
         {% endfor %}
