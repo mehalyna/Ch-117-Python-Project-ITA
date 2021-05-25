@@ -334,5 +334,7 @@ def reset_password(request):
                       'pythonproject117@gmail.com',
                       [email],
                       fail_silently=False)
-        return render(request, 'reset_password_email.html')
+            messages.success(request, 'Temporary password was sent to your email ')
+        else:
+            messages.success(request, 'You entered wrong email.')
     return render(request, 'reset_password.html')
