@@ -16,14 +16,6 @@ class Role:
     ADMIN = 'admin'
 
 
-class Preference(models.Model):
-    _id = models.ObjectIdField(primary_key=True)
-    genres = models.JSONField(default=[])
-    authors = models.JSONField(default=[])
-    rating = models.FloatField(default=2.5)
-    years = models.JSONField(default=[], max_length=2)
-
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, firstname, lastname, email, username, password=None):
         if not firstname:
@@ -37,14 +29,11 @@ class CustomUserManager(BaseUserManager):
         if not password:
             raise ValueError('Users must have a password')
 
-        preference = Preference()
-        preference.save()
         user = self.model(
             firstname=firstname,
             lastname=lastname,
             email=self.normalize_email(email),
             username=username,
-            preference=preference
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -86,7 +75,6 @@ class MongoUser(AbstractBaseUser):
     recommended_books = models.JSONField(default=[])
     wishlist = models.JSONField(default=[])
     rated_books = models.JSONField(default={})
-    preference = models.ForeignKey(to=Preference, on_delete=models.CASCADE)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
     is_admin = models.BooleanField(default=False)
