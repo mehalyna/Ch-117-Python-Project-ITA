@@ -1,12 +1,13 @@
 import json
+import random
+import string
 
 from bson import ObjectId
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.mail import send_mail
-from django.db.models import Q as DQ
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
