@@ -1,5 +1,5 @@
 import math
-
+from datetime import datetime
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from djongo import models
 
@@ -14,6 +14,34 @@ class Role:
     USER = 'user'
     MODERATOR = 'moderator'
     ADMIN = 'admin'
+
+
+class CacheStorage:
+    sorted_books_by_rating = None
+    sorted_books_by_total_read = None
+
+
+class CacheManager:
+    @staticmethod
+    def update_rating_cache(books):
+        sorted_books = sorted(books, key=lambda book: book.statistic.rating, reverse=True)
+        return Cache(sorted_books[:20], datetime.utcnow())
+
+    @staticmethod
+    def update_total_read_cache(books):
+        sorted_books = sorted(books, key=lambda book: book.statistic.total_read, reverse=True)
+        return Cache(sorted_books[:20], datetime.utcnow())
+
+
+class Cache:
+    # time_expires in minutes
+    def __init__(self, data, last_update, time_expires=20):
+        self.data = data
+        self.last_update = last_update
+        self.time_expires = time_expires
+
+    def is_expire(self):
+        return (datetime.utcnow() - self.last_update).total_seconds() > self.time_expires
 
 
 class CustomUserManager(BaseUserManager):

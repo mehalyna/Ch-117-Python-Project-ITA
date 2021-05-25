@@ -10,7 +10,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
-from .models import Author, Book, Review, MongoUser, Status
+from .models import Author, Book, CacheManager, CacheStorage, Review, MongoUser, Status
 
 
 @login_required
@@ -181,7 +181,11 @@ def change_review_status(request, book_id, review_id, new_status):
 
 
 def home(request):
-    top_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__rating')[:20]
+    if CacheStorage.sorted_books_by_rating is None or CacheStorage.sorted_books_by_rating.is_expire():
+        CacheStorage.sorted_books_by_rating = CacheManager.update_rating_cache(
+            Book.objects.filter(status=Status.ACTIVE))
+
+    top_books = CacheStorage.sorted_books_by_rating.data
     new_books = Book.objects.filter(status=Status.ACTIVE).order_by('-pk')[:20]
     books_genres = []
     for genres_list in Book.objects.values('genres'):
@@ -301,8 +305,12 @@ def news_page(request):
 
 
 def collections_page(request):
+    if CacheStorage.sorted_books_by_total_read is None or CacheStorage.sorted_books_by_total_read.is_expire():
+        CacheStorage.sorted_books_by_total_read = CacheManager.update_total_read_cache(
+            Book.objects.filter(status=Status.ACTIVE))
+
     pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:10]
-    total_read_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__total_read')[:10]
+    total_read_books = CacheStorage.sorted_books_by_total_read.data
     return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': total_read_books})
 
 
