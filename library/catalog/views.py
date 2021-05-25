@@ -1,16 +1,15 @@
 import json
-import random
-import string
 
+from bson import ObjectId
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.core.mail import send_mail
 from django.db.models import Q as DQ
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from mongoengine.queryset.visitor import Q
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Author, Book, Review, MongoUser, Status
@@ -25,7 +24,7 @@ def profile_details(request):
 def profile_edit(request):
     user = request.user
     data = {
-        'user_id': user.id,
+        'user_id': user.pk,
         'firstname': user.firstname,
         'lastname': user.lastname,
         'email': user.email,
@@ -73,10 +72,10 @@ def change_password(request):
 
 @login_required
 def profile_bookshelf(request):
-    rec_books = Book.objects(status=Status.ACTIVE).order_by('-statistic__total_read')[:15]
+    rec_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__total_read')[:15]
     wishlist_books = []
     for book_id in request.user.wishlist:
-        book = Book.objects(id=book_id).first()
+        book = Book.objects.filter(pk=ObjectId(book_id)).first()
         if book and book.status == Status.ACTIVE:
             wishlist_books.append(book)
     return render(request, 'profile_bookshelf.html', {'rec_books': rec_books, 'wishlist_books': wishlist_books})
@@ -85,17 +84,18 @@ def profile_bookshelf(request):
 @login_required
 def add_to_wishlist(request, book_id):
     user = request.user
-    book = Book.objects(Q(id=book_id) & Q(status=Status.ACTIVE)).first()
+    book = Book.objects.filter(pk=ObjectId(book_id), status=Status.ACTIVE).first()
     if not book:
         return redirect(home)
 
     if not str(book_id) in user.wishlist:
-        book = Book.objects(id=book_id).first()
+        book = Book.objects.filter(pk=ObjectId(book_id)).first()
         if book:
-            book.update(statistic__total_read=book.statistic.total_read + 1)
-            book.update(statistic__reading_now=book.statistic.reading_now + 1)
+            book.statistic.total_read = book.statistic.total_read + 1
+            book.statistic.reading_now = book.statistic.reading_now + 1
+            book.save()
             user.wishlist.append(book_id)
-            user.update(wishlist=user.wishlist)
+            user.save()
 
     return redirect(book_details, book_id=book_id)
 
@@ -103,15 +103,15 @@ def add_to_wishlist(request, book_id):
 @login_required
 def delete_from_wishlist(request, book_id):
     user = request.user
-    book = Book.objects(Q(id=book_id) & Q(status=Status.ACTIVE)).first()
+    book = Book.objects.filter(pk=ObjectId(book_id), status=Status.ACTIVE).first()
     if not book:
         return redirect(home)
 
     if str(book_id) in user.wishlist:
-        book = Book.objects(id=book_id).first()
-        book.update(statistic__reading_now=book.statistic.reading_now - 1)
+        book = Book.objects.filter(pk=ObjectId(book_id)).first()
+        book.statistic.reading_now = book.statistic.reading_now - 1
         user.wishlist.remove(book_id)
-        user.update(wishlist=user.wishlist)
+        user.save()
 
     return redirect(book_details, book_id=book_id)
 
@@ -122,11 +122,11 @@ def book_details(request, book_id):
     else:
         request.session['previous'] = request.META['HTTP_REFERER']
 
-    book = Book.objects(Q(id=book_id) & Q(status=Status.ACTIVE)).first()
+    book = Book.objects.filter(pk=ObjectId(book_id), status=Status.ACTIVE).first()
     if not book:
         return redirect(home)
 
-    reviews = Review.objects(book_id=book_id).order_by('-date')
+    reviews = Review.objects.filter(book_id=ObjectId(book_id)).order_by('-date')
     return render(request, 'book-details.html',
                   {'book': book, 'reviews': reviews, 'book_id': book_id})
 
@@ -136,14 +136,14 @@ def add_review(request, book_id):
     user = request.user
     text = request.GET.get('text-comment')
     if text.strip():
-        book = Book.objects(Q(id=book_id) & Q(status=Status.ACTIVE)).first()
+        book = Book.objects.filter(pk=ObjectId(book_id), status=Status.ACTIVE).first()
         if not book:
             return redirect(home)
         review = Review(
-            user_id=user.pk,
-            book_id=book.pk,
-            firstname=user.first_name,
-            lastname=user.last_name,
+            user=user,
+            book=book,
+            firstname=user.firstname,
+            lastname=user.lastname,
             comment=text
         )
         review.save()
@@ -154,20 +154,19 @@ def add_review(request, book_id):
 
 @login_required
 def add_rating(request, book_id, rating=1):
-    user = MongoUser.objects.filter(id=request.user.pk).first()
+    user = MongoUser.objects.filter(pk=request.user.pk).first()
     user_rated_books = user.rated_books
 
-    book = Book.objects(Q(id=book_id) & Q(status=Status.ACTIVE)).first()
+    book = Book.objects.filter(pk=ObjectId(book_id), status=Status.ACTIVE).first()
     if not book:
         return redirect(home)
-
     if str(book_id) in user.rated_books.keys():
         book.statistic.stars[user.rated_books[str(book_id)] - 1] -= 1
 
     book.statistic.stars[rating - 1] += 1
     user_rated_books = dict(user_rated_books, **{str(book_id): rating - 1})
     user.rated_books = user_rated_books
-    book.save()
+    user.save()
     book.calculate_rating()
 
     return HttpResponse('Success', content_type="text/plain")
@@ -175,22 +174,24 @@ def add_rating(request, book_id, rating=1):
 
 @login_required
 def change_review_status(request, book_id, review_id, new_status):
-    review = Review.objects(id=review_id).first()
+    review = Review.objects.filter(pk=ObjectId(review_id)).first()
     if review:
-        review.update(status=new_status)
+        review.status = new_status
+        review.save()
 
     return redirect(book_details, book_id=book_id)
 
 
 def home(request):
-    top_books = sorted(Book.objects(status=Status.ACTIVE), key=lambda book: book.statistic.rating, reverse=True)[:20]
-    new_books = Book.objects(status=Status.ACTIVE).order_by('-id')[:20]
-    genres = []
-    for genres_lst in Book.objects.values_list('genres'):
-        for genre in genres_lst:
-            if genre and genre not in genres:
-                genres.append(genre)
-    return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': genres})
+    top_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__rating')[:20]
+    new_books = Book.objects.filter(status=Status.ACTIVE).order_by('-pk')[:20]
+    books_genres = []
+    for genres_list in Book.objects.values('genres'):
+        for genre in genres_list.get('genres'):
+            if genre and genre not in books_genres:
+                books_genres.append(genre)
+
+    return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': books_genres})
 
 
 def information_page(request):
@@ -198,32 +199,32 @@ def information_page(request):
 
 
 def search_by_author(request, author_name):
-    author = Author.objects(Q(name=author_name) & Q(status=Status.ACTIVE))[0]
+    author = Author.objects.filter(name=author_name, status=Status.ACTIVE).first()
     books = []
     for book_id in author.books:
-        book = Book.objects(id=book_id)[0]
+        book = Book.objects.filter(pk=ObjectId(book_id)).first()
         if book and book.status == Status.ACTIVE:
             books.append(book)
     return render(request, 'books.html', {'books': books})
 
 
 def category_search(request, genre):
-    books = Book.objects.filter(Q(genres=genre) & Q(status=Status.ACTIVE))
+    books = Book.objects.filter(genres__contains=genre, status=Status.ACTIVE)
     return render(request, 'books.html', {'books': books, 'genre': genre})
 
 
 def form_search(request):
     q = request.GET.get('searchbar', '')
     if q:
-        authors = Author.objects(Q(name__icontains=q) & Q(status=Status.ACTIVE))
+        authors = Author.objects.filter(name__icontains=q, status=Status.ACTIVE)
         books_id = []
         for author in authors:
             for book_id in author.books:
-                book = Book.objects(id=book_id)[0]
+                book = Book.objects.filter(pk=ObjectId(book_id)).first()
                 if book and book.status == Status.ACTIVE:
-                    books_id.append(book_id)
+                    books_id.append(ObjectId(book_id))
         books = Book.objects.filter(
-            Q(status=Status.ACTIVE) & (Q(title__icontains=q) | Q(year__icontains=q) | Q(id__in=books_id)))
+            Q(status=Status.ACTIVE) & (Q(title__icontains=q) | Q(year__icontains=q) | Q(pk__in=books_id)))
     else:
         return render(request, 'books.html')
     return render(request, 'books.html', {'books': books, 'q': q})
@@ -261,17 +262,17 @@ def registration(request):
 
 
 def unique_registration_check(request, field_value):
-    user = MongoUser.objects.filter(DQ(username=field_value) | DQ(email=field_value)).first()
+    user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
     if user:
         return HttpResponse('Already taken', content_type="text/plain")
     return HttpResponse('', content_type="text/plain")
 
 
 def edit_profile_check(request, field_value):
-    check_user = MongoUser.objects.filter(DQ(username=field_value) | DQ(email=field_value)).first()
+    check_user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
     username = request.user.username
     email = request.user.email
-    if check_user.username != username or check_user.email != email:
+    if check_user and (check_user.username != username or check_user.email != email):
         return HttpResponse('Already taken', content_type="text/plain")
     return HttpResponse('', content_type="text/plain")
 
@@ -302,13 +303,13 @@ def news_page(request):
 
 
 def collections_page(request):
-    pages_books = Book.objects(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:10]
-    total_read_books = Book.objects(status=Status.ACTIVE).order_by('-statistic__total_read')[:10]
+    pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:10]
+    total_read_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__total_read')[:10]
     return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': total_read_books})
 
 
 def authors_page(request):
-    authors = Author.objects(status=Status.ACTIVE).order_by('name')
+    authors = Author.objects.filter(status=Status.ACTIVE).order_by('name')
     return render(request, 'authors.html', {'authors': authors})
 
 
