@@ -5,11 +5,11 @@ import re
 from bson import ObjectId
 from datetime import timedelta
 from dotenv import load_dotenv
+from django.contrib.auth.hashers import make_password
 from flask import flash, Flask, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_required, login_user, logout_user
 from mongoengine import connect
 from urllib import parse
-from werkzeug.security import generate_password_hash
 from werkzeug.urls import url_parse
 
 from admin.forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
@@ -101,11 +101,12 @@ def create_app():
         if request.method == 'POST' and form.validate_on_submit():
             try:
                 user = MongoUser(email=form.email.data)
-                user.first_name = form.firstname.data
-                user.last_name = form.lastname.data
+                user.firstname = form.firstname.data
+                user.lastname = form.lastname.data
                 user.username = form.login.data
                 user.set_password(form.password.data)
                 user.role = form.role.data
+                user.is_admin = form.role.data == Role.ADMIN
                 user.save()
                 flash('User successfully created', 'success')
                 return redirect(url_for('get_users_list'))
@@ -121,7 +122,7 @@ def create_app():
         try:
             user = MongoUser.objects.get(id=ObjectId(_id))
             form = UpdateUserForm(
-                request.form, firstname=user.first_name, lastname=user.last_name,
+                request.form, firstname=user.firstname, lastname=user.lastname,
                 email=user.email, login=user.username, role=user.role, status=user.status)
             form.user_id.data = user.id
             if request.method == 'POST' and form.validate_on_submit():
@@ -129,15 +130,16 @@ def create_app():
                 lastname = form.lastname.data
                 email = form.email.data
                 login = form.login.data
-                password_hash = generate_password_hash(form.password.data)
+                password_hash = make_password(form.password.data)
                 role = form.role.data
+                is_admin = form.role.data == Role.ADMIN
                 status = form.status.data
                 if _id == session.get('_user_id') and (status != Status.ACTIVE or role != Role.ADMIN):
                     flash('The administrator cannot change the status or role for himself', 'warning')
                 else:
-                    user.update(first_name=firstname, last_name=lastname,
+                    user.update(firstname=firstname, lastname=lastname,
                                 email=email, username=login, password=password_hash,
-                                role=role, status=status)
+                                role=role, status=status, is_admin=is_admin)
                     flash('User successfully updated', 'success')
                 return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
         except Exception as e:
@@ -150,11 +152,11 @@ def create_app():
     @login_required
     def delete_user(_id: str):
         try:
-            user = MongoUser.objects.get(id=ObjectId(_id), status=Status.ACTIVE)
+            user = MongoUser.objects.get(id=ObjectId(_id), status=Status.ACTIVE, is_active=True)
             if _id == session.get('_user_id'):
                 flash('The administrator cannot change the status or role for himself', 'warning')
             else:
-                user.update(status=Status.INACTIVE)
+                user.update(status=Status.INACTIVE, is_active=False)
                 flash('User successfully deleted', 'danger')
             return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
         except Exception as e:
@@ -166,8 +168,8 @@ def create_app():
     @login_required
     def restore_user(_id: str):
         try:
-            user = MongoUser.objects.get(id=ObjectId(_id), status=Status.INACTIVE)
-            user.update(status='active')
+            user = MongoUser.objects.get(id=ObjectId(_id), status=Status.INACTIVE, is_active=False)
+            user.update(status=Status.ACTIVE, is_active=True)
             flash('User successfully restored', 'success')
             return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
         except Exception as e:
@@ -180,10 +182,10 @@ def create_app():
         form = LoginForm()
         if form.validate_on_submit():
             admin = MongoUser.objects(username=form.admin.data).first()
-            if admin is None or not admin.check_password(form.password.data) or admin.status != 'active':
+            if admin is None or not admin.check_password(form.password.data) or not admin.is_active:
                 flash('Invalid username or password')
                 return redirect('/admin_login')
-            if admin.role == 'admin':
+            if admin.is_admin:
                 login_user(admin)
                 session.permanent = True
                 next_page = request.args.get('next')
