@@ -12,6 +12,7 @@ from django.urls import reverse
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Author, Book, Review, MongoUser, Status
 
+from django.core.mail import send_mail
 
 @login_required
 def profile_details(request):
@@ -309,3 +310,6 @@ def collections_page(request):
 def authors_page(request):
     authors = Author.objects.filter(status=Status.ACTIVE).order_by('name')
     return render(request, 'authors.html', {'authors': authors})
+
+def help_email(request):
+    return render(request, 'help_email.html')

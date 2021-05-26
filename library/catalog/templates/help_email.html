@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Help page{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <h2>This is help page</h2>
+
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="email" class="form-control" name="from_email" placeholder="Your email"><br>
+            <input type="text" class="form-control" name="subject" placeholder="Subject"><br>
+            <input type="text" class="form-control" name="message" placeholder="Message"><br>
+            <input type="submit" class="btn btn-primary" placeholder="Submit"><br>
+
+        </form>
+
+
+
+    </div>
+
+{% endblock %}
