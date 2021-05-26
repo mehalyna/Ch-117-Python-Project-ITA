@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,25 +44,40 @@
                 <img src="{% static 'images/search.png' %}" alt="Search icon" id="toggler">
             </div>
 
-            {% if user.is_authenticated%}
-            <div class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false">
-                    <img class="user-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{% url 'profile_details' %}">Profile details</a>
-                    <a class="dropdown-item" href="{% url 'profile_bookshelf' %}">Bookshelf</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+            {% if user.is_authenticated %}
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        <img class="user-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'profile_details' %}">Profile details</a>
+                        <a class="dropdown-item" href="{% url 'profile_bookshelf' %}">Bookshelf</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+                    </div>
                 </div>
-            </div>
             {% else %}
-            <button data-toggle="modal" data-target="#ModalAuth" data-toggle="modal" type="submit" class="btn btn-dark">
-                Sign
-                In
-            </button>
+                <button data-toggle="modal" data-target="#ModalAuth" data-toggle="modal" type="submit"
+                        class="btn btn-dark">
+                    {% trans 'Sign In' %}
+                </button>
             {% endif %}
+            <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                <input name="next" type="hidden" value="{{ redirect_to }}">
+                <select name="language">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% get_available_languages as LANGUAGES %}
+                    {% get_language_info_list for LANGUAGES as languages %}
+                    {% for language in languages %}
+                        <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                            {{ language.name_local }} ({{ language.code }})
+                        </option>
+                    {% endfor %}
+                </select>
+                <input type="submit" value="Go">
+            </form>
         </div>
     </div>
 
@@ -71,7 +87,7 @@
 
             <div class="modal-content">
                 <div class="modal-header">
-                     <h1 class="modal-title text-ultramarine" id="AuthModalLabel">Sign In</h1>
+                    <h1 class="modal-title text-ultramarine" id="AuthModalLabel">{% trans 'Sign In' %}</h1>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -80,7 +96,7 @@
 
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="exampleInputUsername" class="text-ultramarine">Username</label>
+                        <label for="exampleInputUsername" class="text-ultramarine">{% trans 'Username' %}</label>
                         <div class="input-group">
                             <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">
@@ -96,7 +112,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="exampleInputPassword" class="text-ultramarine">Password</label>
+                        <label for="exampleInputPassword" class="text-ultramarine">{% trans 'Password' %}</label>
                         <div class="mb-2 input-group">
                             <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">
@@ -113,16 +129,16 @@
                     </div>
                 </div>
                 <div class="text-right mr-4">
-                    Forgot password? <a href="/library/reset_password/">Click here</a>
+                    {% trans 'Forgot password?' %} <a href="/library/reset_password/">{% trans 'Click here' %}</a>
                 </div>
                 <div class="modal-footer">
                     <div class="mb-3">
-                        <a href="{% url 'library-registration' %}" class="btn btn-link">Sign Up</a>
+                        <a href="{% url 'library-registration' %}" class="btn btn-link">{% trans 'Sign Up' %}</a>
                     </div>
 
                     <div class="mb-3">
                         <button type="button" class="btn btn-primary btn-lg btn-block login-btn" id="submitButton"
-                                style="max-width:500px" onclick="login_user()" disabled="disabled">Sign In
+                                style="max-width:500px" onclick="login_user()" disabled="disabled">{% trans 'Sign In' %}
                         </button>
                     </div>
 
@@ -184,7 +200,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-    $('#toggler').click(function (){
+    $('#toggler').click(function () {
         $('#searchtool').toggle('slow');
     });
 
