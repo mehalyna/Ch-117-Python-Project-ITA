@@ -212,9 +212,6 @@ function validateUnique(e) {
         if (data.error_message) {
             element.classList.add('is-invalid');
             setErrorFor(errorId, data.error_message);
-        } else {
-            element.classList.remove('is-invalid');
-            setSuccessFor(errorId);
         }
     });
 }
