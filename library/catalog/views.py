@@ -148,7 +148,7 @@ def change_review_status(request, book_id, review_id, new_status):
     if review:
         review.update(status=new_status)
 
-    return redirect(book_details, book_id=book_id)
+    return HttpResponse('Success Deleted', content_type="text/plain")
 
 
 def home(request):
