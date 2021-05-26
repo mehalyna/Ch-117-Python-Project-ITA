@@ -10,7 +10,9 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
-from .models import Author, Book, CacheManager, CacheStorage, Review, MongoUser, Status
+from .models import Author, Book, Cache, CacheStorage, Review, MongoUser, Status
+
+cache_storage = CacheStorage()
 
 
 @login_required
@@ -181,20 +183,26 @@ def change_review_status(request, book_id, review_id, new_status):
 
 
 def home(request):
-    if CacheStorage.books_rating_cache is None or CacheStorage.books_rating_cache.is_expire():
-        CacheStorage.books_rating_cache = CacheManager.update_rating_cache(
-            Book.objects.filter(status=Status.ACTIVE))
+    if cache_storage.get_cache('books_rating_cache') is None:
+        sorted_books = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.statistic.rating,
+                              reverse=True)
+        cache_storage.add_cache('books_rating_cache', Cache(sorted_books))
 
-    if CacheStorage.new_books_cache is None or CacheStorage.new_books_cache.is_expire():
-        CacheStorage.new_books_cache = CacheManager.update_new_books_cache(
-            Book.objects.filter(status=Status.ACTIVE))
+    if cache_storage.get_cache('new_books_cache') is None:
+        sorted_books = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.pk, reverse=True)
+        cache_storage.add_cache('new_books_cache', Cache(sorted_books))
 
-    if CacheStorage.books_genres_cache is None or CacheStorage.books_genres_cache.is_expire():
-        CacheStorage.books_genres_cache = CacheManager.update_books_genres_cache(Book.objects.values('genres'))
+    if cache_storage.get_cache('books_genres_cache') is None:
+        books_genres = []
+        for genres_list in Book.objects.values('genres'):
+            for genre in genres_list.get('genres'):
+                if genre and genre not in books_genres:
+                    books_genres.append(genre)
+        cache_storage.add_cache('books_genres_cache', Cache(books_genres))
 
-    top_books = CacheStorage.books_rating_cache.data
-    new_books = CacheStorage.new_books_cache.data
-    books_genres = CacheStorage.books_genres_cache.data
+    top_books = cache_storage.get_cache('books_rating_cache').data[:20]
+    new_books = cache_storage.get_cache('new_books_cache').data[:20]
+    books_genres = cache_storage.get_cache('books_genres_cache').data
 
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': books_genres})
 
@@ -308,18 +316,20 @@ def news_page(request):
 
 
 def collections_page(request):
-    if CacheStorage.books_total_read_cache is None or CacheStorage.books_total_read_cache.is_expire():
-        CacheStorage.books_total_read_cache = CacheManager.update_total_read_cache(
-            Book.objects.filter(status=Status.ACTIVE))
+    if cache_storage.get_cache('books_total_read_cache') is None:
+        sorted_books = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.statistic.total_read,
+                              reverse=True)
+        cache_storage.add_cache('books_total_read_cache', Cache(sorted_books))
 
-    pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:10]
-    total_read_books = CacheStorage.books_total_read_cache.data
+    pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:20]
+    total_read_books = cache_storage.get_cache('books_total_read_cache').data[:20]
     return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': total_read_books})
 
 
 def authors_page(request):
-    if CacheStorage.authors_cache is None or CacheStorage.authors_cache.is_expire():
-        CacheStorage.authors_cache = CacheManager.update_authors_cache(Author.objects.filter(status=Status.ACTIVE))
+    if cache_storage.get_cache('authors_cache') is None:
+        sorted_authors = sorted(Author.objects.filter(status=Status.ACTIVE), key=lambda author: author.name)
+        cache_storage.add_cache('authors_cache', Cache(sorted_authors))
 
-    authors = CacheStorage.authors_cache.data
+    authors = cache_storage.get_cache('authors_cache').data
     return render(request, 'authors.html', {'authors': authors})

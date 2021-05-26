@@ -1,8 +1,10 @@
 import math
+import os
 from datetime import datetime
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from djongo import models
 
+CACHE_LIFETIME = int(os.getenv('CACHE_LIFETIME'))
 
 class Status:
     ACTIVE = 'active'
@@ -17,53 +19,34 @@ class Role:
 
 
 class CacheStorage:
-    books_rating_cache = None
-    books_total_read_cache = None
-    new_books_cache = None
-    books_genres_cache = None
-    authors_cache = None
+    def __init__(self):
+        self.__cache_dict = {}
 
 
-class CacheManager:
-    @staticmethod
-    def update_rating_cache(books):
-        sorted_books = sorted(books, key=lambda book: book.statistic.rating, reverse=True)
-        return Cache(sorted_books[:20], datetime.utcnow())
+    def get_cache(self, key):
+        if key in self.__cache_dict.keys():
+            cache = self.__cache_dict[key]
+            if cache is None or not cache.is_live():
+                self.__cache_dict[key] = None
+            else:
+                return cache
+        return None
 
-    @staticmethod
-    def update_total_read_cache(books):
-        sorted_books = sorted(books, key=lambda book: book.statistic.total_read, reverse=True)
-        return Cache(sorted_books[:20], datetime.utcnow())
+    def add_cache(self, key, cache):
+        self.__cache_dict[key] = cache
 
-    @staticmethod
-    def update_new_books_cache(books):
-        sorted_books = sorted(books, key=lambda book: book.pk, reverse=True)
-        return Cache(sorted_books[:20], datetime.utcnow())
-
-    @staticmethod
-    def update_books_genres_cache(genres):
-        books_genres = []
-        for genres_list in genres:
-            for genre in genres_list.get('genres'):
-                if genre and genre not in books_genres:
-                    books_genres.append(genre)
-        return Cache(books_genres, datetime.utcnow())
-
-    @staticmethod
-    def update_authors_cache(authors):
-        sorted_authors = sorted(authors, key=lambda author: author.name)
-        return Cache(sorted_authors, datetime.utcnow())
-
+    def clear(self):
+        self.__cache_dict = {}
 
 class Cache:
-    # time_expires in minutes
-    def __init__(self, data, last_update, time_expires=60):
+    def __init__(self, data, lifetime=CACHE_LIFETIME):
+        ''' value 'lifetime' uses minutes as a unit of measurement '''
         self.data = data
-        self.last_update = last_update
-        self.time_expires = time_expires
+        self.__last_update = datetime.utcnow()
+        self.lifetime = lifetime
 
-    def is_expire(self):
-        return (datetime.utcnow() - self.last_update).total_seconds()/60 > self.time_expires
+    def is_live(self):
+        return (datetime.utcnow() - self.__last_update).total_seconds()/60 < self.lifetime
 
 
 class CustomUserManager(BaseUserManager):
