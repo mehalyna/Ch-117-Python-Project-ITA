@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.mail import send_mail
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -122,7 +122,7 @@ def delete_from_wishlist(request, book_id):
 
 def book_details(request, book_id):
     if 'book_details' in request.META['HTTP_REFERER']:
-        request.META['HTTP_REFERER'] = request.session['previous']
+        request.META['HTTP_REFERER'] = request.session.get('previous') or reverse('library-home')
     else:
         request.session['previous'] = request.META['HTTP_REFERER']
 
@@ -265,11 +265,15 @@ def registration(request):
     return render(request, 'registration.html', {'form': form})
 
 
-def unique_registration_check(request, field_value):
-    user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
-    if user:
-        return HttpResponse('Already taken', content_type="text/plain")
-    return HttpResponse('', content_type="text/plain")
+def unique_registration_check(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        field_value = data.get('field_value')
+        user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
+        if user:
+            return JsonResponse({'error_message': 'Already taken'})
+
+        return JsonResponse({})
 
 
 def edit_profile_check(request, field_value):
