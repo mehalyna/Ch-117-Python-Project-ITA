@@ -51,7 +51,7 @@ setTimeout(function () {
     if ($('#msg').length > 0) {
         $('#msg').fadeTo(500, 0, function () {})
     }
-}, 2000)
+}, 4000)
 
 
  function login_user(){

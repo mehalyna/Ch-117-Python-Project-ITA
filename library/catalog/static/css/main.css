@@ -619,3 +619,26 @@ margin-bottom:7px;
         width: 23%;
     }
 }
+
+.reset-password-email-label {
+    margin-top: 10px;
+    width: 120px;
+}
+.reset-password-email-input {
+    width: 400px !important;
+}
+
+.reset-password-email {
+    display: inline-flex;
+    align-items: center;
+}
+
+.reset-password-button {
+    width: 135px !important;
+    background-color: #1a73e8 !important;
+    color: white !important;
+}
+
+.reset-password-container {
+    margin-top: 60px;
+}

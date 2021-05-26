@@ -1,16 +1,22 @@
 import json
+import random
+import string
 
 from bson import ObjectId
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Author, Book, Review, MongoUser, Status
+
+PASSWORD_ITERATION = 5
+MAX_PASSWORD_NUM = 22
 
 
 @login_required
@@ -313,3 +319,41 @@ def collections_page(request):
 def authors_page(request):
     authors = Author.objects.filter(status=Status.ACTIVE).order_by('name')
     return render(request, 'authors.html', {'authors': authors})
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = MongoUser.objects.filter(email=email).first()
+        if user:
+            number_string = [str(i) for i in range(MAX_PASSWORD_NUM)]
+            eng_alphabet = string.ascii_letters
+            new_password = ''
+            for i in range(PASSWORD_ITERATION):
+                new_password += random.choice(eng_alphabet)
+                new_password += random.choice(number_string)
+            user.set_password(new_password)
+            user.save()
+            send_mail(
+                'Library support',
+                f'''
+                Your temporary password - {new_password}
+                You can authorize on home page
+                Home page link - {request.build_absolute_uri(reverse(home))}
+                ''',
+                'pythonproject117@gmail.com',
+                [email],
+                fail_silently=False
+            )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Success! Check your email and sign in with new credentials.'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Warning! You entered the invalid email.'
+            )
+    return render(request, 'reset_password.html')
