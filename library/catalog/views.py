@@ -344,7 +344,7 @@ def reset_password(request):
                 You can authorize on home page
                 Home page link - {request.build_absolute_uri(reverse(home))}
                 ''',
-                'pythonproject117@gmail.com',
+                os.getenv('EMAIL_HOST_USER'),
                 [email],
                 fail_silently=False
             )
@@ -375,7 +375,7 @@ def help_email(request):
                 Question : {message}\n
                 Email for answer - {user_email}
                 ''',
-                'pythonproject117@gmail.com',
+                os.getenv('EMAIL_HOST_USER'),
                 [os.getenv('ADMIN_EMAIL')],
                 fail_silently=False
             )
