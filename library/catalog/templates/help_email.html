@@ -5,20 +5,26 @@
 
 {% block body %}
 
-    <div class="container">
-        <h2>This is help page</h2>
+<div class="container">
 
-        <form action="" method="post">
-            {% csrf_token %}
-            <input type="email" class="form-control" name="from_email" placeholder="Your email"><br>
-            <input type="text" class="form-control" name="subject" placeholder="Subject"><br>
-            <input type="text" class="form-control" name="message" placeholder="Message"><br>
-            <input type="submit" class="btn btn-primary" placeholder="Submit"><br>
+    <h2 class="h2-author">You can find out any information you need by filling out the form below</h2>
 
-        </form>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.user_email }}<br>
+        {{ form.subject }}<br>
+        {{ form.message }}<br>
+        <input type="submit" class="btn btn-primary" placeholder="Submit" value="Send letter"><br>
+    </form>
 
-
-
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mt-4" id="msg" role="alert">
+        {{ message }}
     </div>
+    {% endfor %}
+    {% endif %}
+
+</div>
 
 {% endblock %}

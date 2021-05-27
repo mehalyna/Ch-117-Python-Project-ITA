@@ -1,18 +1,24 @@
 import json
+import random
+import string
+import os
 
 from bson import ObjectId
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
+from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm, ContactForm
 from .models import Author, Book, Review, MongoUser, Status
 
-from django.core.mail import send_mail
+PASSWORD_ITERATION = 5
+MAX_PASSWORD_NUM = 22
+
 
 @login_required
 def profile_details(request):
@@ -117,7 +123,7 @@ def delete_from_wishlist(request, book_id):
 
 def book_details(request, book_id):
     if 'book_details' in request.META['HTTP_REFERER']:
-        request.META['HTTP_REFERER'] = request.session['previous']
+        request.META['HTTP_REFERER'] = request.session.get('previous') or reverse('library-home')
     else:
         request.session['previous'] = request.META['HTTP_REFERER']
 
@@ -260,11 +266,15 @@ def registration(request):
     return render(request, 'registration.html', {'form': form})
 
 
-def unique_registration_check(request, field_value):
-    user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
-    if user:
-        return HttpResponse('Already taken', content_type="text/plain")
-    return HttpResponse('', content_type="text/plain")
+def unique_registration_check(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        field_value = data.get('field_value')
+        user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
+        if user:
+            return JsonResponse({'error_message': 'Already taken'})
+
+        return JsonResponse({})
 
 
 def edit_profile_check(request, field_value):
@@ -311,5 +321,72 @@ def authors_page(request):
     authors = Author.objects.filter(status=Status.ACTIVE).order_by('name')
     return render(request, 'authors.html', {'authors': authors})
 
+
+def reset_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = MongoUser.objects.filter(email=email).first()
+        if user:
+            number_string = [str(i) for i in range(MAX_PASSWORD_NUM)]
+            eng_alphabet = string.ascii_letters
+            new_password = ''
+            for i in range(PASSWORD_ITERATION):
+                new_password += random.choice(eng_alphabet)
+                new_password += random.choice(number_string)
+            user.set_password(new_password)
+            user.save()
+            send_mail(
+                'Library support',
+                f'''
+                Your temporary password - {new_password}
+                You can authorize on home page
+                Home page link - {request.build_absolute_uri(reverse(home))}
+                ''',
+                'pythonproject117@gmail.com',
+                [email],
+                fail_silently=False
+            )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Success! Check your email and sign in with new credentials.'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Warning! You entered the invalid email.'
+            )
+    return render(request, 'reset_password.html')
+
+
 def help_email(request):
-    return render(request, 'help_email.html')
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            user_email = form.cleaned_data.get('user_email')
+            subject = form.cleaned_data.get('subject')
+            message = form.cleaned_data.get('message')
+            send_mail(
+                f'{subject}',
+                f'''
+                Question : {message}\n
+                Email for answer - {user_email}
+                ''',
+                'pythonproject117@gmail.com',
+                [os.getenv('ADMIN_EMAIL')],
+                fail_silently=False
+            )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'The letter was sent, wait for a response to your mailbox'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Check your form, the fields were filled in incorrectly'
+            )
+    form = ContactForm()
+    return render(request, 'help_email.html',  {'form': form})
