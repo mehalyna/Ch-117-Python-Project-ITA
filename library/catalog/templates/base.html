@@ -52,10 +52,10 @@
                         <img class="user-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{% url 'profile_details' %}">Profile details</a>
-                        <a class="dropdown-item" href="{% url 'profile_bookshelf' %}">Bookshelf</a>
+                        <a class="dropdown-item" href="{% url 'profile_details' %}">{% trans 'Profile details' %}</a>
+                        <a class="dropdown-item" href="{% url 'profile_bookshelf' %}">{% trans 'Bookshelf' %}</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+                        <a class="dropdown-item" href="{% url 'logout' %}">{% trans 'Log out' %}</a>
                     </div>
                 </div>
             {% else %}
@@ -156,25 +156,25 @@
 <div class="footer">
     <div class="footer-container">
         <div class="footer-container-box">
-            <h5>Navigation</h5>
+            <h5>{% trans 'Navigation' %}</h5>
             <div class="footer-links-box">
-                <a href="{% url 'news_page' %}">News</a>
-                <a href="{% url 'form-books' %}">Search tool</a>
-                <a href="{% url 'collections_page' %}">Collections of books</a>
-                <a href="{% url 'authors_page' %}">Authors</a>
+                <a href="{% url 'news_page' %}">{% trans 'News' %}</a>
+                <a href="{% url 'form-books' %}">{% trans 'Search tool' %}</a>
+                <a href="{% url 'collections_page' %}">{% trans 'Collections of books' %}</a>
+                <a href="{% url 'authors_page' %}">{% trans 'Authors' %}</a>
             </div>
         </div>
         <div class="footer-container-box">
-            <h5>Information</h5>
+            <h5>{% trans 'Information' %}</h5>
             <div class="footer-links-box">
-                <a href="{% url 'information_page' %}#about">About us</a>
-                <a href="{% url 'information_page' %}#rules">Site rules</a>
-                <a href="{% url 'information_page' %}#privacy">Privacy and policy</a>
-                <a href="{% url 'information_page' %}#help">Help</a>
+                <a href="{% url 'information_page' %}#about">{% trans 'About us' %}</a>
+                <a href="{% url 'information_page' %}#rules">{% trans 'Site rules' %}</a>
+                <a href="{% url 'information_page' %}#privacy">{% trans 'Privacy and policy' %}</a>
+                <a href="{% url 'information_page' %}#help">{% trans 'Help' %}</a>
             </div>
         </div>
         <div class="footer-container-box">
-            <h5>Stay connected</h5>
+            <h5>{% trans 'Stay connected' %}</h5>
             <a href="https://www.instagram.com/"><img src="{% static 'images/instagram.svg' %}" alt="Instagram"></a>
             <a href="https://www.facebook.com/"><img src="{% static 'images/facebook.svg' %}" alt="Facebook"></a>
             <a href="https://twitter.com/"><img src="{% static 'images/twitter.svg' %}" alt="Twitter"></a>

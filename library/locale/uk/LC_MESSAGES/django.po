@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-26 22:14+0300\n"
+"POT-Creation-Date: 2021-05-27 21:00+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,10 +21,22 @@ msgstr ""
 "100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || "
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
+#: .\catalog\templates\base.html:55
+msgid "Profile details"
+msgstr "Деталі профілю"
+
+#: .\catalog\templates\base.html:56
+msgid "Bookshelf"
+msgstr "Книжкова полиця"
+
+#: .\catalog\templates\base.html:58
+msgid "Log out"
+msgstr "Вихід"
+
 #: .\catalog\templates\base.html:64 .\catalog\templates\base.html:90
 #: .\catalog\templates\base.html:141
 msgid "Sign In"
-msgstr "Ввійти"
+msgstr "Вхід"
 
 #: .\catalog\templates\base.html:99
 msgid "Username"
@@ -44,12 +56,76 @@ msgstr "Натисніть тут"
 
 #: .\catalog\templates\base.html:136
 msgid "Sign Up"
-msgstr "Зареєструватись"
+msgstr "Зареєструватися"
 
-#: .\library\settings.py:163
+#: .\catalog\templates\base.html:159
+msgid "Navigation"
+msgstr "Навігація"
+
+#: .\catalog\templates\base.html:161
+msgid "News"
+msgstr "Новини"
+
+#: .\catalog\templates\base.html:162
+msgid "Search tool"
+msgstr "Пошук"
+
+#: .\catalog\templates\base.html:163
+msgid "Collections of books"
+msgstr "Колекції книг"
+
+#: .\catalog\templates\base.html:164
+msgid "Authors"
+msgstr "Автори"
+
+#: .\catalog\templates\base.html:168
+msgid "Information"
+msgstr "Інформація"
+
+#: .\catalog\templates\base.html:170
+msgid "About us"
+msgstr "Про нас"
+
+#: .\catalog\templates\base.html:171
+msgid "Site rules"
+msgstr "Правила сайту"
+
+#: .\catalog\templates\base.html:172
+msgid "Privacy and policy"
+msgstr "Конфіденційність та політика"
+
+#: .\catalog\templates\base.html:173
+msgid "Help"
+msgstr "Допомога"
+
+#: .\catalog\templates\base.html:177
+msgid "Stay connected"
+msgstr "Залишайтесь на зв'язку"
+
+#: .\catalog\templates\home.html:10
+msgid "Popular books of the week"
+msgstr "Популярні книги тижня"
+
+#: .\catalog\templates\home.html:34
+msgid "New books on a website"
+msgstr "Нові книги на сайті"
+
+#: .\catalog\templates\home.html:60
+msgid "Search your favourite book"
+msgstr "Зайдіть вашу улюблену книгу"
+
+#: .\catalog\templates\home.html:63
+msgid "Title/ Author/ Year"
+msgstr "Заголовок/ Автор/ Рік"
+
+#: .\catalog\templates\home.html:64
+msgid "Search"
+msgstr "Пошук"
+
+#: .\library\settings.py:162
 msgid "Ukrainian"
 msgstr "Українська"
 
-#: .\library\settings.py:164
+#: .\library\settings.py:163
 msgid "English"
 msgstr "Англійська"
