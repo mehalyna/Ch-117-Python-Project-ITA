@@ -20,33 +20,30 @@ class Role:
 
 class CacheStorage:
     def __init__(self):
-        self.__cache_dict = {}
+        self._cache_dict = {}
 
 
-    def get_cache(self, key):
-        if key in self.__cache_dict.keys():
-            cache = self.__cache_dict[key]
-            if cache is None or not cache.is_live():
-                self.__cache_dict[key] = None
+    def get_value(self, key):
+        if key in self._cache_dict:
+            cache = self._cache_dict[key]
+            if cache is None or cache.is_expired():
+                self._cache_dict.pop(key)
             else:
-                return cache
+                return cache.data
         return None
 
-    def add_cache(self, key, cache):
-        self.__cache_dict[key] = cache
-
-    def clear(self):
-        self.__cache_dict = {}
+    def add_value(self, key, data):
+        self._cache_dict[key] = Cache(data)
 
 class Cache:
     def __init__(self, data, lifetime=CACHE_LIFETIME):
         ''' value 'lifetime' uses minutes as a unit of measurement '''
         self.data = data
-        self.__last_update = datetime.utcnow()
+        self._last_update = datetime.utcnow()
         self.lifetime = lifetime
 
-    def is_live(self):
-        return (datetime.utcnow() - self.__last_update).total_seconds()/60 < self.lifetime
+    def is_expired(self):
+        return (datetime.utcnow() - self._last_update).total_seconds() / 60 > self.lifetime
 
 
 class CustomUserManager(BaseUserManager):
