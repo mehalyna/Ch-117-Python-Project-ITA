@@ -172,7 +172,6 @@ function delete_comment() {
     .getAttribute("url");
     let csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0]
     .value;
-    console.log(endpointDelete)
 
 $.ajax({
     method: "POST",

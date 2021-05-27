@@ -12,7 +12,6 @@ from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from mongoengine.queryset.visitor import Q
 
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Author, Book, Review, MongoUser, Status

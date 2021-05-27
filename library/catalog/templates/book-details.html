@@ -15,8 +15,7 @@
 
 {% endfor %}
 {% endif %}
-<div style="margin-top: 50px;background-color: #e1e5e7;"
-     class="container border p-3 mb-3 book_details_frame rounded">
+<div class="container border p-3 mb-3 book_details_frame rounded">
     <div class="d-flex justify-content-start">
         <div class="book_details_img">
             <img style="width:200px;margin-bottom: 10px" id="cover_image" src="{{ book.link_img }}"
@@ -83,7 +82,7 @@
             </p>
         </div>
     </div>
-    <h2 style="margin-left: 400px">Reviews</h2>
+    <h2 id='review-banner'>Reviews</h2>
     {% if user.is_authenticated and user.status == 'active' %}
     <form style="margin-bottom: 80px;" onsubmit="saveStarRating('{% url 'add-rating' book.pk %}')" action="">
         <div class="form-group">
