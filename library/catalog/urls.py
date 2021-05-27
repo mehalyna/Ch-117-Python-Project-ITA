@@ -1,6 +1,4 @@
 from django.urls import path
-from django.contrib.auth import views as auth_views
-from django.urls import path
 
 from . import views
 
@@ -9,7 +7,7 @@ urlpatterns = [
     path('registration/', views.registration, name='library-registration'),
     path('registration_unique_validation/', views.unique_registration_check,
          name='library-registration-validate'),
-    path('edit_profile_validation/<str:field_value>', views.edit_profile_check, name='library-edit-profile-validate'),
+    path('edit_profile_unique_validation/', views.edit_profile_unique_check, name='edit-profile-validate'),
     path('book_details/<str:book_id>', views.book_details, name='book-details'),
     path('profile_details/', views.profile_details, name='profile_details'),
     path('profile_edit/', views.profile_edit, name='profile_edit'),

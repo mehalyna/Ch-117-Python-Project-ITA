@@ -1,7 +1,7 @@
+import os
 import json
 import random
 import string
-import os
 
 from bson import ObjectId
 from django.contrib import messages
@@ -13,7 +13,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm, ContactForm
+from .forms import ChangePasswordForm, ContactForm,  EditProfileForm, RegistrationForm
 from .models import Author, Book, Review, MongoUser, Status
 
 PASSWORD_ITERATION = 5
@@ -277,13 +277,15 @@ def unique_registration_check(request):
         return JsonResponse({})
 
 
-def edit_profile_check(request, field_value):
-    check_user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
-    username = request.user.username
-    email = request.user.email
-    if check_user and (check_user.username != username or check_user.email != email):
-        return HttpResponse('Already taken', content_type="text/plain")
-    return HttpResponse('', content_type="text/plain")
+def edit_profile_unique_check(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        field_value = data.get('field_value')
+        check_user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
+        user = request.user
+        if check_user and check_user.pk != user.pk:
+            return JsonResponse({'error_message': 'Already taken'})
+        return JsonResponse({})
 
 
 def logout_view(request):

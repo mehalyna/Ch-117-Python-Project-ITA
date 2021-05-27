@@ -130,15 +130,19 @@ def create_app():
                 lastname = form.lastname.data
                 email = form.email.data
                 login = form.login.data
-                password_hash = make_password(form.password.data)
                 role = form.role.data
                 is_admin = form.role.data == Role.ADMIN
                 status = form.status.data
+                password_data = form.password.data
+                if password_data:
+                    password = make_password(password_data)
+                else:
+                    password = user.password
                 if _id == session.get('_user_id') and (status != Status.ACTIVE or role != Role.ADMIN):
                     flash('The administrator cannot change the status or role for himself', 'warning')
                 else:
                     user.update(firstname=firstname, lastname=lastname,
-                                email=email, username=login, password=password_hash,
+                                email=email, username=login, password=password,
                                 role=role, status=status, is_admin=is_admin)
                     flash('User successfully updated', 'success')
                 return redirect(utils.back_to_page('page', 'userSearch', 'urlPath'))
@@ -192,6 +196,10 @@ def create_app():
                 if not next_page or url_parse(next_page).netloc != '':
                     next_page = url_for('start_page')
                 return redirect(next_page)
+            else:
+                flash('You don\'t have permission')
+                return redirect(url_for('admin_login'))
+
         return render_template('admin_login.html', title='Sign In', form=form)
 
     @app.route('/logout')
