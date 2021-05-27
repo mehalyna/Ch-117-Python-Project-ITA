@@ -33,11 +33,25 @@ const new_slider = new Swiper('.second-container', {
   speed: 600,
 });
 
+
+const recbook_swiper = new Swiper('.third-container', {
+  direction: 'horizontal',
+  loop: true,
+  navigation: {
+    nextEl: '.first-next',
+    prevEl: '.first-prev',
+  },
+  slidesPerView: 5,
+  spaceBetween: 20,
+  speed: 600,
+
+});
+
 setTimeout(function () {
     if ($('#msg').length > 0) {
         $('#msg').fadeTo(500, 0, function () {})
     }
-}, 2000)
+}, 4000)
 
 
  function login_user(){

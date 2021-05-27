@@ -13,8 +13,8 @@ let lastname = form.elements.namedItem('lastname');
 lastname.value = getWithExpiry(storageKeyPrefix + lastname.id);
 let email = form.elements.namedItem('email');
 email.value = getWithExpiry(storageKeyPrefix + email.id);
-let login = form.elements.namedItem('login');
-login.value = getWithExpiry(storageKeyPrefix + login.id);
+let username = form.elements.namedItem('username');
+username.value = getWithExpiry(storageKeyPrefix + username.id);
 
 let password = form.elements.namedItem('password');
 let confirmPassword = form.elements.namedItem('confirm_password');
@@ -28,16 +28,20 @@ window.onload = function (event) {
     }
     if (email.value) {
         validateEmail();
+        validateUnique(email);
     }
-    if (login.value) {
-        validateLogin();
+    if (username.value) {
+        validateUsername();
+        validateUnique(username);
     }
 }
 
 firstname.addEventListener('input', validationFuncsFirstname);
 lastname.addEventListener('input', validationFuncsLastname);
 email.addEventListener('input', validationFuncsEmail);
-login.addEventListener('input', validationFuncsLogin);
+email.addEventListener('blur', validateUnique);
+username.addEventListener('input', validationFuncsUsername);
+username.addEventListener('blur', validateUnique);
 password.addEventListener('input', validationFuncsPassword);
 confirmPassword.addEventListener('input', validationFuncsConfirmPassword);
 
@@ -59,9 +63,9 @@ function validationFuncsEmail() {
     checkFormValid();
 }
 
-function validationFuncsLogin() {
-    setWithExpiry(storageKeyPrefix + login.id, login.value, timeToLiveMin);
-    validateLogin();
+function validationFuncsUsername() {
+    setWithExpiry(storageKeyPrefix + username.id, username.value, timeToLiveMin);
+    validateUsername();
     checkFormValid();
 }
 
@@ -97,24 +101,22 @@ function validateEmail() {
         email.classList.add('is-invalid');
         setErrorFor(errorId, 'Invalid email');
     } else if (!validateProfanity(email, errorId)) {
-    } else if (!validateUnique(email, errorId)) {
     } else {
         email.classList.remove('is-invalid');
         setSuccessFor(errorId);
     }
 }
 
-function validateLogin() {
-    let errorId = '#loginError'
+function validateUsername() {
+    let errorId = '#usernameError'
 
-    if (!dataRequired(login, errorId)) {
-    } else if (login.value.length < 6) {
-        login.classList.add('is-invalid');
+    if (!dataRequired(username, errorId)) {
+    } else if (username.value.length < 6) {
+        username.classList.add('is-invalid');
         setErrorFor(errorId, 'Minimum 6 characters long');
-    } else if (!validateProfanity(login, errorId)) {
-    } else if (!validateUnique(login, errorId)) {
+    } else if (!validateProfanity(username, errorId)) {
     } else {
-        login.classList.remove('is-invalid');
+        username.classList.remove('is-invalid');
         setSuccessFor(errorId);
     }
 }
@@ -192,24 +194,26 @@ function validatePasswords(element, errorId) {
     }
 }
 
-function validateUnique(element, errorId) {
-    let validationText = '';
-    let validateUrl = `/library/registration_validation/${element.value}`;
-    let request = new XMLHttpRequest();
-    request.open("GET", validateUrl, false);
-    request.send(null);
-    if (request.readyState === 4 && request.status === 200) {
-        validationText = request.responseText;
-    }
-    if (validationText) {
-        element.classList.add('is-invalid');
-        setErrorFor(errorId, validationText);
-        return false;
-    } else {
-        element.classList.remove('is-invalid');
-        setSuccessFor(errorId);
-        return true;
-    }
+function validateUnique(e) {
+    const errorSuffix = 'Error';
+    let element;
+    e instanceof Event ? element = e.target : element = e;
+    let errorId = '#' + element.name + errorSuffix;
+    let validateUrl = `/library/registration_unique_validation/`;
+    let csrftoken = getCookie('csrftoken');
+    const request = new Request(
+        validateUrl,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+    fetch(request, {
+        body: JSON.stringify({field_value: element.value}),
+        method: 'POST',
+    }).then(response => response.json()).then(data => {
+        if (data.error_message) {
+            element.classList.add('is-invalid');
+            setErrorFor(errorId, data.error_message);
+        }
+    });
 }
 
 function setWithExpiry(key, value, ttl) {
@@ -252,4 +256,20 @@ function validateProfanity(element, errorId) {
         setSuccessFor(errorId);
         return true;
     }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }

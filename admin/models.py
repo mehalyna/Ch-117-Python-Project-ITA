@@ -1,9 +1,15 @@
 from datetime import datetime
+from django.conf import settings
+from django.contrib.auth.hashers import check_password, make_password
 from flask_login import UserMixin
 from flask_mongoengine import Document
-from mongoengine import DateTimeField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
-    IntField, ListField, ReferenceField, StringField
-from werkzeug.security import check_password_hash, generate_password_hash
+from mongoengine import (
+    DateTimeField, EmailField, FloatField, IntField, ListField, ReferenceField,
+    StringField, BooleanField, DictField
+)
+
+
+settings.configure()
 
 
 class Statistics:
@@ -30,40 +36,37 @@ class Role:
     ADMIN = 'admin'
 
 
-class Preference(EmbeddedDocument):
-    genres = ListField(default=[])
-    authors = ListField(default=[])
-    rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
-    years = ListField(default=(), max_length=2)
-
-
 class MongoUser(UserMixin, Document):
-    first_name = StringField(max_length=100, min_length=1, required=True)
-    last_name = StringField(max_length=100, min_length=1, required=True)
+    firstname = StringField(max_length=100, min_length=1, required=True)
+    lastname = StringField(max_length=100, min_length=1, required=True)
     email = EmailField(required=True, unique=True)
     username = StringField(required=True, unique=True)
     password = StringField(required=True, min_length=8)
     role = StringField(default=Role.USER)
     status = StringField(default=Status.ACTIVE)
-    last_login = DateTimeField(default=datetime.now)
     reviews = ListField(default=[])
     recommended_books = ListField(default=[])
     wishlist = ListField(default=[])
-    preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
+    rated_books = DictField(default={})
+    last_login = DateTimeField(default=datetime.now)
+    date_joined = DateTimeField(default=datetime.now)
+    is_admin = BooleanField(default=True)
+    is_active = BooleanField(default=True)
+    is_staff = BooleanField(default=False)
+    is_superuser = BooleanField(default=False)
+
+    meta = {'collection': 'catalog_mongouser'}
 
     def __repr__(self):
         return '<Admin {}>'.format(self.username)
 
     def set_password(self, password):
-        self.password = generate_password_hash(password)
+        self.password = make_password(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password, password)
+        return check_password(password, self.password)
 
     def is_authenticated(self):
-        return True
-
-    def is_active(self):
         return True
 
     def is_anonymous(self):
@@ -76,10 +79,13 @@ class MongoUser(UserMixin, Document):
         return self.username
 
 
-class BookStatistic(EmbeddedDocument):
+class BookStatistic(Document):
     rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
     total_read = IntField(default=0, min_value=0)
     reading_now = IntField(default=0, min_value=0)
+    stars = ListField(default=[0, 0, 0, 0, 0])
+
+    meta = {'collection': 'catalog_bookstatistic'}
 
 
 class Author(Document):
@@ -88,6 +94,8 @@ class Author(Document):
     death_date = StringField(default='', max_length=15)
     status = StringField(default=Status.ACTIVE, max_length=50)
     books = ListField(default=[])
+
+    meta = {'collection': 'catalog_author'}
 
 
 class Book(Document):
@@ -102,7 +110,9 @@ class Book(Document):
     genres = ListField(default=[])
     status = StringField(default=Status.ACTIVE, max_length=100)
     store_links = ListField(default=[])
-    statistic = EmbeddedDocumentField(BookStatistic.__name__, default=BookStatistic())
+    statistic_id = ReferenceField(BookStatistic.__name__)
+
+    meta = {'collection': 'catalog_book'}
 
 
 class Review(Document):
@@ -113,4 +123,6 @@ class Review(Document):
     status = StringField(default=Status.ACTIVE, max_length=100)
     comment = StringField(default='', max_length=5000)
     date = DateTimeField(default=datetime.now)
+
+    meta = {'collection': 'catalog_review'}
 

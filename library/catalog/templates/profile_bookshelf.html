@@ -2,23 +2,23 @@
 {% load static %}
 {% block bookshelf_link_class %}active{% endblock %}
 {% block profile_content %}
-    <div class="container">
+    <div class="container rec-books">
         <h2 class="my-5">Recommended for you</h2>
-        <div class="swiper-container first-container">
+        <div class="swiper-container third-container">
             <div class="swiper-wrapper">
                 {% for book in rec_books %}
                 <div class="swiper-slide">
-                    <a href="{% url 'book-details' book.id %}">
+                    <a href="{% url 'book-details' book.pk %}">
                         <img src="{{ book.link_img }}" alt="{{ book.title }}">
                         <p><b>{{book.title}}</b></p>
-                        <p>{{ book.author_id.name}}</p>
+                        <p>{{ book.author.name}}</p>
                     </a>
                 </div>
                 {% endfor %}
             </div>
         </div>
-        <div class="swiper-button-prev first-prev" style="position: relative; top: -278px; left: -40px"></div>
-        <div class="swiper-button-next first-next" style="position: relative; top: -300px; left: 1125px;"></div>
+        <div class="swiper-button-prev first-prev left-arrow"></div>
+        <div class="swiper-button-next first-next right-arrow"></div>
         <br>
     </div>
     <div class="container">
@@ -26,10 +26,10 @@
         <div class="row">
             {% for book in wishlist_books %}
             <div class="col-3">
-                <a href="{% url 'book-details' book.id %}">
+                <a href="{% url 'book-details' book.pk %}">
                     <img src="{{ book.link_img }}" alt="{{ book.title }}">
                     <p><b>{{book.title}}</b></p>
-                    <p>{{ book.author_id.name}}</p>
+                    <p>{{ book.author.name}}</p>
                 </a>
             </div>
             {% endfor %}

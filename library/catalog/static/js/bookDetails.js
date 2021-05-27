@@ -80,16 +80,17 @@ function fillCommentsList(list) {
 
   const data = list.reviews;
   $("#commentList").empty();
+  $("#exampleFormControlTextarea1").empty();
 
   for (let i = 0; i < data.length; i++) {
     const userDeleteButton = `<a id="commentButton" style="float: right; width: 80px; display: none;"
-                   href="/library/change_review_status/${data[i].book_id['$oid']}/${data[i]._id['$oid']}/inactive}"
+                   href="/library/change_review_status/${data[i].fields.book}/${data[i].pk}/inactive}"
                    class="btn btn-danger">Delete</a>`;
 
     const adminRestoreButton = `<a id="commentButton" style="float: right; width: 80px; display: none;"
-                   href="/library/change_review_status/${data[i].book_id['$oid']}/${data[i]._id['$oid']}/active"
+                   href="/library/change_review_status/${data[i].fields.book}/${data[i].pk}/active"
                    class="btn btn-danger">Restore</a>`;
-    const date = new Date(data[i].date.$date).toLocaleDateString("en-US", {
+    const date = new Date(data[i].fields.date).toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -97,16 +98,16 @@ function fillCommentsList(list) {
     });
 
     const regularUserComment =
-      data[i].status === "active" && `
+      data[i].fields.status === "active" && `
           <div id="commentArea" >
           <div style="font-size: large; font-weight: bolder; background: white;" class="card-header">
-                    ${data[i].firstname} ${data[i].lastname}
-                    ${userId === data[i].user_id.$oid && userDeleteButton}
+                    ${data[i].fields.firstname} ${data[i].fields.lastname}
+                    ${userId === data[i].fields.user && userDeleteButton}
 
              </div>
           <div class="card-body">
                         <blockquote class="blockquote mb-0">
-                            <p style="font-size: smaller">${data[i].comment}</p>
+                            <p style="font-size: smaller">${data[i].fields.comment}</p>
                             <footer class="blockquote-footer"><cite
                             title="Source Title">Published ${date}</cite></footer>
                 </blockquote>
@@ -116,10 +117,10 @@ function fillCommentsList(list) {
     const adminComment = `
           <div id="commentArea" >
           <div style="font-size: large; background: white;" class="card-header">
-                    ${data[i].firstname} ${data[i].lastname}
+                    ${data[i].fields.firstname} ${data[i].fields.lastname}
                     ${
-                      data[i].status === "active"
-                        ? userId === data[i].user_id.$oid && userDeleteButton
+                      data[i].fields.status === "active"
+                        ? userId === data[i].fields.user && userDeleteButton
                         : adminRestoreButton
                     }
 
@@ -127,7 +128,7 @@ function fillCommentsList(list) {
              </div>
           <div class="card-body">
                         <blockquote class="blockquote mb-0">
-                            <p style="font-size: large">${data[i].comment}</p>
+                            <p style="font-size: large">${data[i].fields.comment}</p>
                             <footer style="font-size: smaller" class="blockquote-footer"><cite
                             title="Source Title">Published ${date}</cite></footer>
                 </blockquote>
@@ -183,3 +184,4 @@ $.ajax({
     success: fillCommentsList,
   });
 }
+

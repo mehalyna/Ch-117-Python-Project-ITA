@@ -58,19 +58,6 @@
     max-width: 925px !important;
 }
 
-.user_menu {
-    padding: 5% 2% 9%;
-    background-color: #eeecec;
-    border: 1px solid #bad8e3;
-    box-shadow: 0 10px 10px;
-    border-radius: 10px 100px / 30px;
-    height: 560px;
-}
-
-.user_menu_buttons li a {
-    color: black;
-}
-
 .row img {
     width: 100%;
     height: 60%;
@@ -81,6 +68,10 @@
     text-align: center;
     text-decoration: none;
     color: #323232;
+}
+.nav-tabs li a{
+    color:black;
+    font-size:1.2em;
 }
 
 .swiper-container {
@@ -118,6 +109,22 @@
     background: rgba(238, 236, 236, 0.6)
 }
 
+.container .rec-books{
+    position: relative;
+}
+
+.container .rec-books .left-arrow {
+    position: relative;
+    top: -17em;
+    left: -2.5em;
+}
+
+.container .rec-books .right-arrow {
+    position: relative;
+    top: -18rem;
+    left: 68.5em;
+}
+
 .h2-home-page {
     margin-bottom: 25px;
 }
@@ -131,7 +138,7 @@
 
 
 .category-wrapper {
-    height: 240px;
+    height: auto;
     display: flex;
     justify-content: space-between;
     margin-bottom: 45px;
@@ -172,6 +179,7 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    margin-top: auto;
 }
 
 .footer-container {
@@ -212,7 +220,6 @@
 }
 
 .container-search {
-    min-height: 530px;
     margin-top: 30px;
     margin-bottom: 30px;
     height: auto;
@@ -255,6 +262,7 @@
 .navbar {
     height: 70px;
     background: #eeecec;
+    width: 100%;
 }
 
 .navbar-wrapper {
@@ -387,6 +395,9 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Open Sans, Ubuntu, Fira Sans, Helvetica Neue, sans-serif;
     font-size: 1rem;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .page {
@@ -494,10 +505,6 @@ margin-bottom:7px;
     margin-top: 10px;
 }
 
-#editing_form {
-    margin-left: -150px;
-}
-
 .toast{
     position: absolute;
     left: 40%;
@@ -580,10 +587,6 @@ margin-bottom:7px;
     margin-bottom: 10px;
 }
 
-.min-height-650{
-    min-height: 650px;
-}
-
 .collections-next-arrow{
     position: relative !important;
     top: -278px !important;
@@ -594,4 +597,48 @@ margin-bottom:7px;
     position: relative !important;
     top: -300px !important;
     left: -65px !important;
+}
+
+
+/*Media queries*/
+
+@media screen and (max-device-width: 1250px) {
+    .swiper-button-prev::after, .swiper-button-next::after {
+        display: none;
+    }
+    .swiper-button-next, .swiper-button-prev{
+        display: none !important;
+    }
+   }
+
+@media screen and (max-device-width: 1000px ) {
+    .container-search-box{
+        width: 48%;
+    }
+    .trb-box{
+        width: 23%;
+    }
+}
+
+.reset-password-email-label {
+    margin-top: 10px;
+    width: 120px;
+}
+.reset-password-email-input {
+    width: 400px !important;
+}
+
+.reset-password-email {
+    display: inline-flex;
+    align-items: center;
+}
+
+.reset-password-button {
+    width: 135px !important;
+    background-color: #1a73e8 !important;
+    color: white !important;
+}
+
+.reset-password-container {
+    margin-top: 60px;
 }

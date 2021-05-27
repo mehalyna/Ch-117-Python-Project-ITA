@@ -1,7 +1,7 @@
+from bson import ObjectId
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
-from mongoengine.queryset.visitor import Q
 from profanityfilter import ProfanityFilter
 
 from .models import MongoUser
@@ -9,13 +9,6 @@ from .models import MongoUser
 PASSWORD_MESSAGE = 'Minimum 8 characters, at least 1 letter and 1 number'
 PASSWORD_PATTERN = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'
 pf = ProfanityFilter(no_word_boundaries=True)
-
-
-def unique_check(value):
-    message = f'Is already taken'
-    user = MongoUser.objects(Q(username=value) | Q(email=value))
-    if user:
-        raise ValidationError(message)
 
 
 def profanity_check(value):
@@ -29,10 +22,10 @@ class RegistrationForm(Form):
                           widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'John'}))
     lastname = CharField(label='Lastname', max_length=100, validators=[profanity_check],
                          widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'Wick'}))
-    email = EmailField(label='Email', max_length=100, validators=[profanity_check, unique_check],
+    email = EmailField(label='Email', max_length=100, validators=[profanity_check],
                        widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'john@example.com'}))
-    login = CharField(label='Login', min_length=6, max_length=100, validators=[profanity_check, unique_check],
-                      widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'johny_1234'}))
+    username = CharField(label='Username', min_length=6, max_length=100, validators=[profanity_check],
+                         widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'johny_1234'}))
     password = CharField(label='Password', max_length=100, validators=[
         RegexValidator(regex=PASSWORD_PATTERN, message=PASSWORD_MESSAGE)
     ], widget=PasswordInput(attrs={'class': 'form-control'}))
@@ -47,6 +40,20 @@ class RegistrationForm(Form):
         if password != confirm_password:
             raise ValidationError('Password and confirm password doesn\'t match')
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        user = MongoUser.objects.filter(email=email).first()
+        if user:
+            raise ValidationError('Is already taken')
+        return email
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        user = MongoUser.objects.filter(username=username).first()
+        if user:
+            raise ValidationError('Is already taken')
+        return username
+
 
 class EditProfileForm(Form):
     user_id = CharField(required=False)
@@ -56,22 +63,22 @@ class EditProfileForm(Form):
                          widget=TextInput(attrs={'class': 'form-control'}))
     email = EmailField(label='Email', max_length=100, validators=[profanity_check],
                        widget=TextInput(attrs={'class': 'form-control'}))
-    login = CharField(label='Login', min_length=6, max_length=100, validators=[profanity_check],
-                      widget=TextInput(attrs={'class': 'form-control'}))
+    username = CharField(label='Username', min_length=6, max_length=100, validators=[profanity_check],
+                         widget=TextInput(attrs={'class': 'form-control'}))
 
     def clean_email(self):
-        check_user = MongoUser.objects(email=self.cleaned_data.get('email')).first()
-        user = MongoUser.objects(id=self.cleaned_data.get('user_id')).first()
+        check_user = MongoUser.objects.filter(email=self.cleaned_data.get('email')).first()
+        user = MongoUser.objects.filter(pk=ObjectId(self.cleaned_data.get('user_id'))).first()
         if check_user and user.email != self.cleaned_data.get('email'):
             raise ValidationError('is already taken')
         return self.cleaned_data.get('email')
 
-    def clean_login(self):
-        check_user = MongoUser.objects(username=self.cleaned_data.get('login')).first()
-        user = MongoUser.objects(id=self.cleaned_data.get('user_id')).first()
-        if check_user and user.username != self.cleaned_data.get('login'):
+    def clean_username(self):
+        check_user = MongoUser.objects.filter(username=self.cleaned_data.get('username')).first()
+        user = MongoUser.objects.filter(pk=ObjectId(self.cleaned_data.get('user_id'))).first()
+        if check_user and user.username != self.cleaned_data.get('username'):
             raise ValidationError('is already taken')
-        return self.cleaned_data.get('login')
+        return self.cleaned_data.get('username')
 
 
 class ChangePasswordForm(Form):

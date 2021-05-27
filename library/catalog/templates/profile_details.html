@@ -12,7 +12,7 @@
         <div class="alert alert-info m-2 error-msg" role="alert">Error</div>
     {% endif %}
     <div class="d-flex align-items-center flex-column mt-5 mb-5">
-        <form id="editing_form" action="" method="post" class="needs-validation border registration-border col-md-4" novalidate>
+        <form id="editing_form" action="" method="post" class="needs-validation border registration-border col-md-6" novalidate>
             {% csrf_token %}
             <h1 class="text-center mt-2 mb-2 text-ultramarine">Profile details</h1>
             <div>
@@ -23,7 +23,7 @@
                     <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
                 </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.mongo_user.first_name }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.firstname }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
@@ -35,7 +35,7 @@
                                 <img class="input-icon" src="{% static 'images/user-solid.svg' %}" alt="user icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.mongo_user.last_name }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.lastname }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
@@ -48,12 +48,12 @@
                                      alt="email icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.mongo_user.email }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.email }}" disabled>
                 </div>
                 <small class="error-message text-danger" id="confirmPasswordError">Error message</small>
             </div>
             <div>
-                <span class="text-ultramarine">Login</span>
+                <span class="text-ultramarine">Username</span>
                 <div class="input-group">
                     <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">
@@ -61,7 +61,7 @@
                                      alt="login icon">
                             </span>
                     </div>
-                    <input class="form-control" type="text" value="{{ user.mongo_user.username }}" disabled>
+                    <input class="form-control" type="text" value="{{ user.username }}" disabled>
                 </div>
             </div>
             <a class="btn btn-info mt-4 mb-4 sign-up-button" href="{% url 'profile_edit' %}" id="editProfileBtn">

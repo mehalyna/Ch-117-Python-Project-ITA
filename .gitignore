@@ -19,7 +19,6 @@ eggs/
 .eggs/
 lib/
 lib64/
-local/
 parts/
 sdist/
 var/
@@ -47,6 +46,7 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
+.coveragerc
 .cache
 nosetests.xml
 coverage.xml
@@ -137,3 +137,6 @@ dmypy.json
 
 # Credentials
 admin/tests/config.py
+
+# Local files
+local/

@@ -1,14 +1,7 @@
 import math
-from copy import copy
-from datetime import datetime
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
-from django_mongoengine import Document
-from django.contrib.auth.models import AbstractUser
-from mongoengine import DateTimeField, DictField, EmailField, EmbeddedDocument, EmbeddedDocumentField, FloatField, \
-    IntField, ListField, ReferenceField, StringField
-from werkzeug.security import check_password_hash, generate_password_hash
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from djongo import models
 
 
 class Status:
@@ -23,99 +16,112 @@ class Role:
     ADMIN = 'admin'
 
 
-class Preference(EmbeddedDocument):
-    genres = ListField(default=[])
-    authors = ListField(default=[])
-    rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
-    years = ListField(default=(), max_length=2)
+class CustomUserManager(BaseUserManager):
+    def create_user(self, firstname, lastname, email, username, password=None):
+        if not firstname:
+            raise ValueError('Users must have a firstname')
+        if not lastname:
+            raise ValueError('Users must have a lastname')
+        if not email:
+            raise ValueError('Users must have an email')
+        if not username:
+            raise ValueError('Users must have an username')
+        if not password:
+            raise ValueError('Users must have a password')
+
+        user = self.model(
+            firstname=firstname,
+            lastname=lastname,
+            email=self.normalize_email(email),
+            username=username,
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, firstname, lastname, email, username, password=None):
+        user = self.create_user(
+            firstname=firstname,
+            lastname=lastname,
+            email=self.normalize_email(email),
+            username=username,
+            password=password,
+        )
+        user.is_admin = True
+        user.is_staff = True
+        user.is_superuser = True
+        user.role = Role.ADMIN
+        user.save(using=self._db)
+        return user
+
+    def update(self, user, firstname, lastname, email, username):
+        user.firstname = firstname
+        user.lastname = lastname
+        user.email = email
+        user.username = username
+        user.save(using=self._db)
 
 
-class MongoUser(Document):
-    first_name = StringField(max_length=100, min_length=1, required=True)
-    last_name = StringField(max_length=100, min_length=1, required=True)
-    email = EmailField(required=True, unique=True)
-    username = StringField(required=True, unique=True)
-    password = StringField(required=True, min_length=8)
-    role = StringField(default=Role.USER)
-    status = StringField(default=Status.ACTIVE)
-    last_login = DateTimeField(default=datetime.now)
-    reviews = ListField(default=[])
-    recommended_books = ListField(default=[])
-    wishlist = ListField(default=[])
-    rated_books = DictField(default={})
-    preference = EmbeddedDocumentField(Preference.__name__, default=Preference())
+class MongoUser(AbstractBaseUser):
+    _id = models.ObjectIdField(primary_key=True)
+    firstname = models.CharField(max_length=100)
+    lastname = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100, unique=True)
+    username = models.CharField(max_length=100, unique=True)
+    password = models.CharField(max_length=100)
+    role = models.CharField(default=Role.USER, max_length=10)
+    status = models.CharField(default=Status.ACTIVE, max_length=10)
+    reviews = models.JSONField(default=[])
+    recommended_books = models.JSONField(default=[])
+    wishlist = models.JSONField(default=[])
+    rated_books = models.JSONField(default={})
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(auto_now=True)
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
+    objects = CustomUserManager()
 
-    def save(self):
-        if self.password:
-            User = get_user_model()
-            User.objects.create_user(username=self.username,
-                                     email=self.email,
-                                     password=self.password,
-                                     is_active=self.status != Status.INACTIVE)
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['firstname', 'lastname', 'email', 'password']
 
-            self.password = generate_password_hash(self.password)
-        mongo_user = super().save()
-        return mongo_user
-
-    def update(self, **kwargs):
-        mongo_kwargs = copy(kwargs)
-        django_kwargs = copy(kwargs)
-        if 'password' in kwargs:
-            mongo_kwargs['password'] = generate_password_hash(kwargs['password'])
-            django_kwargs['password'] = make_password(kwargs['password'])
-
-        mongo_user = super().update(**mongo_kwargs)
-
-        need_to_update_in_django = ['username', 'password', 'email']
-        for field in list(django_kwargs):
-            if field not in need_to_update_in_django:
-                django_kwargs.pop(field)
-
-        if 'status' in kwargs:
-            django_kwargs['is_active'] = kwargs['status'] != Status.INACTIVE
-
-        django_user_model = get_user_model()
-        django_user_model.objects.filter(username=self.username).update(**django_kwargs)
-        return mongo_user
+    def __str__(self):
+        return self.username
 
 
-class DjangoUser(AbstractUser):
-    @property
-    def mongo_user(self):
-        return MongoUser.objects(username=self.username).first()
+class BookStatistic(models.Model):
+    _id = models.ObjectIdField(primary_key=True)
+    rating = models.FloatField(default=2.5)
+    total_read = models.IntegerField(default=0)
+    reading_now = models.IntegerField(default=0)
+    stars = models.JSONField(default=[0, 0, 0, 0, 0])
 
 
-class BookStatistic(EmbeddedDocument):
-    rating = FloatField(default=2.5, min_value=0.0, max_value=5.0)
-    total_read = IntField(default=0, min_value=0)
-    reading_now = IntField(default=0, min_value=0)
-    stars = ListField(default=[0, 0, 0, 0, 0])
+class Author(models.Model):
+    _id = models.ObjectIdField(primary_key=True)
+    name = models.CharField(default='', max_length=50)
+    birthdate = models.CharField(default='', max_length=15)
+    death_date = models.CharField(default='', max_length=15)
+    status = models.CharField(default=Status.ACTIVE, max_length=50)
+    books = models.JSONField(default=[])
 
 
-class Author(Document):
-    name = StringField(default='', max_length=500)
-    birthdate = StringField(default='', max_length=15)
-    death_date = StringField(default='', max_length=15)
-    status = StringField(default=Status.ACTIVE, max_length=50)
-    books = ListField(default=[])
-
-
-class Book(Document):
-    title = StringField(default='', max_length=200)
-    author_id = ReferenceField(Author.__name__)
-    year = StringField(default='', max_length=20)
-    publisher = StringField(default='', max_length=200)
-    language = StringField(default='', max_length=20)
-    description = StringField(default='', max_length=10000)
-    link_img = StringField(default='', max_length=1000)
-    pages = IntField(default=1, min_value=1)
-    genres = ListField(default=[])
-    status = StringField(default=Status.ACTIVE, max_length=100)
-    store_links = ListField(default=[])
-    statistic = EmbeddedDocumentField(BookStatistic.__name__, default=BookStatistic())
+class Book(models.Model):
+    _id = models.ObjectIdField(primary_key=True)
+    title = models.CharField(default='', max_length=100)
+    author = models.ForeignKey(to=Author, on_delete=models.CASCADE)
+    year = models.CharField(default='', max_length=20)
+    publisher = models.CharField(default='', max_length=200)
+    language = models.CharField(default='', max_length=20)
+    description = models.CharField(default='', max_length=10000)
+    link_img = models.CharField(default='', max_length=1000)
+    pages = models.IntegerField(default=1)
+    genres = models.JSONField(default=[])
+    status = models.CharField(default=Status.ACTIVE, max_length=100)
+    store_links = models.JSONField(default=[])
+    statistic = models.ForeignKey(to=BookStatistic, on_delete=models.CASCADE)
 
     def calculate_rating(self):
         """
@@ -141,16 +147,18 @@ class Book(Document):
         result_sum = get_sum_from_expression(stars_by_value, self.statistic.stars)
         rating = result_sum - Z * math.sqrt(
             (get_sum_from_expression(price_stars, self.statistic.stars) - result_sum ** 2) / (
-                        number_of_vote + number_of_stars + 1))
+                    number_of_vote + number_of_stars + 1))
 
-        super(Book, self).update(statistic__rating=round(rating, 2))
+        self.statistic.rating = round(rating, 2)
+        self.statistic.save()
 
 
-class Review(Document):
-    user_id = ReferenceField(MongoUser.__name__, required=True)
-    book_id = ReferenceField(Book.__name__, required=True)
-    firstname = StringField(default='', max_length=50)
-    lastname = StringField(default='', max_length=50)
-    status = StringField(default=Status.ACTIVE, max_length=100)
-    comment = StringField(default='', max_length=5000)
-    date = DateTimeField(default=datetime.now)
+class Review(models.Model):
+    _id = models.ObjectIdField(primary_key=True)
+    user = models.ForeignKey(to=MongoUser, on_delete=models.CASCADE)
+    book = models.ForeignKey(to=Book, on_delete=models.CASCADE)
+    firstname = models.CharField(default='', max_length=50)
+    lastname = models.CharField(default='', max_length=50)
+    status = models.CharField(default=Status.ACTIVE, max_length=10)
+    comment = models.CharField(default='', max_length=5000)
+    date = models.DateTimeField(auto_now=True)

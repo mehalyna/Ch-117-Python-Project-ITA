@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 import mongoengine
 
+from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -55,6 +56,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+MESSAGE_TAGS = {
+    messages.SUCCESS: 'success',
+    messages.ERROR: 'danger',
+}
+
 ROOT_URLCONF = 'library.urls'
 
 TEMPLATES = [
@@ -96,10 +103,9 @@ DATABASES = {
 
 mongoengine.connect(DB_NAME, host=MONGO_DATABASE_HOST)
 
-AUTH_USER_MODEL = 'catalog.DjangoUser'
+AUTH_USER_MODEL = 'catalog.MongoUser'
 
 TEST_RUNNER = 'library.library_test_runner.LibraryMixinRunner'
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -141,8 +147,14 @@ STATICFILES_DIRS = [
     '/var/www/static/',
 ]
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')

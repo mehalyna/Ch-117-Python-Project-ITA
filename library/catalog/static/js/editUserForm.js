@@ -7,14 +7,14 @@ let inputsList = form.querySelectorAll('input.form-control');
 let firstname = form.elements.namedItem('firstname');
 let lastname = form.elements.namedItem('lastname');
 let email = form.elements.namedItem('email');
-let login = form.elements.namedItem('login');
+let username = form.elements.namedItem('username');
 
 let submitButton = form.elements.namedItem('submitButton');
 
 firstname.addEventListener('input', validationFuncsFirstname);
 lastname.addEventListener('input', validationFuncsLastname);
 email.addEventListener('input', validationFuncsEmail);
-login.addEventListener('input', validationFuncsLogin);
+username.addEventListener('input', validationFuncsUsername);
 
 function validationFuncsFirstname() {
     validateFirstname();
@@ -31,8 +31,8 @@ function validationFuncsEmail() {
     checkFormValid();
 }
 
-function validationFuncsLogin() {
-    validateLogin();
+function validationFuncsUsername() {
+    validateUsername();
     checkFormValid();
 }
 
@@ -65,17 +65,17 @@ function validateEmail() {
     }
 }
 
-function validateLogin() {
-    let errorId = '#loginError'
+function validateUsername() {
+    let errorId = '#usernameError'
 
-    if (!dataRequired(login, errorId)) {
-    } else if (login.value.length < 6) {
-        login.classList.add('is-invalid');
+    if (!dataRequired(username, errorId)) {
+    } else if (username.value.length < 6) {
+        username.classList.add('is-invalid');
         setErrorFor(errorId, 'Minimum 6 characters long');
-    } else if (!validateProfanity(login, errorId)) {
-    } else if (!validateUnique(login, errorId)) {
+    } else if (!validateProfanity(username, errorId)) {
+    } else if (!validateUnique(username, errorId)) {
     } else {
-        login.classList.remove('is-invalid');
+        username.classList.remove('is-invalid');
         setSuccessFor(errorId);
     }
 }
