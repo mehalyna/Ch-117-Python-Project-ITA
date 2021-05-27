@@ -1,4 +1,3 @@
-from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from . import views
@@ -32,4 +31,5 @@ urlpatterns = [
     path('collections/', views.collections_page, name='collections_page'),
     path('authors/', views.authors_page, name='authors_page'),
     path('reset_password/', views.reset_password, name='reset_password'),
+    path('help/', views.help_email, name='help_email'),
 ]

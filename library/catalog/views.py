@@ -1,3 +1,4 @@
+import os
 import json
 import random
 import string
@@ -12,7 +13,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
+from .forms import ChangePasswordForm, ContactForm,  EditProfileForm, RegistrationForm
 from .models import Author, Book, Review, MongoUser, Status
 
 PASSWORD_ITERATION = 5
@@ -343,7 +344,7 @@ def reset_password(request):
                 You can authorize on home page
                 Home page link - {request.build_absolute_uri(reverse(home))}
                 ''',
-                'pythonproject117@gmail.com',
+                os.getenv('EMAIL_HOST_USER'),
                 [email],
                 fail_silently=False
             )
@@ -359,3 +360,35 @@ def reset_password(request):
                 'Warning! You entered the invalid email.'
             )
     return render(request, 'reset_password.html')
+
+
+def help_email(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            user_email = form.cleaned_data.get('user_email')
+            subject = form.cleaned_data.get('subject')
+            message = form.cleaned_data.get('message')
+            send_mail(
+                f'{subject}',
+                f'''
+                Question : {message}\n
+                Email for answer - {user_email}
+                ''',
+                os.getenv('EMAIL_HOST_USER'),
+                [os.getenv('ADMIN_EMAIL')],
+                fail_silently=False
+            )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'The letter was sent, wait for a response to your mailbox'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Check your form, the fields were filled in incorrectly'
+            )
+    form = ContactForm()
+    return render(request, 'help_email.html',  {'form': form})
