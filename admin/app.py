@@ -196,6 +196,10 @@ def create_app():
                 if not next_page or url_parse(next_page).netloc != '':
                     next_page = url_for('start_page')
                 return redirect(next_page)
+            else:
+                flash('You don\'t have permission')
+                return redirect(url_for('admin_login'))
+
         return render_template('admin_login.html', title='Sign In', form=form)
 
     @app.route('/logout')
