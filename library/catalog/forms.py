@@ -104,3 +104,4 @@ class ContactForm(Form):
     user_email = EmailField(max_length=100, required=True, widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
     subject = CharField(max_length=150, required=True, widget=TextInput(attrs={'class' : 'form-control', 'placeholder': 'Subject'}))
     message = CharField(max_length=500, required=True, widget=Textarea(attrs={'class': 'form-control', 'placeholder': 'Message'}))
+    
