@@ -9,7 +9,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.serializers import serialize
 from django.db.models import Q
 from django.core.mail import send_mail
-from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse

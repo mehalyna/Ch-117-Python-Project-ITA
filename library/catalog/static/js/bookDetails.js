@@ -57,9 +57,7 @@ function saveStarRating(url) {
   }
   let request = new XMLHttpRequest();
   request.open("GET", url, true);
-  ``;
   request.send(null);
-  1;
 }
 
 function addMouseEventsForComments() {
@@ -80,7 +78,6 @@ function fillCommentsList(list) {
 
   const data = list.reviews;
   $("#commentList").empty();
-  $("#exampleFormControlTextarea1").empty();
 
   for (let i = 0; i < data.length; i++) {
     const userDeleteButton = `<a id="commentButton" style="float: right; width: 80px; display: none;"
@@ -154,7 +151,7 @@ function add_comment() {
     .getAttribute("url");
   let csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0]
     .value;
-
+  eraseText();
   $.ajax({
     method: "POST",
     url: endpoint,
@@ -164,6 +161,9 @@ function add_comment() {
     },
     dataType: "json",
     success: fillCommentsList,
+             function () {
+                document.getElementById("exampleFormControlTextarea1").value = "";
+    }
   });
 }
 
