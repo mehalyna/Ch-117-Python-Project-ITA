@@ -41,7 +41,7 @@ const recbook_swiper = new Swiper('.third-container', {
     nextEl: '.first-next',
     prevEl: '.first-prev',
   },
-  slidesPerView: 4,
+  slidesPerView: 5,
   spaceBetween: 20,
   speed: 600,
 
@@ -51,7 +51,7 @@ setTimeout(function () {
     if ($('#msg').length > 0) {
         $('#msg').fadeTo(500, 0, function () {})
     }
-}, 2000)
+}, 4000)
 
 
  function login_user(){

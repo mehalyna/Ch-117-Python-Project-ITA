@@ -56,19 +56,8 @@
 .book_details_frame {
     background: #EEFCFC;
     max-width: 925px !important;
-}
-
-.user_menu {
-    padding: 5% 2% 9%;
-    background-color: #eeecec;
-    border: 1px solid #bad8e3;
-    box-shadow: 0 10px 10px;
-    border-radius: 10px 100px / 30px;
-    height: 560px;
-}
-
-.user_menu_buttons li a {
-    color: black;
+    margin-top: 50px;
+    background-color: #e1e5e7;
 }
 
 .row img {
@@ -81,6 +70,10 @@
     text-align: center;
     text-decoration: none;
     color: #323232;
+}
+.nav-tabs li a{
+    color:black;
+    font-size:1.2em;
 }
 
 .swiper-container {
@@ -118,10 +111,6 @@
     background: rgba(238, 236, 236, 0.6)
 }
 
-.container .profile-content {
-    max-width: 78%;
-}
-
 .container .rec-books{
     position: relative;
 }
@@ -135,7 +124,7 @@
 .container .rec-books .right-arrow {
     position: relative;
     top: -18rem;
-    left: 51.2em;
+    left: 68.5em;
 }
 
 .h2-home-page {
@@ -518,10 +507,6 @@ margin-bottom:7px;
     margin-top: 10px;
 }
 
-#editing_form {
-    margin-left: -150px;
-}
-
 .toast{
     position: absolute;
     left: 40%;
@@ -635,4 +620,31 @@ margin-bottom:7px;
     .trb-box{
         width: 23%;
     }
+}
+
+.reset-password-email-label {
+    margin-top: 10px;
+    width: 120px;
+}
+.reset-password-email-input {
+    width: 400px !important;
+}
+
+.reset-password-email {
+    display: inline-flex;
+    align-items: center;
+}
+
+.reset-password-button {
+    width: 135px !important;
+    background-color: #1a73e8 !important;
+    color: white !important;
+}
+
+.reset-password-container {
+    margin-top: 60px;
+}
+
+h2#review-banner {
+  margin-left: 400px;
 }

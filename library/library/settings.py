@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
-import mongoengine
 
+from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -55,6 +55,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+MESSAGE_TAGS = {
+    messages.SUCCESS: 'success',
+    messages.ERROR: 'danger',
+}
+
 ROOT_URLCONF = 'library.urls'
 
 TEMPLATES = [
@@ -80,10 +86,6 @@ WSGI_APPLICATION = 'library.wsgi.application'
 
 
 DB_NAME = os.getenv('DB_NAME')
-HOST = os.getenv('MONGO_URL')
-PORT = int(os.getenv('PORT'))
-
-MONGO_DATABASE_HOST = f'{HOST}:{PORT}'
 
 LOGIN_URL = 'login_redirect_page'
 
@@ -93,8 +95,6 @@ DATABASES = {
         'NAME': DB_NAME,
     }
 }
-
-mongoengine.connect(DB_NAME, host=MONGO_DATABASE_HOST)
 
 AUTH_USER_MODEL = 'catalog.MongoUser'
 

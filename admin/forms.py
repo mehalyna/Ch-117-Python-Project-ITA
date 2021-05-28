@@ -6,6 +6,7 @@ from wtforms.validators import DataRequired, Length, Regexp, ValidationError
 from admin.models import Role, Status, MongoUser
 
 EMAIL_PATTERN = r'^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
+MIN_PASSWORD_LEN = 8
 
 
 def unique_check(column: str, update: bool = False):
@@ -22,6 +23,13 @@ def unique_check(column: str, update: bool = False):
     return _unique_check
 
 
+def update_password_validator(form, field):
+    password_len = len(field.data)
+    message = f'Field must be at least {MIN_PASSWORD_LEN} character long.'
+    if 0 < password_len < MIN_PASSWORD_LEN:
+        raise ValidationError(message)
+
+
 class AddUserForm(FlaskForm):
     firstname = StringField('Firstname', validators=[DataRequired()])
     lastname = StringField('Lastname', validators=[DataRequired()])
@@ -30,7 +38,7 @@ class AddUserForm(FlaskForm):
         unique_check('email')])
     login = StringField('Login', validators=[DataRequired(), Length(min=6), unique_check('login')])
     password = PasswordField('Password', validators=[
-        DataRequired(), Length(min=8)
+        DataRequired(), Length(min=MIN_PASSWORD_LEN)
     ])
     role = SelectField('Role', choices=[
         (Role.ADMIN, Role.ADMIN),
@@ -48,6 +56,9 @@ class UpdateUserForm(AddUserForm):
     ])
     login = StringField('Login', validators=[
         DataRequired(), unique_check('login', update=True), Length(min=6)
+    ])
+    password = PasswordField('Password', validators=[
+        update_password_validator
     ])
     status = SelectField('Status', choices=[
         (Status.ACTIVE, Status.ACTIVE),

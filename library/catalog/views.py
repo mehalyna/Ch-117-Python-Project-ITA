@@ -1,20 +1,27 @@
-import json
 import os
+import json
+import random
+import string
 
 from bson import ObjectId
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.serializers import serialize
 from django.db.models import Q
-from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
+from .forms import ChangePasswordForm, ContactForm, EditProfileForm, RegistrationForm
 from .models import Author, Book, CacheStorage, Review, MongoUser, Status
 
 CACHE_LIFETIME = int(os.getenv('CACHE_LIFETIME'))
 cache_storage = CacheStorage(CACHE_LIFETIME)
+
+PASSWORD_ITERATION = 5
+MAX_PASSWORD_NUM = 22
 
 
 @login_required
@@ -120,7 +127,7 @@ def delete_from_wishlist(request, book_id):
 
 def book_details(request, book_id):
     if 'book_details' in request.META['HTTP_REFERER']:
-        request.META['HTTP_REFERER'] = request.session['previous']
+        request.META['HTTP_REFERER'] = request.session.get('previous') or reverse('library-home')
     else:
         request.session['previous'] = request.META['HTTP_REFERER']
 
@@ -133,25 +140,31 @@ def book_details(request, book_id):
                   {'book': book, 'reviews': reviews, 'book_id': book_id})
 
 
-@login_required
 def add_review(request, book_id):
-    user = request.user
-    text = request.GET.get('text-comment')
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "Not authorized"})
+    text = request.POST.get('text-comment')
     if text.strip():
         book = Book.objects.filter(pk=ObjectId(book_id), status=Status.ACTIVE).first()
         if not book:
             return redirect(home)
-        review = Review(
-            user=user,
-            book=book,
-            firstname=user.firstname,
-            lastname=user.lastname,
-            comment=text
-        )
+        review = Review(user=request.user,
+                        book=book,
+                        firstname=request.user.firstname,
+                        lastname=request.user.lastname,
+                        comment=text)
         review.save()
     else:
         messages.error(request, "The comment field should not be blank")
-    return redirect(book_details, book_id=book_id)
+    reviews = serialize('json', Review.objects.filter(book_id=ObjectId(book_id)).order_by('-date'))
+    return JsonResponse({"reviews": json.loads(reviews)})
+
+
+def show_reviews(request, book_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "Not authorized"})
+    reviews = serialize('json', Review.objects.filter(book_id=ObjectId(book_id)).order_by('-date'))
+    return JsonResponse({"reviews": json.loads(reviews)})
 
 
 @login_required
@@ -181,7 +194,7 @@ def change_review_status(request, book_id, review_id, new_status):
         review.status = new_status
         review.save()
 
-    return redirect(book_details, book_id=book_id)
+    return HttpResponse('Success Deleted', content_type="text/plain")
 
 
 def home(request):
@@ -276,20 +289,26 @@ def registration(request):
     return render(request, 'registration.html', {'form': form})
 
 
-def unique_registration_check(request, field_value):
-    user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
-    if user:
-        return HttpResponse('Already taken', content_type="text/plain")
-    return HttpResponse('', content_type="text/plain")
+def unique_registration_check(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        field_value = data.get('field_value')
+        user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
+        if user:
+            return JsonResponse({'error_message': 'Already taken'})
+
+        return JsonResponse({})
 
 
-def edit_profile_check(request, field_value):
-    check_user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
-    username = request.user.username
-    email = request.user.email
-    if check_user and (check_user.username != username or check_user.email != email):
-        return HttpResponse('Already taken', content_type="text/plain")
-    return HttpResponse('', content_type="text/plain")
+def edit_profile_unique_check(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        field_value = data.get('field_value')
+        check_user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
+        user = request.user
+        if check_user and check_user.pk != user.pk:
+            return JsonResponse({'error_message': 'Already taken'})
+        return JsonResponse({})
 
 
 def logout_view(request):
@@ -337,3 +356,73 @@ def authors_page(request):
         cache_storage.add_value('authors', authors)
 
     return render(request, 'authors.html', {'authors': authors})
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = MongoUser.objects.filter(email=email).first()
+        if user:
+            number_string = [str(i) for i in range(MAX_PASSWORD_NUM)]
+            eng_alphabet = string.ascii_letters
+            new_password = ''
+            for i in range(PASSWORD_ITERATION):
+                new_password += random.choice(eng_alphabet)
+                new_password += random.choice(number_string)
+            user.set_password(new_password)
+            user.save()
+            send_mail(
+                'Library support',
+                f'''
+                Your temporary password - {new_password}
+                You can authorize on home page
+                Home page link - {request.build_absolute_uri(reverse(home))}
+                ''',
+                os.getenv('EMAIL_HOST_USER'),
+                [email],
+                fail_silently=False
+            )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Success! Check your email and sign in with new credentials.'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Warning! You entered the invalid email.'
+            )
+    return render(request, 'reset_password.html')
+
+
+def help_email(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            user_email = form.cleaned_data.get('user_email')
+            subject = form.cleaned_data.get('subject')
+            message = form.cleaned_data.get('message')
+            send_mail(
+                f'{subject}',
+                f'''
+                Question : {message}\n
+                Email for answer - {user_email}
+                ''',
+                os.getenv('EMAIL_HOST_USER'),
+                [os.getenv('ADMIN_EMAIL')],
+                fail_silently=False
+            )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'The letter was sent, wait for a response to your mailbox'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Check your form, the fields were filled in incorrectly'
+            )
+    form = ContactForm()
+    return render(request, 'help_email.html',  {'form': form})
