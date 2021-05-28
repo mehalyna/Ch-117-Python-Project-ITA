@@ -1,4 +1,5 @@
 import json
+import os
 
 from bson import ObjectId
 from django.contrib import messages
@@ -12,7 +13,8 @@ from django.urls import reverse
 from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
 from .models import Author, Book, CacheStorage, Review, MongoUser, Status
 
-cache_storage = CacheStorage()
+CACHE_LIFETIME = int(os.getenv('CACHE_LIFETIME'))
+cache_storage = CacheStorage(CACHE_LIFETIME)
 
 
 @login_required
@@ -204,10 +206,6 @@ def home(request):
                     books_genres.append(genre)
         cache_storage.add_value('books_genres', books_genres)
 
-    top_books = cache_storage.get_value('top_books')
-    new_books = cache_storage.get_value('new_books')
-    books_genres = cache_storage.get_value('books_genres')
-
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': books_genres})
 
 
@@ -328,16 +326,14 @@ def collections_page(request):
         cache_storage.add_value('books_total_read', books_total_read)
 
     pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:20]
-    total_read_books = cache_storage.get_value('books_total_read')
-    return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': total_read_books})
+    return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': books_total_read})
 
 
 def authors_page(request):
     authors = cache_storage.get_value('authors')
 
     if authors is None:
-        sorted_authors = sorted(Author.objects.filter(status=Status.ACTIVE), key=lambda author: author.name)
-        cache_storage.add_value('authors', sorted_authors)
+        authors = sorted(Author.objects.filter(status=Status.ACTIVE), key=lambda author: author.name)
+        cache_storage.add_value('authors', authors)
 
-    authors = cache_storage.get_value('authors')
     return render(request, 'authors.html', {'authors': authors})

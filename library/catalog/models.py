@@ -1,10 +1,7 @@
 import math
-import os
 from datetime import datetime
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from djongo import models
-
-CACHE_LIFETIME = int(os.getenv('CACHE_LIFETIME'))
 
 class Status:
     ACTIVE = 'active'
@@ -19,24 +16,25 @@ class Role:
 
 
 class CacheStorage:
-    def __init__(self):
+    def __init__(self, lifetime):
+        self.lifetime = lifetime
         self._cache_dict = {}
 
 
     def get_value(self, key):
         if key in self._cache_dict:
             cache = self._cache_dict[key]
-            if cache is None or cache.is_expired():
+            if cache.is_expired():
                 self._cache_dict.pop(key)
             else:
                 return cache.data
         return None
 
     def add_value(self, key, data):
-        self._cache_dict[key] = Cache(data)
+        self._cache_dict[key] = Cache(data, self.lifetime)
 
 class Cache:
-    def __init__(self, data, lifetime=CACHE_LIFETIME):
+    def __init__(self, data, lifetime):
         ''' value 'lifetime' uses minutes as a unit of measurement '''
         self.data = data
         self._last_update = datetime.utcnow()
