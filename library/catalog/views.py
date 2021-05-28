@@ -2,6 +2,7 @@ import os
 import json
 import random
 import string
+import time
 
 from bson import ObjectId
 from django.contrib import messages
@@ -14,7 +15,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from .forms import ChangePasswordForm, ContactForm,  EditProfileForm, RegistrationForm
-from .models import Author, Book, Review, MongoUser, Status
+from .models import Author, Book, Review, MongoUser, Status, BookStatistic
 
 PASSWORD_ITERATION = 5
 MAX_PASSWORD_NUM = 22
@@ -320,7 +321,15 @@ def collections_page(request):
 
 
 def authors_page(request):
-    authors = Author.objects.filter(status=Status.ACTIVE).order_by('name')
+    authors = Author.objects.filter(status=Status.ACTIVE)
+    authors_total_rating = []
+    authors_avg_rating = []
+    for author in authors:
+        author_books = author.book_set.all()
+        total_rating = sum([book.statistic.rating for book in author_books])
+        authors_total_rating.append(total_rating)
+        authors_avg_rating.append(total_rating/len(author_books))
+
     return render(request, 'authors.html', {'authors': authors})
 
 
