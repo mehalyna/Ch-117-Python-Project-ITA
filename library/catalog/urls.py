@@ -19,6 +19,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('author_books/<str:author_name>/', views.search_by_author, name='library-books-author'),
     path('add_review/<str:book_id>/', views.add_review, name='add-review'),
+    path('show_reviews/<str:book_id>/', views.show_reviews, name='show_reviews'),
     path('add_rating/<str:book_id>/', views.add_rating, name='add-rating'),
     path('add_rating/<str:book_id>/<int:rating>/', views.add_rating, name='add-rating'),
     path('add_to_wishlist/<str:book_id>/', views.add_to_wishlist, name='add-to-wishlist'),

@@ -7,6 +7,7 @@ from bson import ObjectId
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.serializers import serialize
 from django.db.models import Q
 from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
@@ -136,25 +137,31 @@ def book_details(request, book_id):
                   {'book': book, 'reviews': reviews, 'book_id': book_id})
 
 
-@login_required
 def add_review(request, book_id):
-    user = request.user
-    text = request.GET.get('text-comment')
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "Not authorized"})
+    text = request.POST.get('text-comment')
     if text.strip():
         book = Book.objects.filter(pk=ObjectId(book_id), status=Status.ACTIVE).first()
         if not book:
             return redirect(home)
-        review = Review(
-            user=user,
-            book=book,
-            firstname=user.firstname,
-            lastname=user.lastname,
-            comment=text
-        )
+        review = Review(user=request.user,
+                        book=book,
+                        firstname=request.user.firstname,
+                        lastname=request.user.lastname,
+                        comment=text)
         review.save()
     else:
         messages.error(request, "The comment field should not be blank")
-    return redirect(book_details, book_id=book_id)
+    reviews = serialize('json', Review.objects.filter(book_id=ObjectId(book_id)).order_by('-date'))
+    return JsonResponse({"reviews": json.loads(reviews)})
+
+
+def show_reviews(request, book_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "Not authorized"})
+    reviews = serialize('json', Review.objects.filter(book_id=ObjectId(book_id)).order_by('-date'))
+    return JsonResponse({"reviews": json.loads(reviews)})
 
 
 @login_required
@@ -184,7 +191,7 @@ def change_review_status(request, book_id, review_id, new_status):
         review.status = new_status
         review.save()
 
-    return redirect(book_details, book_id=book_id)
+    return HttpResponse('Success Deleted', content_type="text/plain")
 
 
 def home(request):
