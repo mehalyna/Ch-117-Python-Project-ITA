@@ -5,9 +5,15 @@
 
 {% block body %}
 
-<div class="container min-height-650">
-    <h2 style="margin-top: 25px;">News and information about updates</h2>
-    <p>There is no news and updates yet</p>
-</div>
+    <div class="container min-height-650">
+        <h2 style="margin-top: 25px;">News and information about updates</h2>
+        <p>There is no news and updates yet</p>
+        {% for new in news %}
+            <div>
+                <div><h6>{{ new.date }}</h6></div>
+                <div><a href="{{ new.link }}"><h3>{{ new.title }}</h3></a></div>
+            </div>
+        {% endfor %}
+    </div>
 
 {% endblock %}

@@ -1,6 +1,8 @@
 import json
 import random
 import string
+from bs4 import BeautifulSoup
+import requests
 
 from bson import ObjectId
 from django.contrib import messages
@@ -308,8 +310,26 @@ def login_redirect_page(request):
     return render(request, 'login_redirect.html')
 
 
+def parse():
+    URL = 'https://www.loc.gov/news/?dates=2021&c=50'
+    HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'
+    }
+    response = requests.get(URL, headers=HEADERS)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    items = soup.findAll('div', class_='description')
+    comps = []
+    for item in items:
+        comps.append({
+            'title': item.find('a').get_text(strip=True),
+            'date': item.find('span', class_='brief-date').get_text(strip=True),
+            'link': item.find('a').get('href')
+        })
+    return comps
+
+
 def news_page(request):
-    return render(request, 'news_page.html')
+    return render(request, 'news_page.html', {'news': parse()})
 
 
 def collections_page(request):
