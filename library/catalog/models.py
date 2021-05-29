@@ -2,6 +2,7 @@ import math
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from djongo import models
+from mongoengine import DoesNotExist
 
 
 class Status:
@@ -93,10 +94,27 @@ class MongoUser(AbstractBaseUser):
 
 class BookStatistic(models.Model):
     _id = models.ObjectIdField(primary_key=True)
-    rating = models.FloatField(default=2.5)
+    rating = models.FloatField(default=0.0)
     total_read = models.IntegerField(default=0)
     reading_now = models.IntegerField(default=0)
     stars = models.JSONField(default=[0, 0, 0, 0, 0])
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+
+        try:
+            book_statistic_in_db = BookStatistic.objects.filter(pk=self.pk).first()
+            book_statistic_rating_in_db = book_statistic_in_db.rating
+        except:
+            book_statistic_rating_in_db = 0
+        finally:
+            super().save(force_insert, force_update, using, update_fields)
+
+        rating_to_add = self.rating - book_statistic_rating_in_db
+        book_of_the_statistic = self.book_set.all().first()
+        if book_of_the_statistic:
+            book_of_the_statistic.author.total_rating = round(rating_to_add + book_of_the_statistic.author.total_rating,
+                                                              2)
+            book_of_the_statistic.author.save()
 
 
 class Author(models.Model):
@@ -106,7 +124,11 @@ class Author(models.Model):
     death_date = models.CharField(default='', max_length=15)
     status = models.CharField(default=Status.ACTIVE, max_length=50)
     books = models.JSONField(default=[])
+    total_rating = models.FloatField(default=0.0)
 
+    # @property
+    # def avg_rating(self):
+    #     return self.total_rating/len(self.book_set.all())
 
 class Book(models.Model):
     _id = models.ObjectIdField(primary_key=True)

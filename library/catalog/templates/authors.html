@@ -8,7 +8,8 @@
     <h2 class="h2-author">Available authors</h2>
     <div class="author-box">
         {% for author in authors %}
-            <a style="" href="{% url 'library-books-author' author.name %}"><p>{{ author.name }}</p></a>
+            <a style="" href="{% url 'library-books-author' author.name %}"><p>{{ author.name }} | {{ author.total_rating }}</p></a>
+
         {% endfor %}
     </div>
 

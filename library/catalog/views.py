@@ -322,13 +322,25 @@ def collections_page(request):
 
 def authors_page(request):
     authors = Author.objects.filter(status=Status.ACTIVE)
-    authors_total_rating = []
-    authors_avg_rating = []
-    for author in authors:
-        author_books = author.book_set.all()
-        total_rating = sum([book.statistic.rating for book in author_books])
-        authors_total_rating.append(total_rating)
-        authors_avg_rating.append(total_rating/len(author_books))
+    # for author in authors:
+    #     author.total_rating = 0
+    #     author.save()
+    # with open('catalog/books_statistic_light.json') as statistics:
+    #     for statistic in json.load(statistics):
+    #         s = BookStatistic()
+    #         s.pk = ObjectId(statistic['_id']['$oid'])
+    #         s.rating = statistic['rating']
+    #         s.stars = statistic['stars']
+    #         s.total_read = statistic['total_read']
+    #         s.reading_now = statistic['reading_now']
+    #         s.save()
+    # authors_total_rating = []
+    # authors_avg_rating = []
+    # for author in authors:
+    #     author_books = author.book_set.all()
+    #     total_rating = sum([book.statistic.rating for book in author_books])
+    #     authors_total_rating.append(total_rating)
+    #     authors_avg_rating.append(total_rating/len(author_books))
 
     return render(request, 'authors.html', {'authors': authors})
 
