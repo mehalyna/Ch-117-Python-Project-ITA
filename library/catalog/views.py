@@ -2,6 +2,7 @@ import os
 import json
 import random
 import string
+import stripe
 
 from bson import ObjectId
 from django.contrib import messages
@@ -13,15 +14,19 @@ from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.views import View
+from django.views.generic import TemplateView
 
 from .forms import ChangePasswordForm, ContactForm, EditProfileForm, RegistrationForm
-from .models import Author, Book, CacheStorage, Review, MongoUser, Status
+from .models import Author, Book, CacheStorage, MongoUser, Product, Review, Status
 
 CACHE_LIFETIME = int(os.getenv('CACHE_LIFETIME'))
 cache_storage = CacheStorage(CACHE_LIFETIME)
 
 PASSWORD_ITERATION = 5
 MAX_PASSWORD_NUM = 22
+
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
 
 @login_required
@@ -426,3 +431,49 @@ def help_email(request):
             )
     form = ContactForm()
     return render(request, 'help_email.html',  {'form': form})
+
+
+def donate_success(request):
+    return render(request, 'success.html')
+
+def donate_failed(request):
+    return render(request, 'cancel.html')
+
+class ProductLandingPageView(TemplateView):
+    template_name = "donate_page.html"
+
+    def get_context_data(self, **kwargs):
+        product = Product.objects.get(name="Donate")
+        context = super(ProductLandingPageView, self).get_context_data(**kwargs)
+        context.update({
+            "product":product,
+            "STRIPE_PUBLIC_KEY": os.getenv('STRIPE_PUBLIC_KEY')
+
+        })
+        return context
+
+class CreateCheckoutSessionView(View):
+    def post(self, request, *args, **kwargs):
+        product_id = self.kwargs["pk"]
+        product = Product.objects.get(id=product_id)
+        print(product)
+        YOUR_DOMAIN = 'http:127.0.0.1:8000/library/home'
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'usd',
+                        'unit_amount': product.price,
+                        'product_data': {
+                            'name': product.name,
+                        },
+                    },
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=YOUR_DOMAIN + '/success',
+            cancel_url=YOUR_DOMAIN + '/cancel',
+        )
+        return JsonResponse({'id': checkout_session.id})

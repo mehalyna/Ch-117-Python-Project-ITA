@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from djongo import models
 
+
 class Status:
     ACTIVE = 'active'
     INACTIVE = 'inactive'
@@ -20,7 +21,6 @@ class CacheStorage:
         self.lifetime = lifetime
         self._cache_dict = {}
 
-
     def get_value(self, key):
         if key in self._cache_dict:
             cache = self._cache_dict[key]
@@ -32,6 +32,7 @@ class CacheStorage:
 
     def add_value(self, key, data):
         self._cache_dict[key] = Cache(data, self.lifetime)
+
 
 class Cache:
     def __init__(self, data, lifetime):
@@ -190,3 +191,15 @@ class Review(models.Model):
     status = models.CharField(default=Status.ACTIVE, max_length=10)
     comment = models.CharField(default='', max_length=5000)
     date = models.DateTimeField(auto_now=True)
+
+
+class Product(models.Model):
+    _id = models.ObjectIdField(primary_key=True)
+    name = models.CharField(max_length=100)
+    price = models.IntegerField(1000)  # cents
+
+    def __str__(self):
+        return self.name
+
+    def get_display_price(self):
+        return "{0:.2f}".format(self.price / 100)
