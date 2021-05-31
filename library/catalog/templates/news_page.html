@@ -1,13 +1,34 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}News{% endblock %}
-
 {% block body %}
-
-<div class="container min-height-650">
-    <h2 style="margin-top: 25px;">News and information about updates</h2>
-    <p>There is no news and updates yet</p>
-</div>
-
+    <div class="container my-container">
+        <div class="row">
+            <div class="col-info">
+                <h5 class="text-left">For More Info:</h5>
+                <p class="text-left news-contacts">
+                    <a href="https://www.loc.gov/news/">Office of Communications</a><br>
+                    Library of Congress<br>
+                    101 Independence Ave, S.E.<br>
+                    Washington, D.C. 20540-1600<br>
+                    <strong>Voice:</strong> 202.707.2905<br>
+                    <strong>Fax:</strong> 202.707.9199<br>
+                    <strong>Email:</strong> <a href="mailto:news@loc.gov">news@loc.gov</a><br>
+                </p>
+                <hr>
+            </div>
+            <div class="col-content">
+                <div class="container">
+                    <h2 class="text-center">News from the Library of Congress of 2021</h2>
+                    <hr>
+                    {% for new in news %}
+                        <div class="mb-4">
+                            <div><i>&nbsp {{ new.date }}</i></div>
+                            <div><strong><a href="{{ new.link }}">{{ new.title }}</a></strong></div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
