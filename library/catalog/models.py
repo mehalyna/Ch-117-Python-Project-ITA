@@ -129,9 +129,10 @@ class BookStatistic(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # get the book statistic rating from db
         try:
+            # returns None if statistic not in db
             book_statistic_in_db = BookStatistic.objects.filter(pk=self.pk).first()
             book_statistic_rating_in_db = book_statistic_in_db.rating
-        except:
+        except AttributeError:
             book_statistic_rating_in_db = 0
         finally:
             super().save(force_insert, force_update, using, update_fields)
