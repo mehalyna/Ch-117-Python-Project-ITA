@@ -56,6 +56,8 @@
 .book_details_frame {
     background: #EEFCFC;
     max-width: 925px !important;
+    margin-top: 50px;
+    background-color: #e1e5e7;
 }
 
 .row img {
@@ -642,4 +644,8 @@ margin-bottom:7px;
 
 .reset-password-container {
     margin-top: 60px;
+}
+
+h2#review-banner {
+  margin-left: 400px;
 }

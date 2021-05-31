@@ -7,14 +7,18 @@ from bson import ObjectId
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.serializers import serialize
 from django.db.models import Q
 from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .forms import ChangePasswordForm, ContactForm,  EditProfileForm, RegistrationForm
-from .models import Author, Book, Review, MongoUser, Status
+from .forms import ChangePasswordForm, ContactForm, EditProfileForm, RegistrationForm
+from .models import Author, Book, CacheStorage, Review, MongoUser, Status
+
+CACHE_LIFETIME = int(os.getenv('CACHE_LIFETIME'))
+cache_storage = CacheStorage(CACHE_LIFETIME)
 
 PASSWORD_ITERATION = 5
 MAX_PASSWORD_NUM = 22
@@ -136,25 +140,31 @@ def book_details(request, book_id):
                   {'book': book, 'reviews': reviews, 'book_id': book_id})
 
 
-@login_required
 def add_review(request, book_id):
-    user = request.user
-    text = request.GET.get('text-comment')
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "Not authorized"})
+    text = request.POST.get('text-comment')
     if text.strip():
         book = Book.objects.filter(pk=ObjectId(book_id), status=Status.ACTIVE).first()
         if not book:
             return redirect(home)
-        review = Review(
-            user=user,
-            book=book,
-            firstname=user.firstname,
-            lastname=user.lastname,
-            comment=text
-        )
+        review = Review(user=request.user,
+                        book=book,
+                        firstname=request.user.firstname,
+                        lastname=request.user.lastname,
+                        comment=text)
         review.save()
     else:
         messages.error(request, "The comment field should not be blank")
-    return redirect(book_details, book_id=book_id)
+    reviews = serialize('json', Review.objects.filter(book_id=ObjectId(book_id)).order_by('-date'))
+    return JsonResponse({"reviews": json.loads(reviews)})
+
+
+def show_reviews(request, book_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "Not authorized"})
+    reviews = serialize('json', Review.objects.filter(book_id=ObjectId(book_id)).order_by('-date'))
+    return JsonResponse({"reviews": json.loads(reviews)})
 
 
 @login_required
@@ -184,17 +194,30 @@ def change_review_status(request, book_id, review_id, new_status):
         review.status = new_status
         review.save()
 
-    return redirect(book_details, book_id=book_id)
+    return HttpResponse('Success Deleted', content_type="text/plain")
 
 
 def home(request):
-    top_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__rating')[:20]
-    new_books = Book.objects.filter(status=Status.ACTIVE).order_by('-pk')[:20]
-    books_genres = []
-    for genres_list in Book.objects.values('genres'):
-        for genre in genres_list.get('genres'):
-            if genre and genre not in books_genres:
-                books_genres.append(genre)
+    top_books = cache_storage.get_value('top_books')
+    new_books = cache_storage.get_value('new_books')
+    books_genres = cache_storage.get_value('books_genres')
+
+    if top_books is None:
+        top_books = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.statistic.rating,
+                           reverse=True)[:20]
+        cache_storage.add_value('top_books', top_books)
+
+    if new_books is None:
+        new_books = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.pk, reverse=True)[:20]
+        cache_storage.add_value('new_books', new_books)
+
+    if books_genres is None:
+        books_genres = []
+        for genres_list in Book.objects.values('genres'):
+            for genre in genres_list.get('genres'):
+                if genre and genre not in books_genres:
+                    books_genres.append(genre)
+        cache_storage.add_value('books_genres', books_genres)
 
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': books_genres})
 
@@ -314,13 +337,23 @@ def news_page(request):
 
 
 def collections_page(request):
-    pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:10]
-    total_read_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__total_read')[:10]
-    return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': total_read_books})
+    books_total_read = cache_storage.get_value('books_total_read')
+
+    if books_total_read is None:
+        books_total_read = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.statistic.total_read,
+                              reverse=True)[:20]
+        cache_storage.add_value('books_total_read', books_total_read)
+
+    pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:20]
+    return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': books_total_read})
 
 
 def authors_page(request):
-    authors = Author.objects.filter(status=Status.ACTIVE).order_by('-total_rating')
+    authors = cache_storage.get_value('authors')
+
+    if authors is None:
+        authors = sorted(Author.objects.filter(status=Status.ACTIVE), key=lambda author: author.total_rating, reverse=True)
+        cache_storage.add_value('authors', authors)
     return render(request, 'authors.html', {'authors': authors})
 
 
