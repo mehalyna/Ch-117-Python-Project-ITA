@@ -2,7 +2,6 @@ import os
 import json
 import random
 import string
-import time
 
 from bson import ObjectId
 from django.contrib import messages
@@ -15,7 +14,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from .forms import ChangePasswordForm, ContactForm,  EditProfileForm, RegistrationForm
-from .models import Author, Book, Review, MongoUser, Status, BookStatistic
+from .models import Author, Book, Review, MongoUser, Status
 
 PASSWORD_ITERATION = 5
 MAX_PASSWORD_NUM = 22
@@ -321,27 +320,7 @@ def collections_page(request):
 
 
 def authors_page(request):
-    authors = Author.objects.filter(status=Status.ACTIVE)
-    # for author in authors:
-    #     author.total_rating = 0
-    #     author.save()
-    # with open('catalog/books_statistic_light.json') as statistics:
-    #     for statistic in json.load(statistics):
-    #         s = BookStatistic()
-    #         s.pk = ObjectId(statistic['_id']['$oid'])
-    #         s.rating = statistic['rating']
-    #         s.stars = statistic['stars']
-    #         s.total_read = statistic['total_read']
-    #         s.reading_now = statistic['reading_now']
-    #         s.save()
-    # authors_total_rating = []
-    # authors_avg_rating = []
-    # for author in authors:
-    #     author_books = author.book_set.all()
-    #     total_rating = sum([book.statistic.rating for book in author_books])
-    #     authors_total_rating.append(total_rating)
-    #     authors_avg_rating.append(total_rating/len(author_books))
-
+    authors = Author.objects.filter(status=Status.ACTIVE).order_by('-total_rating')
     return render(request, 'authors.html', {'authors': authors})
 
 
