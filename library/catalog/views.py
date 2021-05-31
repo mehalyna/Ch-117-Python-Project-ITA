@@ -201,7 +201,7 @@ def change_review_status(request, book_id, review_id, new_status):
         review.status = new_status
         review.save()
 
-    return HttpResponse('Success Deleted', content_type="text/plain")
+    return HttpResponse('Success', content_type="text/plain")
 
 
 def home(request):

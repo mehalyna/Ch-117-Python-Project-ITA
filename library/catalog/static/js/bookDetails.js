@@ -80,13 +80,13 @@ function fillCommentsList(list) {
   $("#commentList").empty();
 
   for (let i = 0; i < data.length; i++) {
+    const buttonClass = `comment-delete-button-${i}`;
+    const buttonClassAdmin = `comment-restore-button-${i}`;
     const userDeleteButton = `<a id="commentButton" style="float: right; width: 80px; display: none;"
-                   href="/library/change_review_status/${data[i].fields.book}/${data[i].pk}/inactive}"
-                   class="btn btn-danger">Delete</a>`;
+                   class="btn btn-danger ${buttonClass}">Delete</a>`;
 
     const adminRestoreButton = `<a id="commentButton" style="float: right; width: 80px; display: none;"
-                   href="/library/change_review_status/${data[i].fields.book}/${data[i].pk}/active"
-                   class="btn btn-danger">Restore</a>`;
+                   class="btn btn-danger ${buttonClassAdmin}">Restore</a>`;
     const date = new Date(data[i].fields.date).toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
@@ -117,7 +117,7 @@ function fillCommentsList(list) {
                     ${data[i].fields.firstname} ${data[i].fields.lastname}
                     ${
                       data[i].fields.status === "active"
-                        ? userId === data[i].fields.user && userDeleteButton
+                        ? userDeleteButton
                         : adminRestoreButton
                     }
 
@@ -136,6 +136,18 @@ function fillCommentsList(list) {
 
     if (content) {
       $("#commentList").append(content);
+      if (userRole == "admin") {
+      change_comment_status(`.${buttonClass}`,
+      `/library/change_review_status/${data[i].fields.book}/${data[i].pk}/inactive/`,
+      `/library/show_reviews/${data[i].fields.book}/`)
+      change_comment_status(`.${buttonClassAdmin}`,
+      `/library/change_review_status/${data[i].fields.book}/${data[i].pk}/active/`,
+      `/library/show_reviews/${data[i].fields.book}/`)
+      } else {
+      change_comment_status(`.${buttonClass}`,
+      `/library/change_review_status/${data[i].fields.book}/${data[i].pk}/inactive/`,
+      `/library/show_reviews/${data[i].fields.book}/`)
+      }
     }
     addMouseEventsForComments();
   }
@@ -151,7 +163,7 @@ function add_comment() {
     .getAttribute("url");
   let csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0]
     .value;
-  eraseText();
+  document.getElementById("exampleFormControlTextarea1").value = "";
   $.ajax({
     method: "POST",
     url: endpoint,
@@ -160,27 +172,39 @@ function add_comment() {
       "text-comment": textComment,
     },
     dataType: "json",
-    success: fillCommentsList,
-             function () {
-                document.getElementById("exampleFormControlTextarea1").value = "";
-    }
+    success: fillCommentsList
   });
 }
 
-function delete_comment() {
-    let endpointDelete = document.getElementById("commentButton")
-    .getAttribute("url");
+function change_comment_status(classname, url, getListURL) {
+    let elementButton = document.querySelector(classname)
+    if (elementButton){
     let csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0]
     .value;
-
-$.ajax({
+    elementButton.onclick = function (){
+                 $.ajax({
     method: "POST",
-    url: endpointDelete,
+    url: url,
     data: {
       csrfmiddlewaretoken: csrfmiddlewaretoken
     },
     dataType: "json",
-    success: fillCommentsList,
+    complete:function(res){
+
+    if (res.status === 200) {
+        $.ajax({
+        method:"GET",
+        url: getListURL,
+        data: {
+            csrfmiddlewaretoken: csrfmiddlewaretoken
+             },
+    dataType: "json",
+    success: fillCommentsList
+        });
+        }
+    }
   });
+  }
+}
 }
 
