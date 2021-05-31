@@ -1,3 +1,4 @@
+import os
 import json
 import random
 import string
@@ -13,8 +14,11 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .forms import ChangePasswordForm, EditProfileForm, RegistrationForm
-from .models import Author, Book, Review, MongoUser, Status
+from .forms import ChangePasswordForm, ContactForm, EditProfileForm, RegistrationForm
+from .models import Author, Book, CacheStorage, Review, MongoUser, Status
+
+CACHE_LIFETIME = int(os.getenv('CACHE_LIFETIME'))
+cache_storage = CacheStorage(CACHE_LIFETIME)
 
 PASSWORD_ITERATION = 5
 MAX_PASSWORD_NUM = 22
@@ -194,13 +198,26 @@ def change_review_status(request, book_id, review_id, new_status):
 
 
 def home(request):
-    top_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__rating')[:20]
-    new_books = Book.objects.filter(status=Status.ACTIVE).order_by('-pk')[:20]
-    books_genres = []
-    for genres_list in Book.objects.values('genres'):
-        for genre in genres_list.get('genres'):
-            if genre and genre not in books_genres:
-                books_genres.append(genre)
+    top_books = cache_storage.get_value('top_books')
+    new_books = cache_storage.get_value('new_books')
+    books_genres = cache_storage.get_value('books_genres')
+
+    if top_books is None:
+        top_books = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.statistic.rating,
+                           reverse=True)[:20]
+        cache_storage.add_value('top_books', top_books)
+
+    if new_books is None:
+        new_books = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.pk, reverse=True)[:20]
+        cache_storage.add_value('new_books', new_books)
+
+    if books_genres is None:
+        books_genres = []
+        for genres_list in Book.objects.values('genres'):
+            for genre in genres_list.get('genres'):
+                if genre and genre not in books_genres:
+                    books_genres.append(genre)
+        cache_storage.add_value('books_genres', books_genres)
 
     return render(request, 'home.html', {'top_books': top_books, 'new_books': new_books, 'genres': books_genres})
 
@@ -283,13 +300,15 @@ def unique_registration_check(request):
         return JsonResponse({})
 
 
-def edit_profile_check(request, field_value):
-    check_user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
-    username = request.user.username
-    email = request.user.email
-    if check_user and (check_user.username != username or check_user.email != email):
-        return HttpResponse('Already taken', content_type="text/plain")
-    return HttpResponse('', content_type="text/plain")
+def edit_profile_unique_check(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        field_value = data.get('field_value')
+        check_user = MongoUser.objects.filter(Q(username=field_value) | Q(email=field_value)).first()
+        user = request.user
+        if check_user and check_user.pk != user.pk:
+            return JsonResponse({'error_message': 'Already taken'})
+        return JsonResponse({})
 
 
 def logout_view(request):
@@ -318,13 +337,24 @@ def news_page(request):
 
 
 def collections_page(request):
-    pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:10]
-    total_read_books = Book.objects.filter(status=Status.ACTIVE).order_by('-statistic__total_read')[:10]
-    return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': total_read_books})
+    books_total_read = cache_storage.get_value('books_total_read')
+
+    if books_total_read is None:
+        books_total_read = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.statistic.total_read,
+                              reverse=True)[:20]
+        cache_storage.add_value('books_total_read', books_total_read)
+
+    pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:20]
+    return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': books_total_read})
 
 
 def authors_page(request):
-    authors = Author.objects.filter(status=Status.ACTIVE).order_by('name')
+    authors = cache_storage.get_value('authors')
+
+    if authors is None:
+        authors = sorted(Author.objects.filter(status=Status.ACTIVE), key=lambda author: author.name)
+        cache_storage.add_value('authors', authors)
+
     return render(request, 'authors.html', {'authors': authors})
 
 
@@ -348,7 +378,7 @@ def reset_password(request):
                 You can authorize on home page
                 Home page link - {request.build_absolute_uri(reverse(home))}
                 ''',
-                'pythonproject117@gmail.com',
+                os.getenv('EMAIL_HOST_USER'),
                 [email],
                 fail_silently=False
             )
@@ -364,3 +394,35 @@ def reset_password(request):
                 'Warning! You entered the invalid email.'
             )
     return render(request, 'reset_password.html')
+
+
+def help_email(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            user_email = form.cleaned_data.get('user_email')
+            subject = form.cleaned_data.get('subject')
+            message = form.cleaned_data.get('message')
+            send_mail(
+                f'{subject}',
+                f'''
+                Question : {message}\n
+                Email for answer - {user_email}
+                ''',
+                os.getenv('EMAIL_HOST_USER'),
+                [os.getenv('ADMIN_EMAIL')],
+                fail_silently=False
+            )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'The letter was sent, wait for a response to your mailbox'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Check your form, the fields were filled in incorrectly'
+            )
+    form = ContactForm()
+    return render(request, 'help_email.html',  {'form': form})
