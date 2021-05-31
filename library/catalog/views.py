@@ -454,17 +454,13 @@ class ProductLandingPageView(TemplateView):
 
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
-        # product_id = self.kwargs["pk"]
-        # product = Product.objects.get(id=product_id)
-        # print(product)
-        YOUR_DOMAIN = 'http:127.0.0.1:8000/library'
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
                 {
                     'price_data': {
                         'currency': 'usd',
-                        'unit_amount': 2000,
+                        'unit_amount': 500,
                         'product_data': {
                             'name': 'DONATE',
                         },
