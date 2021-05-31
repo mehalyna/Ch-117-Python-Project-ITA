@@ -446,7 +446,7 @@ class ProductLandingPageView(TemplateView):
         product = Product.objects.get(name="Donate")
         context = super(ProductLandingPageView, self).get_context_data(**kwargs)
         context.update({
-            "product":product,
+            "product": product,
             "STRIPE_PUBLIC_KEY": os.getenv('STRIPE_PUBLIC_KEY')
 
         })
@@ -454,26 +454,26 @@ class ProductLandingPageView(TemplateView):
 
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
-        product_id = self.kwargs["pk"]
-        product = Product.objects.get(id=product_id)
-        print(product)
-        YOUR_DOMAIN = 'http:127.0.0.1:8000/library/home'
+        # product_id = self.kwargs["pk"]
+        # product = Product.objects.get(id=product_id)
+        # print(product)
+        YOUR_DOMAIN = 'http:127.0.0.1:8000/library'
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
                 {
                     'price_data': {
                         'currency': 'usd',
-                        'unit_amount': product.price,
+                        'unit_amount': 2000,
                         'product_data': {
-                            'name': product.name,
+                            'name': 'NAME',
                         },
                     },
                     'quantity': 1,
                 },
             ],
             mode='payment',
-            success_url=YOUR_DOMAIN + '/success',
-            cancel_url=YOUR_DOMAIN + '/cancel',
+            success_url=YOUR_DOMAIN + '/success/',
+            cancel_url=YOUR_DOMAIN + '/cancel/',
         )
         return JsonResponse({'id': checkout_session.id})
