@@ -73,7 +73,6 @@ function addMouseEventsForComments() {
 }
 
 function fillCommentsList(list) {
-  console.log('suka')
   let userId = document.getElementById("userId").getAttribute("value");
   let userRole = document.getElementById("userRole").getAttribute("value");
 
@@ -111,14 +110,14 @@ function fillCommentsList(list) {
                 </blockquote>
                      </div>
             </div>`;
-    console.log(userId, userRole)
+
     const adminComment = `
           <div id="commentArea" >
           <div style="font-size: large; background: white;" class="card-header">
                     ${data[i].fields.firstname} ${data[i].fields.lastname}
                     ${
                       data[i].fields.status === "active"
-                        ? userId === data[i].fields.user && userDeleteButton
+                        ? userDeleteButton
                         : adminRestoreButton
                     }
 
@@ -179,6 +178,7 @@ function add_comment() {
 
 function change_comment_status(classname, url, getListURL) {
     let elementButton = document.querySelector(classname)
+    if (elementButton){
     let csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0]
     .value;
     elementButton.onclick = function (){
@@ -190,7 +190,7 @@ function change_comment_status(classname, url, getListURL) {
     },
     dataType: "json",
     complete:function(res){
-    console.log(res.status)
+
     if (res.status === 200) {
         $.ajax({
         method:"GET",
@@ -205,5 +205,6 @@ function change_comment_status(classname, url, getListURL) {
     }
   });
   }
+}
 }
 
