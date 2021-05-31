@@ -1,8 +1,10 @@
 import os
 import json
 import random
+import requests
 import string
 
+from bs4 import BeautifulSoup
 from bson import ObjectId
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -22,6 +24,11 @@ cache_storage = CacheStorage(CACHE_LIFETIME)
 
 PASSWORD_ITERATION = 5
 MAX_PASSWORD_NUM = 22
+
+URL = 'https://www.loc.gov/news/?dates=2021&c=50'
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'
+}
 
 
 @login_required
@@ -332,8 +339,23 @@ def login_redirect_page(request):
     return render(request, 'login_redirect.html')
 
 
+def news_parse():
+    response = requests.get(URL, headers=HEADERS)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    items = soup.findAll('div', class_='description')
+    comps = []
+    for item in items:
+        comps.append({
+            'title': item.find('a').get_text(strip=True),
+            'date': item.find('span', class_='brief-date').get_text(strip=True),
+            'link': item.find('a').get('href')
+        })
+    return comps
+
+
 def news_page(request):
-    return render(request, 'news_page.html')
+    news = news_parse()
+    return render(request, 'news_page.html', {'news': news})
 
 
 def collections_page(request):
@@ -341,7 +363,7 @@ def collections_page(request):
 
     if books_total_read is None:
         books_total_read = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.statistic.total_read,
-                              reverse=True)[:20]
+                                  reverse=True)[:20]
         cache_storage.add_value('books_total_read', books_total_read)
 
     pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:20]
@@ -425,4 +447,4 @@ def help_email(request):
                 'Check your form, the fields were filled in incorrectly'
             )
     form = ContactForm()
-    return render(request, 'help_email.html',  {'form': form})
+    return render(request, 'help_email.html', {'form': form})
