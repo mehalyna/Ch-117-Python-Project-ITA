@@ -466,14 +466,14 @@ class CreateCheckoutSessionView(View):
                         'currency': 'usd',
                         'unit_amount': 2000,
                         'product_data': {
-                            'name': 'NAME',
+                            'name': 'DONATE',
                         },
                     },
                     'quantity': 1,
                 },
             ],
             mode='payment',
-            success_url=YOUR_DOMAIN + '/success/',
-            cancel_url=YOUR_DOMAIN + '/cancel/',
+            success_url='http://127.0.0.1:8000/library/success/',
+            cancel_url='http://127.0.0.1:8000/library/cancel/',
         )
         return JsonResponse({'id': checkout_session.id})
