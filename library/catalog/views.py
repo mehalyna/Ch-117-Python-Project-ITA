@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.serializers import serialize
-from django.db.models import Q
+from django.db.models import Q, Sum, Avg
 from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
@@ -374,9 +374,20 @@ def authors_page(request):
     authors = cache_storage.get_value('authors')
 
     if authors is None:
-        authors = sorted(Author.objects.filter(status=Status.ACTIVE), key=lambda author: author.name)
+        authors = sorted(
+            Author.objects.filter(
+                status=Status.ACTIVE
+            ).annotate(
+                total_rating=Sum('book__statistic__rating')
+            ).annotate(
+                total_read=Sum('book__statistic__total_read')
+            ).annotate(
+                avg_rating=Avg('book__statistic__rating')
+            ),
+            key=lambda author: author.total_rating,
+            reverse=True
+        )
         cache_storage.add_value('authors', authors)
-
     return render(request, 'authors.html', {'authors': authors})
 
 
