@@ -191,15 +191,3 @@ class Review(models.Model):
     status = models.CharField(default=Status.ACTIVE, max_length=10)
     comment = models.CharField(default='', max_length=5000)
     date = models.DateTimeField(auto_now=True)
-
-
-class Product(models.Model):
-    _id = models.ObjectIdField(primary_key=True)
-    name = models.CharField(max_length=100)
-    price = models.IntegerField(1000)  # cents
-
-    def __str__(self):
-        return self.name
-
-    def get_display_price(self):
-        return "{0:.2f}".format(self.price / 100)

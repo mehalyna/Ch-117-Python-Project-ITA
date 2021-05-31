@@ -2,7 +2,6 @@ from django.urls import path
 from .views import CreateCheckoutSessionView, ProductLandingPageView
 
 from . import views
-
 urlpatterns = [
     path('home/', views.home, name='library-home'),
     path('registration/', views.registration, name='library-registration'),
@@ -35,7 +34,9 @@ urlpatterns = [
     path('reset_password/', views.reset_password, name='reset_password'),
     path('help/', views.help_email, name='help_email'),
     path('donate/', ProductLandingPageView.as_view(), name='donate-page'),
-    path('create-checkout-session', CreateCheckoutSessionView.as_view(), name='create-checkout-session'),
+    path('create-checkout-session/', CreateCheckoutSessionView.as_view(), name='create-checkout-session'),
     path('cancel/', views.donate_failed, name='donate_failed'),
-    path('success/', views.donate_success, name='donate_success')
+    path('success/', views.donate_success, name='donate_success'),
+
 ]
+

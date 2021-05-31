@@ -18,7 +18,7 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from .forms import ChangePasswordForm, ContactForm, EditProfileForm, RegistrationForm
-from .models import Author, Book, CacheStorage, MongoUser, Product, Review, Status
+from .models import Author, Book, CacheStorage, MongoUser, Review, Status
 
 CACHE_LIFETIME = int(os.getenv('CACHE_LIFETIME'))
 cache_storage = CacheStorage(CACHE_LIFETIME)
@@ -443,10 +443,8 @@ class ProductLandingPageView(TemplateView):
     template_name = "donate_page.html"
 
     def get_context_data(self, **kwargs):
-        product = Product.objects.get(name="Donate")
         context = super(ProductLandingPageView, self).get_context_data(**kwargs)
         context.update({
-            "product": product,
             "STRIPE_PUBLIC_KEY": os.getenv('STRIPE_PUBLIC_KEY')
 
         })
@@ -454,22 +452,18 @@ class ProductLandingPageView(TemplateView):
 
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        price = data.get('paymentId')
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
                 {
-                    'price_data': {
-                        'currency': 'usd',
-                        'unit_amount': 500,
-                        'product_data': {
-                            'name': 'DONATE',
-                        },
-                    },
+                    'price': price,
                     'quantity': 1,
                 },
             ],
             mode='payment',
-            success_url='http://127.0.0.1:8000/library/success/',
-            cancel_url='http://127.0.0.1:8000/library/cancel/',
+            success_url=request.build_absolute_uri(reverse('donate_success')),
+            cancel_url=request.build_absolute_uri(reverse('donate_failed')),
         )
         return JsonResponse({'id': checkout_session.id})

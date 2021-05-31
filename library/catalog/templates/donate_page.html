@@ -3,7 +3,6 @@
 <html>
   <head>
     <title>Donation</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
     <script src="https://js.stripe.com/v3/"></script>
   </head>
@@ -15,40 +14,18 @@
           alt="The cover of Stubborn Attachments"
         />
         <div class="description">
-          <h3>{{ product.name }}</h3>
-          <h5>{{product.get_display_price}}$</h5>
+          <h3>Donate</h3>
+          <input type="radio" id="price1" name="price" value="price_1IxASMEGI0IveNQBxxLNI8ty">
+          <label for="price1">5.00$</label>
+          <input type="radio" id="price2" name="price" value="price_1IxASNEGI0IveNQBgT99pcPX">
+          <label for="price2">10.00$</label>
+          <input type="radio" id="price3" name="price" value="price_1IxASNEGI0IveNQBeSPwf19I">
+          <label for="price3">50.00$</label>
         </div>
       </div>
-      <button type="button" id="checkout-button">Checkout</button>
+      <button type="button" id="checkout-button" onclick="paymentMethod('{{ STRIPE_PUBLIC_KEY }}', '{% url 'create-checkout-session' %}')">Checkout</button>
     </section>
     {% csrf_token %}
   </body>
-  <script type="text/javascript">
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    // Create an instance of the Stripe object with your publishable API key
-    var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
-    var checkoutButton = document.getElementById("checkout-button");
-    checkoutButton.addEventListener("click", function () {
-      fetch("{% url 'create-checkout-session' %}", {
-        method: "POST",
-        headers: {
-          'X-CSRFToken': csrftoken
-        }
-      })
-        .then(function (response) {
-          return response.json();
-        })
-        .then(function (session) {
-          return stripe.redirectToCheckout({ sessionId: session.id });
-        })
-        .then(function (result) {
-          if (result.error) {
-            alert(result.error.message);
-          }
-        })
-        .catch(function (error) {
-          console.error("Error:", error);
-        });
-    });
-  </script>
+  <script src="{% static 'js/payments_metod.js' %}"></script>
 </html>

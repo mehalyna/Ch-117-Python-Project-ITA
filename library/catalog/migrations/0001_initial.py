@@ -79,14 +79,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Product',
-            fields=[
-                ('_id', djongo.models.fields.ObjectIdField(auto_created=True, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=100)),
-                ('price', models.IntegerField(verbose_name=1000)),
-            ],
-        ),
-        migrations.CreateModel(
             name='Review',
             fields=[
                 ('_id', djongo.models.fields.ObjectIdField(auto_created=True, primary_key=True, serialize=False)),
