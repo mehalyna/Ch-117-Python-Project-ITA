@@ -3,6 +3,7 @@ import json
 import random
 import requests
 import string
+import stripe
 
 from bs4 import BeautifulSoup
 from bson import ObjectId
@@ -15,9 +16,11 @@ from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.views import View
+from django.views.generic import TemplateView
 
 from .forms import ChangePasswordForm, ContactForm, EditProfileForm, RegistrationForm
-from .models import Author, Book, CacheStorage, Review, MongoUser, Status
+from .models import Author, Book, CacheStorage, MongoUser, Review, Status
 
 CACHE_LIFETIME = int(os.getenv('CACHE_LIFETIME'))
 cache_storage = CacheStorage(CACHE_LIFETIME)
@@ -25,10 +28,14 @@ cache_storage = CacheStorage(CACHE_LIFETIME)
 PASSWORD_ITERATION = 5
 MAX_PASSWORD_NUM = 22
 
+
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+
 URL = 'https://www.loc.gov/news/?dates=2021&c=50'
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'
 }
+
 
 
 @login_required
@@ -447,4 +454,40 @@ def help_email(request):
                 'Check your form, the fields were filled in incorrectly'
             )
     form = ContactForm()
-    return render(request, 'help_email.html', {'form': form})
+    return render(request, 'help_email.html',  {'form': form})
+
+
+def donate_success(request):
+    return render(request, 'success.html')
+
+def donate_failed(request):
+    return render(request, 'cancel.html')
+
+class ProductLandingPageView(TemplateView):
+    template_name = "donate_page.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductLandingPageView, self).get_context_data(**kwargs)
+        context.update({
+            "STRIPE_PUBLIC_KEY": os.getenv('STRIPE_PUBLIC_KEY')
+
+        })
+        return context
+
+class CreateCheckoutSessionView(View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        price = data.get('paymentId')
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price': price,
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=request.build_absolute_uri(reverse('donate_success')),
+            cancel_url=request.build_absolute_uri(reverse('donate_failed')),
+        )
+        return JsonResponse({'id': checkout_session.id})
