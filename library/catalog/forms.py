@@ -1,7 +1,7 @@
 from bson import ObjectId
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
-from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
+from django.forms import CharField, EmailField, Form, PasswordInput, TextInput, Textarea
 from profanityfilter import ProfanityFilter
 
 from .models import MongoUser
@@ -98,3 +98,10 @@ class ChangePasswordForm(Form):
 
         if new_password != confirm_password:
             raise ValidationError('Password and confirm password doesn\'t match')
+
+
+class ContactForm(Form):
+    user_email = EmailField(max_length=100, required=True, widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
+    subject = CharField(max_length=150, required=True, widget=TextInput(attrs={'class' : 'form-control', 'placeholder': 'Subject'}))
+    message = CharField(max_length=500, required=True, widget=Textarea(attrs={'class': 'form-control', 'placeholder': 'Message'}))
+    

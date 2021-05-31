@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 library/library/book_store
+library/.coveragerc
 .idea/
 .Python
 build/

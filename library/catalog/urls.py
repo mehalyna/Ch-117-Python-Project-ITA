@@ -1,4 +1,3 @@
-from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from . import views
@@ -20,6 +19,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('author_books/<str:author_name>/', views.search_by_author, name='library-books-author'),
     path('add_review/<str:book_id>/', views.add_review, name='add-review'),
+    path('show_reviews/<str:book_id>/', views.show_reviews, name='show_reviews'),
     path('add_rating/<str:book_id>/', views.add_rating, name='add-rating'),
     path('add_rating/<str:book_id>/<int:rating>/', views.add_rating, name='add-rating'),
     path('add_to_wishlist/<str:book_id>/', views.add_to_wishlist, name='add-to-wishlist'),
@@ -32,4 +32,5 @@ urlpatterns = [
     path('collections/', views.collections_page, name='collections_page'),
     path('authors/', views.authors_page, name='authors_page'),
     path('reset_password/', views.reset_password, name='reset_password'),
+    path('help/', views.help_email, name='help_email'),
 ]
