@@ -7,17 +7,17 @@
 
 <div class="container">
 
-    <h2 class="h2-collections">Books with over 1000 pages</h2>
+    <h2 class="h2-collections">The newest books</h2>
     <div class="swiper-container first-container">
       <!-- Additional required wrapper -->
       <div class="swiper-wrapper">
         <!-- Slides -->
-          {% for book in pages_books %}
+          {% for book in the_newest_books %}
             <div class="swiper-slide slide-relative">
                 <a href="{% url 'book-details' book.pk %}">
                     <img src="{{ book.link_img }}" alt="{{ book.title }}">
                     <p><b>{{ book.title }}</b></p>
-                    <p class="text-bottom">Pages: {{ book.pages }}</p>
+                    <p class="text-bottom">Published: {{ book.year }}</p>
                 </a>
             </div>
           {% endfor %}

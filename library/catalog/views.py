@@ -360,14 +360,19 @@ def news_page(request):
 
 def collections_page(request):
     books_total_read = cache_storage.get_value('books_total_read')
+    the_newest_books = cache_storage.get_value('the_newest_books')
 
     if books_total_read is None:
         books_total_read = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.statistic.total_read,
                                   reverse=True)[:20]
         cache_storage.add_value('books_total_read', books_total_read)
 
-    pages_books = Book.objects.filter(Q(pages__gte=1000) & Q(status=Status.ACTIVE))[:20]
-    return render(request, 'collections.html', {'pages_books': pages_books, 'total_read_books': books_total_read})
+    if the_newest_books is None:
+        the_newest_books = sorted(Book.objects.filter(status=Status.ACTIVE), key=lambda book: book.year,
+                                  reverse=True)[:20]
+        cache_storage.add_value('the_newest_books', the_newest_books)
+
+    return render(request, 'collections.html', {'the_newest_books': the_newest_books, 'total_read_books': books_total_read})
 
 
 def authors_page(request):
