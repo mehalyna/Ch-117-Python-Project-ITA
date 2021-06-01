@@ -82,11 +82,12 @@ function fillCommentsList(list) {
   for (let i = 0; i < data.length; i++) {
     const buttonClass = `comment-delete-button-${i}`;
     const buttonClassAdmin = `comment-restore-button-${i}`;
-    const userDeleteButton = `<a id="commentButton" style="float: right; width: 80px; display: none;"
-                   class="btn btn-danger ${buttonClass}">Delete</a>`;
+    const userDeleteButton = `<a id="commentButton" style="float: right; width: 40px; display: none;"
+                   class="btn btn-outline-danger ${buttonClass}">×</a>`;
 
     const adminRestoreButton = `<a id="commentButton" style="float: right; width: 80px; display: none;"
-                   class="btn btn-danger ${buttonClassAdmin}">Restore</a>`;
+                   class="btn btn-outline-info ${buttonClassAdmin}">Restore</a>`;
+
     const date = new Date(data[i].fields.date).toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
@@ -97,15 +98,15 @@ function fillCommentsList(list) {
     const regularUserComment =
       data[i].fields.status === "active" && `
           <div id="commentArea" >
-          <div style="font-size: large; font-weight: bolder; background: white;" class="card-header">
+          <div style="font-size: 15pt; background: white;" class="card-header">
                     ${data[i].fields.firstname} ${data[i].fields.lastname}
-                    ${userId === data[i].fields.user && userDeleteButton}
+                    ${userId === data[i].fields.user && userDeleteButton ? userDeleteButton : ""}
 
              </div>
           <div class="card-body">
                         <blockquote class="blockquote mb-0">
-                            <p style="font-size: smaller">${data[i].fields.comment}</p>
-                            <footer class="blockquote-footer"><cite
+                            <p style="font-size: 14pt">${data[i].fields.comment}</p>
+                            <footer style="font-size: 10pt" class="blockquote-footer"><cite
                             title="Source Title">Published ${date}</cite></footer>
                 </blockquote>
                      </div>
@@ -113,7 +114,7 @@ function fillCommentsList(list) {
 
     const adminComment = `
           <div id="commentArea" >
-          <div style="font-size: large; background: white;" class="card-header">
+          <div style="font-size: 15pt; background: white;" class="card-header">
                     ${data[i].fields.firstname} ${data[i].fields.lastname}
                     ${
                       data[i].fields.status === "active"
@@ -125,8 +126,8 @@ function fillCommentsList(list) {
              </div>
           <div class="card-body">
                         <blockquote class="blockquote mb-0">
-                            <p style="font-size: large">${data[i].fields.comment}</p>
-                            <footer style="font-size: smaller" class="blockquote-footer"><cite
+                            <p style="font-size: 14pt">${data[i].fields.comment}</p>
+                            <footer style="font-size: 10pt" class="blockquote-footer"><cite
                             title="Source Title">Published ${date}</cite></footer>
                 </blockquote>
                      </div>
