@@ -6,23 +6,19 @@ radioButtonList.forEach(radioButton => {
     })
 })
 
-
-
 function paymentMethod(stripePublicKey, url) {
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    // Create an instance of the Stripe object with your publishable API key
     var stripe = Stripe(stripePublicKey);
-    var checkoutButton = document.getElementById("checkout-button");
     var checkedPrice = document.querySelector('input[name = price]:checked');
     let unit_amount;
     if (checkedPrice.id === "customPrice"){
         unit_amount = inputField.value * 100;
-        console.log(unit_amount);
     }
     else {
         unit_amount = checkedPrice.value;
     }
-    fetch(url, {
+    if (!isNaN(unit_amount)){
+        fetch(url, {
         method: "POST",
         headers: {
             'X-CSRFToken': csrftoken
@@ -43,4 +39,9 @@ function paymentMethod(stripePublicKey, url) {
         .catch(function (error) {
             console.error("Error:", error);
         });
+    }
+    else {
+        alert('Input correct amount')
+    }
+
 }
