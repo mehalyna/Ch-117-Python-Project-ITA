@@ -116,7 +116,8 @@ def add_to_wishlist(request, book_id):
         if book:
             book.statistic.total_read = book.statistic.total_read + 1
             book.statistic.reading_now = book.statistic.reading_now + 1
-            book.save()
+            book.statistic.save()
+
             user.wishlist.append(book_id)
             user.save()
 
@@ -133,6 +134,8 @@ def delete_from_wishlist(request, book_id):
     if str(book_id) in user.wishlist:
         book = Book.objects.filter(pk=ObjectId(book_id)).first()
         book.statistic.reading_now = book.statistic.reading_now - 1
+        book.statistic.save()
+
         user.wishlist.remove(book_id)
         user.save()
 
