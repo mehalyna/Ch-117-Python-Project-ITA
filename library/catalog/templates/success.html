@@ -1,14 +1,16 @@
-<html>
-<head>
-  <title>Thanks for your order!</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <section>
-    <p>
-      We appreciate your business! If you have any questions, please email
-      <a href="mailto:orders@example.com">orders@example.com</a>.
-    </p>
-  </section>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Success{% endblock %}
+
+{% block body %}
+
+<div class="container">
+  <h2 class="h2-donate">Your donation was sent successfully, thank you</h2>
+  <p>You can always contact us via <a href="{% url 'help_email' %}">email</a></p>
+  <div class="img-container">
+    <img src="{% static 'images/green-tick.svg' %}" alt="Green Tick">
+  </div>
+
+</div>
+{% endblock %}
