@@ -438,6 +438,7 @@ def reset_password(request):
                 messages.ERROR,
                 'Warning! You entered the invalid email.'
             )
+        return redirect(reset_password)
     return render(request, 'reset_password.html')
 
 
