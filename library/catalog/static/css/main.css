@@ -670,3 +670,46 @@ h2#review-banner {
 .news-contacts {
     font-size: 14px;
 }
+
+.user-ml{
+    margin-left: 20px;
+}
+
+.heart-icon{
+  height: 34px;
+  width: 34px;
+}
+
+.price-box label{
+    font-size: 25px;
+}
+
+.price-container{
+    display: flex;
+    justify-content: space-around;
+}
+
+.btn-container{
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.btn-container button{
+    width: 20%;
+}
+
+.h2-donate{
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+.img-container{
+    display: flex;
+    justify-content: center;
+}
+
+.img-container img{
+    width: 196px;
+    height: 196px;
+}
