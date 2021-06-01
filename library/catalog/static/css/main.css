@@ -56,10 +56,14 @@
 .book_details_frame {
     background: #EEFCFC;
     max-width: 925px !important;
-    margin-top: 50px;
     background-color: #e1e5e7;
 }
-
+.book-details-alert-container{
+    max-width: 925px;
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+}
 .row img {
     width: 100%;
     height: 60%;
