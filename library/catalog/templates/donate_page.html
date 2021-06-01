@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Donation</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+  <body>
+    <section>
+      <div class="product">
+        <img
+          src=""
+          alt="The cover of Stubborn Attachments"
+        />
+        <div class="description">
+          <h3>Donate</h3>
+          <input type="radio" id="price1" name="price" value="price_1IxASMEGI0IveNQBxxLNI8ty">
+          <label for="price1">5.00$</label>
+          <input type="radio" id="price2" name="price" value="price_1IxASNEGI0IveNQBgT99pcPX">
+          <label for="price2">10.00$</label>
+          <input type="radio" id="price3" name="price" value="price_1IxASNEGI0IveNQBeSPwf19I">
+          <label for="price3">50.00$</label>
+        </div>
+      </div>
+      <button type="button" id="checkout-button" onclick="paymentMethod('{{ STRIPE_PUBLIC_KEY }}', '{% url 'create-checkout-session' %}')">Checkout</button>
+    </section>
+    {% csrf_token %}
+  </body>
+  <script src="{% static 'js/payments_metod.js' %}"></script>
+</html>

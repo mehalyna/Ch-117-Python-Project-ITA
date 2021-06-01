@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from djongo import models
 
+
 class Status:
     ACTIVE = 'active'
     INACTIVE = 'inactive'
@@ -20,7 +21,6 @@ class CacheStorage:
         self.lifetime = lifetime
         self._cache_dict = {}
 
-
     def get_value(self, key):
         if key in self._cache_dict:
             cache = self._cache_dict[key]
@@ -32,6 +32,7 @@ class CacheStorage:
 
     def add_value(self, key, data):
         self._cache_dict[key] = Cache(data, self.lifetime)
+
 
 class Cache:
     def __init__(self, data, lifetime):

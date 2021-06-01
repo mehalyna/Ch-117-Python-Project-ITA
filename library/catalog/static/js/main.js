@@ -14,6 +14,15 @@ const top_swiper = new Swiper('.first-container', {
   slidesPerView: 5,
   spaceBetween: 20,
   speed: 600,
+
+  breakpoints:{
+      768: {
+      slidesPerView: 4,
+    },
+      1250:{
+          slidesPerView:5,
+      }
+  }
 });
 
 
@@ -31,6 +40,15 @@ const new_slider = new Swiper('.second-container', {
   slidesPerView: 5,
   spaceBetween: 20,
   speed: 600,
+
+    breakpoints:{
+      768: {
+      slidesPerView: 4,
+    },
+      1250:{
+          slidesPerView:5,
+      }
+  }
 });
 
 
@@ -45,6 +63,14 @@ const recbook_swiper = new Swiper('.third-container', {
   spaceBetween: 20,
   speed: 600,
 
+    breakpoints:{
+      768: {
+      slidesPerView: 4,
+    },
+      1250:{
+          slidesPerView:5,
+      }
+  }
 });
 
 setTimeout(function () {

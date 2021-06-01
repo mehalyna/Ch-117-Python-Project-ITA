@@ -648,3 +648,25 @@ margin-bottom:7px;
 h2#review-banner {
   margin-left: 400px;
 }
+
+/*news*/
+.my-container {
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+.col-info {
+    flex: 0 0 15%;
+    width: 15%;
+    border-right: 1px solid #eeecec;
+    margin-top: 55px;
+}
+
+.col-content {
+    flex: 0 0 85%;
+    width: 85%;
+    padding-left: 50px;
+}
+
+.news-contacts {
+    font-size: 14px;
+}
