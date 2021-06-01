@@ -4,18 +4,7 @@
 {% block title %}Book details{% endblock %}
 
 {% block body %}
-
-{% if messages %}
-{% for message in messages %}
-<div class="toast ">
-    <div class="toast-body font-weight-bold text-danger">
-        <h6>{{ message }}</h6>
-    </div>
-</div>
-
-{% endfor %}
-{% endif %}
-<div class="container border p-3 mb-3 book_details_frame rounded">
+<div class="container border p-3 mb-3 mt-5 book_details_frame rounded">
     <div class="d-flex justify-content-start">
         <div class="book_details_img">
             <img style="width:200px;margin-bottom: 10px" id="cover_image" src="{{ book.link_img }}"
@@ -149,8 +138,12 @@
     {% endif %}
 
 </div>
-
-<div style="margin-top: 50px;background-color: white;"
+<div class="book-details-alert-container" id="bookDetailsAlertContainer">
+    <div class="alert" id="errorMessage">
+        &nbsp;
+    </div>
+</div>
+<div style="background-color: white;"
      class="container border p-3 mb-3 book_details_frame rounded">
     {% if user.is_authenticated and user.status == 'active' %}
     <div class="form-group">
