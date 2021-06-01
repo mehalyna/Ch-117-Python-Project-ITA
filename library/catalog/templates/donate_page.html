@@ -7,19 +7,26 @@
 
 <div class="container">
   <h2 class="h2-author">Your donation will help us make the site better</h2>
+  <p style="margin-top: 25px; font-size: 25px; text-align: center">Choose one of the options</p>
     <div class="price-container">
       <div class="price-box">
         <label for="price1">5.00$</label>
-        <input class="form-control" type="radio" id="price1" name="price" value="price_1IxASMEGI0IveNQBxxLNI8ty">
+        <input class="form-control" type="radio" id="price1" name="price" value="500">
       </div>
       <div class="price-box">
         <label for="price2">10.00$</label>
-        <input class="form-control" type="radio" id="price2" name="price" value="price_1IxASNEGI0IveNQBgT99pcPX">
+        <input class="form-control" type="radio" id="price2" name="price" value="1000">
       </div>
       <div class="price-box">
         <label for="price3">50.00$</label>
-        <input class="form-control" type="radio" id="price3" name="price" value="price_1IxASNEGI0IveNQBeSPwf19I">
+        <input class="form-control" type="radio" id="price3" name="price" value="5000">
       </div>
+    </div>
+
+    <div class="price-box">
+      <p class="your-sum">Or enter your amount</p>
+      <input type="radio" id="customPrice" name="price" class="form-control" value="getCustomValue()">
+      <input type="text" id="customPriceInput" class="customPriceInput form-control" name="customPriceInput" disabled>
     </div>
 
   <div class="btn-container">
@@ -28,10 +35,7 @@
 
   {% csrf_token %}
 
-
 </div>
-
-
 
   <script src="{% static 'js/payments_metod.js' %}"></script>
   <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
