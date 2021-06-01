@@ -3,6 +3,7 @@
 <html>
   <head>
     <title>Donation</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
     <script src="https://js.stripe.com/v3/"></script>
   </head>
@@ -15,12 +16,17 @@
         />
         <div class="description">
           <h3>Donate</h3>
-          <input type="radio" id="price1" name="price" value="price_1IxASMEGI0IveNQBxxLNI8ty">
+          <input type="radio" id="price1" name="price" value="500">
           <label for="price1">5.00$</label>
-          <input type="radio" id="price2" name="price" value="price_1IxASNEGI0IveNQBgT99pcPX">
+          <input type="radio" id="price2" name="price" value="1000">
           <label for="price2">10.00$</label>
-          <input type="radio" id="price3" name="price" value="price_1IxASNEGI0IveNQBeSPwf19I">
+          <input type="radio" id="price3" name="price" value="5000">
           <label for="price3">50.00$</label>
+        <div>
+          <input type="radio" id="customPrice" name="price" value="getCustomValue()">
+          <input type="text" id="customPriceInput" class="customPriceInput" name="customPriceInput" disabled>
+          <label for="customPrice">Your amount</label>
+        </div>
         </div>
       </div>
       <button type="button" id="checkout-button" onclick="paymentMethod('{{ STRIPE_PUBLIC_KEY }}', '{% url 'create-checkout-session' %}')">Checkout</button>

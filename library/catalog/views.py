@@ -477,12 +477,18 @@ class ProductLandingPageView(TemplateView):
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        price = data.get('paymentId')
+        unit_amount = data.get('unit_amount')
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
                 {
-                    'price': price,
+                    'price_data': {
+                        'currency': 'usd',
+                        'unit_amount': unit_amount,
+                        'product_data': {
+                            'name': 'DONATE',
+                        },
+                    },
                     'quantity': 1,
                 },
             ],
