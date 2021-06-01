@@ -494,17 +494,27 @@ class ProductLandingPageView(TemplateView):
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        price = data.get('paymentId')
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[
-                {
-                    'price': price,
-                    'quantity': 1,
-                },
-            ],
-            mode='payment',
-            success_url=request.build_absolute_uri(reverse('donate_success')),
-            cancel_url=request.build_absolute_uri(reverse('donate_failed')),
-        )
-        return JsonResponse({'id': checkout_session.id})
+        unit_amount = data.get('unit_amount')
+        if str(unit_amount).isdigit():
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'usd',
+                            'unit_amount': unit_amount,
+                            'product_data': {
+                                'name': 'DONATE',
+                            },
+                        },
+                        'quantity': 1,
+                    },
+                ],
+                mode='payment',
+                success_url=request.build_absolute_uri(reverse('donate_success')),
+                cancel_url=request.build_absolute_uri(reverse('donate_failed')),
+            )
+            return JsonResponse({'id': checkout_session.id})
+        else:
+            messages.error(request, 'Wrong old password.')
+            return JsonResponse({})
