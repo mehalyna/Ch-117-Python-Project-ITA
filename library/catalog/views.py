@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.serializers import serialize
-from django.db.models import Q
+from django.db.models import Q, Sum, Avg
 from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
@@ -116,7 +116,8 @@ def add_to_wishlist(request, book_id):
         if book:
             book.statistic.total_read = book.statistic.total_read + 1
             book.statistic.reading_now = book.statistic.reading_now + 1
-            book.save()
+            book.statistic.save()
+
             user.wishlist.append(book_id)
             user.save()
 
@@ -133,6 +134,8 @@ def delete_from_wishlist(request, book_id):
     if str(book_id) in user.wishlist:
         book = Book.objects.filter(pk=ObjectId(book_id)).first()
         book.statistic.reading_now = book.statistic.reading_now - 1
+        book.statistic.save()
+
         user.wishlist.remove(book_id)
         user.save()
 
@@ -386,9 +389,20 @@ def authors_page(request):
     authors = cache_storage.get_value('authors')
 
     if authors is None:
-        authors = sorted(Author.objects.filter(status=Status.ACTIVE), key=lambda author: author.name)
+        authors = sorted(
+            Author.objects.filter(
+                status=Status.ACTIVE
+            ).annotate(
+                total_rating=Sum('book__statistic__rating')
+            ).annotate(
+                total_read=Sum('book__statistic__total_read')
+            ).annotate(
+                avg_rating=Avg('book__statistic__rating')
+            ),
+            key=lambda author: author.total_rating,
+            reverse=True
+        )
         cache_storage.add_value('authors', authors)
-
     return render(request, 'authors.html', {'authors': authors})
 
 
@@ -427,6 +441,7 @@ def reset_password(request):
                 messages.ERROR,
                 'Warning! You entered the invalid email.'
             )
+        return redirect(reset_password)
     return render(request, 'reset_password.html')
 
 
@@ -482,17 +497,27 @@ class ProductLandingPageView(TemplateView):
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        price = data.get('paymentId')
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[
-                {
-                    'price': price,
-                    'quantity': 1,
-                },
-            ],
-            mode='payment',
-            success_url=request.build_absolute_uri(reverse('donate_success')),
-            cancel_url=request.build_absolute_uri(reverse('donate_failed')),
-        )
-        return JsonResponse({'id': checkout_session.id})
+        unit_amount = data.get('unit_amount')
+        if str(unit_amount).isdigit():
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'usd',
+                            'unit_amount': unit_amount,
+                            'product_data': {
+                                'name': 'DONATE',
+                            },
+                        },
+                        'quantity': 1,
+                    },
+                ],
+                mode='payment',
+                success_url=request.build_absolute_uri(reverse('donate_success')),
+                cancel_url=request.build_absolute_uri(reverse('donate_failed')),
+            )
+            return JsonResponse({'id': checkout_session.id})
+        else:
+            messages.error(request, 'Wrong old password.')
+            return JsonResponse({})

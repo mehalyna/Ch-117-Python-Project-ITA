@@ -58,7 +58,7 @@
                     <span class="h3">{{ book.title }}</span>
                 </div>
                 <div class="custom ml-1">
-                    <a class="btn btn-secondary" onclick="window.history.back();">Back</a>
+                    <a class="btn btn-secondary" href="{{ request.META.HTTP_REFERER  }}">Back</a>
                 </div>
             </div>
             <p>by <a href="{% url 'library-books-author' book.author.name %}"><b>{{ book.author.name }}</b></a>
