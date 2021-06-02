@@ -5,11 +5,11 @@
 
 {% block body %}
 
-<div class="container">
+<div class="container mb-3">
 
     <h2 class="h2-author">You can find out any information you need by filling out the form below</h2>
 
-    <form action="" method="post">
+    <form action="" method="post" novalidate>
         {% csrf_token %}
         {{ form.user_email }}<br>
         {{ form.subject }}<br>
@@ -23,6 +23,10 @@
         {{ message }}
     </div>
     {% endfor %}
+        {% else %}
+        <div class="alert mt-4" id="msg" role="alert">
+            &nbsp;
+        </div>
     {% endif %}
 
 </div>
