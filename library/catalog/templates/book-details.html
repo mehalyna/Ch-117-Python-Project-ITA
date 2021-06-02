@@ -71,8 +71,8 @@
             </p>
         </div>
     </div>
-    <h2 id='review-banner'>Reviews</h2>
     {% if user.is_authenticated and user.status == 'active' %}
+    <h2 id='review-banner'>Reviews</h2>
     <form style="margin-bottom: 80px;" onsubmit="saveStarRating('{% url 'add-rating' book.pk %}')" action="">
         <div class="form-group">
             <div style="margin-top: -280px;margin-bottom: -340px" class="page">
@@ -143,9 +143,9 @@
         &nbsp;
     </div>
 </div>
+{% if user.is_authenticated and user.status == 'active' %}
 <div style="background-color: white;"
      class="container border p-3 mb-3 book_details_frame rounded">
-    {% if user.is_authenticated and user.status == 'active' %}
     <div class="form-group">
         <h4 for="exampleFormControlTextarea1">Review</h4>
         <textarea class="form-control" placeholder="Your comment..." id="exampleFormControlTextarea1"
@@ -158,12 +158,12 @@
      <div id="endpoint-list" url="{% url 'show_reviews' book.pk %}" style="display: none;"></div>
     <div id="userId" value="{{user.pk}}" style="display: none;"></div>
     <div id="userRole" value="{{user.role}}" style="display: none;"></div>
-     {% endif %}
 
     <div id="commentList">
     </div>
 
 </div>
+{% endif %}
     <script src="{% static 'js/bookDetails.js' %}"></script>
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
     {% endblock %}
