@@ -162,6 +162,7 @@
     <div id="commentList">
     </div>
 {% else %}
+    {% if reviews %}
      {% for review in reviews %}
         <div id="commentArea">
           <div class="card-header book-details-user-name">
@@ -175,6 +176,9 @@
                      </div>
             </div>
     {% endfor %}
+        {% else %}
+        <h5 class="text-secondary d-flex justify-content-center">There are no reviews yet</h5>
+        {% endif %}
 {% endif %}
 </div>
 
