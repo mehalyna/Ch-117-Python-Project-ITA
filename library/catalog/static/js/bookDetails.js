@@ -3,9 +3,6 @@ const starStorageKey = "bookDetailsRatingStar";
 let ratingStars = document.querySelectorAll(".rating__control");
 
 $(document).ready(function () {
-  $(".toast").toast({ delay: 3000 });
-  $(".toast").toast("show");
-
   let endpoint = document.getElementById("endpoint-list").getAttribute("url");
   let csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0]
     .value;
@@ -75,7 +72,10 @@ function addMouseEventsForComments() {
 function fillCommentsList(list) {
   let userId = document.getElementById("userId").getAttribute("value");
   let userRole = document.getElementById("userRole").getAttribute("value");
-
+  let errorMessage = list.error;
+  if(errorMessage){
+      showError(errorMessage);
+  }
   const data = list.reviews;
   $("#commentList").empty();
 
@@ -209,3 +209,12 @@ function change_comment_status(classname, url, getListURL) {
 }
 }
 
+function showError(errorMessage){
+    let errorDiv = document.getElementById('errorMessage');
+    errorDiv.style.opacity = '1';
+    errorDiv.classList.add('alert-danger');
+    errorDiv.innerHTML = errorMessage;
+    setTimeout(function (){
+      $(errorDiv).fadeTo(500, 0.0, 'linear');
+    }, 5000);
+}

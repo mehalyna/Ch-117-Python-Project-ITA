@@ -158,6 +158,7 @@ def book_details(request, book_id):
 
 
 def add_review(request, book_id):
+    error = ''
     if not request.user.is_authenticated:
         return JsonResponse({"message": "Not authorized"})
     text = request.POST.get('text-comment')
@@ -172,9 +173,9 @@ def add_review(request, book_id):
                         comment=text)
         review.save()
     else:
-        messages.error(request, "The comment field should not be blank")
+        error = 'The comment field should not be blank.'
     reviews = serialize('json', Review.objects.filter(book_id=ObjectId(book_id)).order_by('-date'))
-    return JsonResponse({"reviews": json.loads(reviews)})
+    return JsonResponse({'reviews': json.loads(reviews), 'error': error})
 
 
 def show_reviews(request, book_id):

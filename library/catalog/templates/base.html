@@ -43,6 +43,7 @@
             <div class="toggler-wrapper">
                 <img src="{% static 'images/search.png' %}" alt="Search icon" id="toggler">
             </div>
+            <a href="{% url 'donate-page' %}"><img class="heart-icon" src="{% static 'images/heart.svg' %}" alt="Heart Icon "></a>
 
             {% if user.is_authenticated%}
             <div class="nav-item dropdown">
@@ -58,7 +59,7 @@
                 </div>
             </div>
             {% else %}
-            <button data-toggle="modal" data-target="#ModalAuth" data-toggle="modal" type="submit" class="btn btn-dark">
+            <button data-toggle="modal" data-target="#ModalAuth" data-toggle="modal" type="submit" class="btn btn-dark user-ml">
                 Sign
                 In
             </button>

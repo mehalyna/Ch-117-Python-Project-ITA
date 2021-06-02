@@ -1,37 +1,43 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Donation</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
-    <script src="https://js.stripe.com/v3/"></script>
-  </head>
-  <body>
-    <section>
-      <div class="product">
-        <img
-          src=""
-          alt="The cover of Stubborn Attachments"
-        />
-        <div class="description">
-          <h3>Donate</h3>
-          <input type="radio" id="price1" name="price" value="500">
-          <label for="price1">5.00$</label>
-          <input type="radio" id="price2" name="price" value="1000">
-          <label for="price2">10.00$</label>
-          <input type="radio" id="price3" name="price" value="5000">
-          <label for="price3">50.00$</label>
-        <div>
-          <input type="radio" id="customPrice" name="price" value="getCustomValue()">
-          <input type="text" id="customPriceInput" class="customPriceInput" name="customPriceInput" disabled>
-          <label for="customPrice">Your amount</label>
-        </div>
-        </div>
+
+{% block title %}Donation{% endblock %}
+
+{% block body %}
+
+<div class="container">
+  <h2 class="h2-author">Your donation will help us make the site better</h2>
+  <p style="margin-top: 25px; font-size: 25px; text-align: center">Choose one of the options</p>
+    <div class="price-container">
+      <div class="price-box">
+        <label for="price1">5.00$</label>
+        <input class="form-control" type="radio" id="price1" name="price" value="500">
       </div>
-      <button type="button" id="checkout-button" onclick="paymentMethod('{{ STRIPE_PUBLIC_KEY }}', '{% url 'create-checkout-session' %}')">Checkout</button>
-    </section>
-    {% csrf_token %}
-  </body>
+      <div class="price-box">
+        <label for="price2">10.00$</label>
+        <input class="form-control" type="radio" id="price2" name="price" value="1000">
+      </div>
+      <div class="price-box">
+        <label for="price3">50.00$</label>
+        <input class="form-control" type="radio" id="price3" name="price" value="5000">
+      </div>
+    </div>
+
+    <div class="price-box">
+      <p class="your-sum">Or enter your amount</p>
+      <input type="radio" id="customPrice" name="price" class="form-control" value="getCustomValue()">
+      <input type="text" id="customPriceInput" class="customPriceInput form-control" name="customPriceInput" disabled>
+    </div>
+
+  <div class="btn-container">
+    <button class="btn btn-primary" type="button" id="checkout-button" onclick="paymentMethod('{{ STRIPE_PUBLIC_KEY }}', '{% url 'create-checkout-session' %}')">Donate</button>
+  </div>
+
+  {% csrf_token %}
+
+</div>
+
   <script src="{% static 'js/payments_metod.js' %}"></script>
-</html>
+  <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+{% endblock %}

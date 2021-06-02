@@ -17,7 +17,7 @@
                 <a href="{% url 'book-details' book.pk %}">
                     <img src="{{ book.link_img }}" alt="{{ book.title }}">
                     <p><b>{{ book.title }}</b></p>
-                    <p>{{ book.author_id.name }}</p>
+                    <p>{{ book.author.name }}</p>
                 </a>
             </div>
           {% endfor %}
@@ -40,7 +40,7 @@
               <a href="{% url 'book-details' book.pk %}">
                   <img src="{{ book.link_img }}" alt="{{ book.title }}">
                   <p><b>{{ book.title }}</b></p>
-                  <p>{{ book.author_id.name }}</p>
+                  <p>{{ book.author.name }}</p>
               </a>
           </div>
           {% endfor %}

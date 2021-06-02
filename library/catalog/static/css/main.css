@@ -56,10 +56,14 @@
 .book_details_frame {
     background: #EEFCFC;
     max-width: 925px !important;
-    margin-top: 50px;
     background-color: #e1e5e7;
 }
-
+.book-details-alert-container{
+    max-width: 925px;
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+}
 .row img {
     width: 100%;
     height: 60%;
@@ -669,4 +673,58 @@ h2#review-banner {
 
 .news-contacts {
     font-size: 14px;
+}
+
+.user-ml{
+    margin-left: 18px;
+}
+
+.heart-icon{
+  height: 34px;
+  width: 34px;
+}
+
+.price-box label{
+    font-size: 25px;
+}
+
+.price-container{
+    display: flex;
+    justify-content: space-around;
+
+}
+
+.btn-container{
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.btn-container button{
+    width: 20%;
+}
+
+.h2-donate{
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+.img-container{
+    display: flex;
+    justify-content: center;
+}
+
+.img-container img{
+    width: 196px;
+    height: 196px;
+}
+
+.your-sum{
+    margin-top: 25px;
+    font-size: 25px;
+    text-align: center;
+}
+
+.price-box input{
+    margin-bottom: 20px;
 }
