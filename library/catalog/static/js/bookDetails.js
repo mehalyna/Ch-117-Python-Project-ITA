@@ -133,11 +133,11 @@ function fillCommentsList(list) {
                      </div>
             </div>`;
 
-    const content = userRole === "admin" ? adminComment : regularUserComment;
+    const content = userRole === "admin" ||  userRole === "moderator" ? adminComment : regularUserComment;
 
     if (content) {
       $("#commentList").append(content);
-      if (userRole == "admin") {
+      if (userRole == "admin" ||  userRole == "moderator") {
       change_comment_status(`.${buttonClass}`,
       `/library/change_review_status/${data[i].fields.book}/${data[i].pk}/inactive/`,
       `/library/show_reviews/${data[i].fields.book}/`)
