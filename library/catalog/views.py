@@ -474,6 +474,7 @@ def help_email(request):
                 messages.ERROR,
                 'Check your form, the fields were filled in incorrectly'
             )
+        return redirect(help_email)
     form = ContactForm()
     return render(request, 'help_email.html',  {'form': form})
 
