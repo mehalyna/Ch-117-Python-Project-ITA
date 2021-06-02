@@ -158,12 +158,27 @@
      <div id="endpoint-list" url="{% url 'show_reviews' book.pk %}" style="display: none;"></div>
     <div id="userId" value="{{user.pk}}" style="display: none;"></div>
     <div id="userRole" value="{{user.role}}" style="display: none;"></div>
-     {% endif %}
 
     <div id="commentList">
     </div>
-
+{% else %}
+     {% for review in reviews %}
+        <div id="commentArea">
+          <div class="card-header book-details-user-name">
+                    {{ review.firstname }} {{ review.lastname }}
+          </div>
+          <div class="card-body">
+                        <blockquote class="blockquote mb-0">
+                            <p class="book-details-review-text">{{ review.comment }}</p>
+                            <footer class="blockquote-footer book-details-user-published"><cite title="Source Title">Published {{ review.date }}</cite></footer>
+                </blockquote>
+                     </div>
+            </div>
+    {% endfor %}
+{% endif %}
 </div>
+
+
     <script src="{% static 'js/bookDetails.js' %}"></script>
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
     {% endblock %}

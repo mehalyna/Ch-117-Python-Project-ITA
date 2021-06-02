@@ -728,3 +728,16 @@ h2#review-banner {
 .price-box input{
     margin-bottom: 20px;
 }
+
+.book-details-user-name{
+    font-size: 15pt;
+    background: white!important;
+}
+
+.book-details-review-text{
+    font-size: 14pt;
+}
+
+.book-details-user-published{
+    font-size: 10pt!important;
+}
