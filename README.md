@@ -42,7 +42,7 @@ Python Project of Ch-117 mixed group ITA
  1. Create the first administrator user to login in admin.
    - Start flask shell from terminal:
    - ```sh
-     from models import User
+     from models import MongoUser
      ```
    - ```sh
       u = User(firstname='<UserFirstname>', lastname='<UserLastname>', login='<UserLogin>', role='admin', email='<UserEmail@example.com>')
