@@ -71,8 +71,9 @@
             </p>
         </div>
     </div>
-    <h2 id='review-banner'>Reviews</h2>
+
     {% if user.is_authenticated and user.status == 'active' %}
+    <h2 id='review-banner'>Reviews</h2>
     <form style="margin-bottom: 80px;" onsubmit="saveStarRating('{% url 'add-rating' book.pk %}')" action="">
         <div class="form-group">
             <div style="margin-top: -280px;margin-bottom: -340px" class="page">
