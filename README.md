@@ -25,6 +25,12 @@ Python Project of Ch-117 mixed group ITA
       DB_NAME=<your_db_name>
       MONGO_URL=<your_url>
       PORT=<your_port>
+      EMAIL_HOST_USER=<your_app_email>
+      EMAIL_HOST_PASSWORD=<your_app_email_password>
+      ADMIN_EMAIL=<admin_email>
+      CACHE_LIFETIME=<cache_lifetime_in_min>
+      STRIPE_PUBLIC_KEY=<stripe_public_key>
+      STRIPE_SECRET_KEY=<stripe_secret_key>
    ```
 
 ### Our project include two servers:
