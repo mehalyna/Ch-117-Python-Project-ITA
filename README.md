@@ -45,7 +45,7 @@ Python Project of Ch-117 mixed group ITA
      from models import MongoUser
      ```
    - ```sh
-      u = MongoUser(firstname='<UserFirstname>', lastname='<UserLastname>', login='<UserLogin>', role='admin', email='<UserEmail@example.com>')
+      u = MongoUser(firstname='<UserFirstname>', lastname='<UserLastname>', username='<Username>', role='admin', email='<UserEmail@example.com>')
       ```
    - Minimum number of characters for login = 6  
    - ```sh
