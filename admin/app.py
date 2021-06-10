@@ -13,7 +13,7 @@ from urllib import parse
 from werkzeug.urls import url_parse
 
 from admin.forms import AddBookForm, AddUserForm, LoginForm, UpdateBookForm, UpdateUserForm
-from admin.models import Author, Book, Role, Statistics, Status, MongoUser
+from admin.models import Author, Book, BookStatistic, Role, Statistics, Status, MongoUser
 import admin.utils as utils
 
 
@@ -277,15 +277,16 @@ def create_app():
                 books = []
                 for row in data:
                     author = Author.objects(**row['author']).first()
+                    statistic = BookStatistic()
+                    statistic.save()
                     if author:
                         row.pop('author')
-                        books.append(Book(author_id=author.pk, **row))
+                        books.append(Book(author_id=author.pk, statistic_id=statistic.pk, **row))
                     else:
                         author = Author(**row['author'])
                         author.save()
                         row.pop('author')
-                        books.append(Book(author_id=author.pk, **row))
-
+                        books.append(Book(author_id=author.pk, statistic_id=statistic.pk, **row))
                 Book.objects.insert(books)
                 for book in books:
                     book.author_id.books.append(str(book.id))
